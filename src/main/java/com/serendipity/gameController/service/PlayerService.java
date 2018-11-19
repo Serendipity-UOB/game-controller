@@ -4,13 +4,14 @@ import com.serendipity.gameController.model.Player;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface PlayerService {
 
     void savePlayer(Player player);
 
-    Player getPlayer(Long id);
+    Optional<Player> getPlayer(Long id);
 
     List<Player> getAllPlayers();
 

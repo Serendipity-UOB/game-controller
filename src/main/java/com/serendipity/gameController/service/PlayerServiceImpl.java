@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("playerService")
 public class PlayerServiceImpl implements PlayerService {
@@ -20,13 +21,15 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player getPlayer(Long id){
-        return new Player();
+    public Optional<Player> getPlayer(Long id){
+        return playerRepository.findById(id);
     }
 
     @Override
     public List<Player> getAllPlayers(){
-        return new ArrayList<>();
+        List<Player> ps = new ArrayList<>();
+        playerRepository.findAll().forEach(ps::add);
+        return ps;
     }
 
 }
