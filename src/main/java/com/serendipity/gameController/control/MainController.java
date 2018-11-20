@@ -34,7 +34,7 @@ public class MainController {
     @GetMapping(value="/initGame")
     public String initGame(){
         //TODO: Shuffle hacker names
-        //TODO: Assign targets
+        assignTargets();
         //TODO: Init information maps
         //Redirect to select player page
         return "redirect:/";
@@ -59,7 +59,7 @@ public class MainController {
         Random random = new Random();
         for (int i = 0; i < ps.size(); i++) {
             int next = random.nextInt(unassignedPlayers.size());
-            while(next == i) {
+            while(ps.get(i).getId() == unassignedPlayers.get(i).getId()) {
                 next = random.nextInt(unassignedPlayers.size());
             }
             ps.get(i).setTarget(unassignedPlayers.get(next));
