@@ -3,36 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hacker Hunt | Game Controller</title>
+    <title>Hacker Hunt | Select Player</title>
 </head>
 <body>
 
-<div>
-    <p>Select your real name</p>
-    <form th:action="'/selectPlayer'" method="post">
-        <select th:field="*{selectedPlayerId}">
-            <option th:each="player : ${players}" th:text="${player.realName}" th:value="${player.id}"></option>
-        </select>
-        <button type="submit">Go</button>
-    </form>
+    <div>
+        <button type="button">
+            <a th:href="@{/initGame}">Initialise Game</a>
+        </button>
+    </div>
 
-
-
-
-
-    <!--<form action="#" th:action="'/completeJob'" method="post">-->
-        <!--<input type="hidden" name="job" th:value="${job.id}"/>-->
-        <!--<input type="hidden" name="returnTo" value="home"/>-->
-        <!--<button th:if="${!job.isComplete() and job.getDoctor().getId() == #authentication.getPrincipal().getUserCore().getId()}"-->
-                <!--type="submit"-->
-                <!--class="custom-button green-outlined">-->
-            <!--<i class="fa fa-check"></i>-->
-        <!--</button>-->
-    <!--</form>-->
-
-
-
-</div>
+    <div>
+        Select your name
+        <div th:each="player : ${players}">
+            <a th:href="@{/playerHome/{id}(id=${player.id})}" th:text="${player.realName}"></a>
+        </div>
+    </div>
 
 </body>
 </html>

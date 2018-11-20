@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
 <head>
     <meta charset="UTF-8">
-    <title>Player Home</title>
+    <title>Hacker Hunt | Player Home</title>
 </head>
 <body>
 
-Player Home
+    <div>
+        Your real name is: <span th:text="${player.realName}"/><br/>
+        Your hacker name is: <span th:text="${player.hackerName}"/><br/>
+        Your target is: <span th:text="${targetHackerName}"/>
+    </div>
 
 </body>
 </html>

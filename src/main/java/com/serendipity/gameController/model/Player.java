@@ -1,12 +1,9 @@
 package com.serendipity.gameController.model;
 
-import org.springframework.expression.spel.ast.NullLiteral;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class Player {
@@ -84,4 +81,5 @@ public class Player {
     public void setKills(int kills) {
         this.kills = kills;
     }
+
 }
