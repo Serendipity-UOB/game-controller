@@ -18,8 +18,6 @@ public interface PlayerService {
 
     void createPlayers();
 
-    List<Player> sortPlayers(List<Player> players);
-
     List<Player> getAllPlayersExcept(Player player);
 
     void assignTargets();

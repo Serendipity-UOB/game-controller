@@ -44,11 +44,6 @@ public class PlayerServiceImpl implements PlayerService {
         return players;
     }
 
-    @Override
-    public List<Player> sortPlayers(List<Player> players) {
-        return new ArrayList<>();
-    }
-
     public void createPlayers() {
         if (playerRepository.count() != 0) {
             informationService.deleteAll();
