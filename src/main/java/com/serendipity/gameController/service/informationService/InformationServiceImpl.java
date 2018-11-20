@@ -26,7 +26,7 @@ public class InformationServiceImpl implements InformationService {
 
     @Override
     public List<Information> getAllInformationForOwner(Player owner) {
-        return informationRepository.findInformationsByOwner(owner);
+        return informationRepository.findInformationsByOwnerOrderById(owner);
     }
 
     @Override
