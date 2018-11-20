@@ -34,7 +34,8 @@ public class MainController {
     @GetMapping(value="/initGame")
     public String initGame(){
         //TODO: Shuffle hacker names
-        //TODO: Assign targets
+        //Assign targets
+        assignTargets();
         //TODO: Init information maps
         //Redirect to select player page
         return "redirect:/";
