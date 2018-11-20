@@ -76,4 +76,15 @@ public class Player {
     public void setKills(int kills) {
         this.kills = kills;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", realName='" + realName + '\'' +
+                ", hackerName='" + hackerName + '\'' +
+                ", target=" + target +
+                ", kills=" + kills +
+                '}';
+    }
 }
