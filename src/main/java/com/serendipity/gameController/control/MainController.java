@@ -4,7 +4,6 @@ import com.serendipity.gameController.model.Player;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +15,7 @@ public class MainController {
     public String home(Model model) {
         String name = "Tilly";
         model.addAttribute("name", name);
-//        return "index.html";
-        return "temp";
+        return "homepage";
     }
 
     public List<Player> initGame(){
