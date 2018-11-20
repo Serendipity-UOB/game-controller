@@ -1,6 +1,7 @@
-package com.serendipity.gameController.service;
+package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +18,7 @@ public interface PlayerService {
 
     void createPlayers();
 
+    List<Player> getAllPlayersExcept(Player player);
+
+    void assignTargets();
 }
