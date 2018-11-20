@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Hacker Hunt | Player Home</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet" media="screen"/>
 </head>
 <body>
 
-    <a th:href="@{/}">Home</a>
+    <a th:href="@{/}" style="font-size: 5vw">Home</a>
 
     <div>
         Your real name is: <span th:text="${player.realName}"/><br/>
