@@ -1,18 +1,17 @@
 package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Player;
-import com.serendipity.gameController.service.PlayerService;
 import com.serendipity.gameController.service.PlayerServiceImpl;
-import org.aspectj.apache.bcel.util.Play;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
 
 @Controller
 public class MainController {
@@ -54,7 +53,18 @@ public class MainController {
         return "playerHome";
     }
 
-
-
-
+    private void assignTargets(){
+        List<Player> ps = playerService.getAllPlayers();
+        List<Player> unassignedPlayers = playerService.getAllPlayers();
+        Random random = new Random();
+        for (int i = 0; i < ps.size(); i++) {
+            int next = random.nextInt(unassignedPlayers.size());
+            while(next == i) {
+                next = random.nextInt(unassignedPlayers.size());
+            }
+            ps.get(i).setTarget(unassignedPlayers.get(next));
+            unassignedPlayers.remove(next);
+            playerService.savePlayer(ps.get(i));
+        }
+    }
 }

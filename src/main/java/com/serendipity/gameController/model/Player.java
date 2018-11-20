@@ -82,4 +82,14 @@ public class Player {
         this.kills = kills;
     }
 
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", realName='" + realName + '\'' +
+                ", hackerName='" + hackerName + '\'' +
+                ", target=" + target.getHackerName() +
+                ", kills=" + kills +
+                '}';
+    }
 }
