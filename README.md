@@ -2,12 +2,14 @@
 
 A simple web app used for testing early Hacker Hunt game mechanics.
 
-To run the PostgreSQL server:
+To run the server you need to first configure the database:
+
+1. Run the PostgreSQL server:
 ```bash
 postgres -D /usr/local/var/postgres
 ```
 
-And create the correct database and access:
+2. Create the database and access rights:
 ```bash
 psql
 CREATE ROLE serendipity WITH LOGIN PASSWORD 'serendipity';
