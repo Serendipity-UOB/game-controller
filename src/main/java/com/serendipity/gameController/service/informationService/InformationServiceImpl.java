@@ -3,6 +3,7 @@ package com.serendipity.gameController.service.informationService;
 import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.InformationRepository;
+import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -13,6 +14,9 @@ public class InformationServiceImpl implements InformationService {
 
     @Autowired
     InformationRepository informationRepository;
+
+    @Autowired
+    PlayerServiceImpl playerService;
 
     @Override
     public void saveInformation(Information information) {
@@ -43,5 +47,16 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public void deleteAll() {
         informationRepository.deleteAll();
+    }
+
+    @Override
+    public void initInformation() {
+        for (Player player : playerService.getAllPlayers()) {
+            for (Player otherPlayer : playerService.getAllPlayersExcept(player)) {
+                //Add an information entry
+                Information information = new Information(player, otherPlayer, 0);
+                saveInformation(information);
+            }
+        }
     }
 }

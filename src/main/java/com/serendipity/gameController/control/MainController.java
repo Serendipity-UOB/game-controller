@@ -98,18 +98,7 @@ public class MainController {
     private void init() {
         playerService.createPlayers();
         playerService.assignTargets();
-        initInformation();
+        informationService.initInformation();
     }
-
-    private void initInformation() {
-        for (Player player : playerService.getAllPlayers()) {
-            for (Player otherPlayer : playerService.getAllPlayersExcept(player)) {
-                //Add an information entry
-                Information information = new Information(player, otherPlayer, 0);
-                informationService.saveInformation(information);
-            }
-        }
-    }
-
 
 }
