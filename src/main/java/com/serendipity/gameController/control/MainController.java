@@ -66,6 +66,20 @@ public class MainController {
         return "redirect:/playerHome/"+ownerId;
     }
 
+    @PostMapping(value="/killPlayer")
+    public String kill(@ModelAttribute("ownerId") Long ownerId,
+                       @ModelAttribute("contactId") Long contactId) {
+        Player owner = playerService.getPlayer(ownerId).get();
+        //Add 1 to killer's kills
+        playerService.incKills(owner);
+        //Killer gets assigned new random target from other players
+        List<Player> otherPlayers = playerService.getAllPlayersExcept(owner);
+        Random random = new Random();
+        owner.setTarget(otherPlayers.get(random.nextInt(otherPlayers.size())));
+        playerService.savePlayer(owner);
+        return "redirect:/playerHome/"+ownerId;
+    }
+
     private void init() {
         playerService.createPlayers();
         playerService.assignTargets();

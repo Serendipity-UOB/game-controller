@@ -58,6 +58,12 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public void incKills(Player player) {
+        player.setKills(player.getKills()+1);
+        playerRepository.save(player);
+    }
+
+    @Override
     public void assignTargets() {
         List<Player> players = getAllPlayers();
         List<Player> unassigned = getAllPlayers();

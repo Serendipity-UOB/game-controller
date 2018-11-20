@@ -21,4 +21,6 @@ public interface PlayerService {
     List<Player> getAllPlayersExcept(Player player);
 
     void assignTargets();
+
+    void incKills(Player player);
 }
