@@ -24,8 +24,6 @@ public class Player {
     private int kills;
 
     public Player() {
-        this.realName = "";
-        this.hackerName = "";
         this.kills = 0;
     }
 

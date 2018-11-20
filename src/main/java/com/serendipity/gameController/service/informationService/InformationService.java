@@ -16,8 +16,12 @@ public interface InformationService {
 
     List<Information> getAllInformationForOwner(Player owner);
 
+<<<<<<< HEAD
     Optional<Information> getInformationForOwnerAndContact(Player owner, Player contact);
 
     void incInteractions(Information information);
+=======
+    void deleteAll();
+>>>>>>> c677fd26120c03af805ca4516c5bc385834ccd17
 
 }

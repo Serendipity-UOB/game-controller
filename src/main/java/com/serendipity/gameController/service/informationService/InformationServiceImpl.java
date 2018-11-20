@@ -30,6 +30,7 @@ public class InformationServiceImpl implements InformationService {
     }
 
     @Override
+<<<<<<< HEAD
     public Optional<Information> getInformationForOwnerAndContact(Player owner, Player contact) {
         return informationRepository.findInformationByOwnerAndContact(owner, contact);
     }
@@ -38,6 +39,10 @@ public class InformationServiceImpl implements InformationService {
     public void incInteractions(Information information) {
         information.setInteractions(information.getInteractions()+1);
         informationRepository.save(information);
+=======
+    public void deleteAll() {
+        informationRepository.deleteAll();
+>>>>>>> c677fd26120c03af805ca4516c5bc385834ccd17
     }
 
 }

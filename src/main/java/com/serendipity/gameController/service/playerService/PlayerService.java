@@ -16,10 +16,11 @@ public interface PlayerService {
 
     List<Player> getAllPlayers();
 
-    List<Player> getAllPlayersExcept(Player player);
+    void createPlayers();
 
     List<Player> sortPlayers(List<Player> players);
 
-    void insertRootPlayers();
+    List<Player> getAllPlayersExcept(Player player);
 
+    void assignTargets();
 }
