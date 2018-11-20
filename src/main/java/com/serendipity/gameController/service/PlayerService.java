@@ -15,6 +15,6 @@ public interface PlayerService {
 
     List<Player> getAllPlayers();
 
-    void insertRootPlayers();
+    void createPlayers();
 
 }

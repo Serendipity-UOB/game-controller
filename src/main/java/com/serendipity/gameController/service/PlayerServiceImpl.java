@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service("playerService")
 public class PlayerServiceImpl implements PlayerService {
@@ -35,14 +33,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @PostConstruct
-    public void insertRootPlayers() {
-        if (playerRepository.count() == 0) {
-            savePlayer(new Player("Tilly", "Puppylover"));
-            savePlayer(new Player("Tom", "Cookingking"));
-            savePlayer(new Player("Nuha", "Cutekitten"));
-            savePlayer(new Player("Jack", "Headshot"));
-            savePlayer(new Player("David", "Jackedjones"));
-            savePlayer(new Player("Louis", "Bigboi"));
+    public void createPlayers() {
+        List<String> hackerNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero", "Cutiekitten", "Jackedjones");
+        List<String> realNames = Arrays.asList("Tom", "Tilly", "Louis", "Nuha", "Jack", "David");
+        Collections.shuffle(hackerNames);
+        for (int i = 0; i < realNames.size(); i++) {
+            savePlayer(new Player(realNames.get(i), hackerNames.get(i)));
         }
     }
 

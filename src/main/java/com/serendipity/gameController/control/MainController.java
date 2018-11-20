@@ -8,10 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 
 @Controller
@@ -49,12 +46,12 @@ public class MainController {
     }
 
     private void init() {
-        //TODO: Shuffle hacker names
+
         //TODO: Init information maps
-        assign();
+        assignTarget();
     }
 
-    private void assign(){
+    private void assignTarget() {
         List<Player> players = playerService.getAllPlayers();
         List<Player> unassigned = playerService.getAllPlayers();
         Random random = new Random();
