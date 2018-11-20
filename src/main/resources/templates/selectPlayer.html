@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hacker Hunt | Game Controller</title>
+</head>
+<body>
+
+<div>
+    <p>Select your real name</p>
+    <form th:action="'/selectPlayer'" method="post">
+        <select th:field="*{selectedPlayerId}">
+            <option th:each="player : ${players}" th:text="${player.realName}" th:value="${player.id}"></option>
+        </select>
+        <button type="submit">Go</button>
+    </form>
+
+
+
+
+
+    <!--<form action="#" th:action="'/completeJob'" method="post">-->
+        <!--<input type="hidden" name="job" th:value="${job.id}"/>-->
+        <!--<input type="hidden" name="returnTo" value="home"/>-->
+        <!--<button th:if="${!job.isComplete() and job.getDoctor().getId() == #authentication.getPrincipal().getUserCore().getId()}"-->
+                <!--type="submit"-->
+                <!--class="custom-button green-outlined">-->
+            <!--<i class="fa fa-check"></i>-->
+        <!--</button>-->
+    <!--</form>-->
+
+
+
+</div>
+
+</body>
+</html>
