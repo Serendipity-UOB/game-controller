@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
-
 }

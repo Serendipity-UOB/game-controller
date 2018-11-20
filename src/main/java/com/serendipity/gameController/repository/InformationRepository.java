@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface InformationRepository extends CrudRepository<Information, Long> {
 
-    List<Information> findInformationsByOwner(Player owner);
+    List<Information> findInformationsByOwnerOrderById(Player owner);
 
     Optional<Information> findInformationByOwnerAndContact(Player owner, Player contact);
 
