@@ -1,12 +1,16 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
-import com.serendipity.gameController.service.PlayerServiceImpl;
+import com.serendipity.gameController.service.informationService.InformationService;
+import com.serendipity.gameController.service.informationService.InformationServiceImpl;
+import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,9 @@ public class MainController {
 
     @Autowired
     PlayerServiceImpl playerService;
+
+    @Autowired
+    InformationServiceImpl informationService;
 
     @GetMapping(value="/")
     public String home() {
@@ -38,9 +45,17 @@ public class MainController {
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             model.addAttribute("player", player);
+            model.addAttribute("informations", informationService.getAllInformationForOwner(player));
+        } else {
+            //TODO Error
         }
         return "playerHome";
     }
+
+//    @PostMapping(value="/interact")
+//    public String interact() {
+//        return "redirect:/playerHome/"+id;
+//    }
 
     @GetMapping(value="/initGame")
     public String initGame(){
@@ -52,6 +67,17 @@ public class MainController {
         //TODO: Shuffle hacker names
         //TODO: Init information maps
         assign();
+        initInformation();
+    }
+
+    private void initInformation() {
+        for (Player player : playerService.getAllPlayers()) {
+            for (Player otherPlayer : playerService.getAllPlayersExcept(player)) {
+                //Add an information entry
+                Information information = new Information(player, otherPlayer, 0);
+                informationService.saveInformation(information);
+            }
+        }
     }
 
     private void assign(){

@@ -13,5 +13,31 @@
         Your target is: <span th:text="${player.target.hackerName}"/>
     </div>
 
+    <table border="1">
+        <tr>
+            <td>Contact</td>
+            <td>Interactions</td>
+            <td>Interact</td>
+            <td>Hacker Name</td>
+            <td>Kill</td>
+        </tr>
+        <tr th:each="information : ${informations}">
+            <td><span th:text="${information.contact.realName}"/></td>
+            <td><span th:text="${information.interactions}"/></td>
+            <td>
+                <form th:action="@{/}">
+                    <button type="submit">Interact</button>
+                </form>
+            </td>
+            <td>
+                <span th:if="${information.interactions}>=5" th:text="${information.contact.hackerName}"/>
+                <span th:if="${information.interactions}<5"><em>Unknown</em></span>
+            </td>
+            <td>
+                <button th:if="${information.contact}==${player.target}">Kill</button>
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

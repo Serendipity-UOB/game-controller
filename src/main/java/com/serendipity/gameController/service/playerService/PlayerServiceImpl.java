@@ -1,4 +1,4 @@
-package com.serendipity.gameController.service;
+package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
@@ -31,6 +31,15 @@ public class PlayerServiceImpl implements PlayerService {
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
         return ps;
+    }
+
+    @Override
+    public List<Player> getAllPlayersExcept(Player player) {
+        List<Player> players = new ArrayList<>();
+        for (Player p : getAllPlayers()) {
+            if (p != player) players.add(p);
+        }
+        return players;
     }
 
     @Override
