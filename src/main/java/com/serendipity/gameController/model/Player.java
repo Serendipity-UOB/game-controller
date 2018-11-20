@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Player {
@@ -12,16 +13,24 @@ public class Player {
     @GeneratedValue
     private Long id;
 
-    private RealName realName;
+    @NotNull
+    private String realName;
 
-    private HackerName hackerName;
+    @NotNull
+    private String hackerName;
 
     @ManyToOne
     private Player target;
 
     private int kills;
 
-    public Player(RealName realName, HackerName hackerName, Player target) {
+    public Player(@NotNull String realName, @NotNull String hackerName) {
+        this.realName = realName;
+        this.hackerName = hackerName;
+        this.kills = 0;
+    }
+
+    public Player(String realName, String hackerName, Player target) {
         this.realName = realName;
         this.hackerName = hackerName;
         this.target = target;
@@ -36,19 +45,19 @@ public class Player {
         this.id = id;
     }
 
-    public RealName getRealName() {
+    public String getRealName() {
         return realName;
     }
 
-    public void setRealName(RealName realName) {
+    public void setRealName(String realName) {
         this.realName = realName;
     }
 
-    public HackerName getHackerName() {
+    public String getHackerName() {
         return hackerName;
     }
 
-    public void setHackerName(HackerName hackerName) {
+    public void setHackerName(String hackerName) {
         this.hackerName = hackerName;
     }
 

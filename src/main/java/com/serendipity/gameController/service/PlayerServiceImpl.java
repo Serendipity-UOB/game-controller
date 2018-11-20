@@ -5,6 +5,7 @@ import com.serendipity.gameController.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,19 @@ public class PlayerServiceImpl implements PlayerService {
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
         return ps;
+    }
+
+    @Override
+    @PostConstruct
+    public void insertRootPlayers() {
+        if (playerRepository.count() == 0) {
+            savePlayer(new Player("Tilly", "Puppylover"));
+            savePlayer(new Player("Tom", "Cookingking"));
+            savePlayer(new Player("Nuha", "Cutekitten"));
+            savePlayer(new Player("Jack", "Headshot"));
+            savePlayer(new Player("David", "Jackedjones"));
+            savePlayer(new Player("Louis", "Bigboi"));
+        }
     }
 
 }
