@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -31,40 +32,64 @@ public class MainController {
         return "selectPlayer";
     }
 
-    @GetMapping(value="/initGame")
-    public String initGame(){
-        //TODO: Shuffle hacker names
-        assignTargets();
-        //TODO: Init information maps
-        //Redirect to select player page
-        return "redirect:/";
-    }
-
     @GetMapping(value="/playerHome/{id}")
     public String playerHome(@PathVariable("id") Long id, Model model) {
         Optional<Player> playerOptional = playerService.getPlayer(id);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             model.addAttribute("player", player);
-            String targetHackerName = "";
-//            String targetHackerName = player.getTarget().getHackerName();
-            model.addAttribute("targetHackerName", targetHackerName);
         }
         return "playerHome";
     }
 
-    private void assignTargets(){
-        List<Player> ps = playerService.getAllPlayers();
-        List<Player> unassignedPlayers = playerService.getAllPlayers();
-        Random random = new Random();
-        for (int i = 0; i < ps.size(); i++) {
-            int next = random.nextInt(unassignedPlayers.size());
-            while(ps.get(i).getId() == unassignedPlayers.get(i).getId()) {
-                next = random.nextInt(unassignedPlayers.size());
-            }
-            ps.get(i).setTarget(unassignedPlayers.get(next));
-            unassignedPlayers.remove(next);
-            playerService.savePlayer(ps.get(i));
-        }
+    @GetMapping(value="/initGame")
+    public String initGame(){
+        //TODO: Shuffle hacker names
+        //TODO: Init information maps
+        assign();
+        //Redirect to select player page
+        return "redirect:/";
     }
+
+    private void assign(){
+        List<Player> players = playerService.getAllPlayers();
+        List<Player> unassigned = playerService.getAllPlayers();
+        Random random = new Random();
+        for (Player player : players) {
+            //Get the list of players that are unassigned and not me
+            List<Player> chooseFrom = new ArrayList<>();
+            for (Player p : unassigned) {
+                if (!(p.equals(player))) {
+                    chooseFrom.add(p);
+                }
+            }
+            //Check to see if chooseFrom is empty
+            if (chooseFrom.isEmpty()) {
+                //Swap the last person's target with someone who doesn't have them as a target
+                //Try swapping with the first person's target
+                if (!(players.get(0).equals(player))) {
+                    //Then swap their targets
+                    players.get(0).setTarget(player);
+                    player.setTarget(players.get(0));
+
+                } else {
+                    players.get(1).setTarget(player);
+                    player.setTarget(players.get(1));
+                }
+            } else {
+                //Pick random from chooseFrom
+                int i = random.nextInt(chooseFrom.size());
+                Player target = chooseFrom.get(i);
+                player.setTarget(target);
+                //Reset unassigned
+                unassigned.remove(target);
+            }
+        }
+        //Update the database
+        for (Player player : players) {
+            playerService.savePlayer(player);
+        }
+
+    }
+
 }
