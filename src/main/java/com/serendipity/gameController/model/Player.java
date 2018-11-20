@@ -1,5 +1,7 @@
 package com.serendipity.gameController.model;
 
+import org.springframework.expression.spel.ast.NullLiteral;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,6 +25,12 @@ public class Player {
     private Player target;
 
     private int kills;
+
+    public Player() {
+        this.realName = "";
+        this.hackerName = "";
+        this.kills = 0;
+    }
 
     public Player(@NotNull String realName, @NotNull String hackerName) {
         this.realName = realName;
