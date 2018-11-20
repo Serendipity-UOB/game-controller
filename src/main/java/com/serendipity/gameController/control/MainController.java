@@ -61,8 +61,23 @@ public class MainController {
                            @ModelAttribute("contactId") Long contactId) {
         Player owner = playerService.getPlayer(ownerId).get();
         Player contact = playerService.getPlayer(contactId).get();
-        Information information = informationService.getInformationForOwnerAndContact(owner, contact).get();
-        informationService.incInteractions(information);
+        //Information about the person you are interacting with
+        Information primaryInformation = informationService.getInformationForOwnerAndContact(owner, contact).get();
+        informationService.incInteractions(primaryInformation);
+        //Information about a random one of their contacts
+        List<Information> secondaryInformation = informationService.getAllInformationForOwner(contact);
+        List<Player> contacts = new ArrayList<>();
+        for (Information information : secondaryInformation) {
+            if ((!information.getContact().equals(owner)) && (information.getInteractions() > 0)) {
+                contacts.add(information.getContact());
+            }
+        }
+        if (!contacts.isEmpty()) {
+            Random random = new Random();
+            Player randomContact = contacts.get(random.nextInt(contacts.size()));
+            Information randomInfo = informationService.getInformationForOwnerAndContact(owner, randomContact).get();
+            informationService.incInteractions(randomInfo);
+        }
         return "redirect:/playerHome/"+ownerId;
     }
 
