@@ -44,11 +44,14 @@ public class MainController {
 
     @GetMapping(value="/initGame")
     public String initGame(){
+        init();
+        return "redirect:/";
+    }
+
+    private void init() {
         //TODO: Shuffle hacker names
         //TODO: Init information maps
         assign();
-        //Redirect to select player page
-        return "redirect:/";
     }
 
     private void assign(){
