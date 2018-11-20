@@ -91,7 +91,7 @@ public class Player {
                 "id=" + id +
                 ", realName='" + realName + '\'' +
                 ", hackerName='" + hackerName + '\'' +
-                ", target=" + target +
+                ", target=" + target.getHackerName() +
                 ", kills=" + kills +
                 '}';
     }
