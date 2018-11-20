@@ -2,7 +2,11 @@
 
 A simple web app used for testing early Hacker Hunt game mechanics.
 
-To run the server you need to first configure the database:
+The app is currently hosted on Heroku:
+
+https://serendipity-game-controller.herokuapp.com/
+
+To run the server locally you need to first configure the database:
 
 1. Run the PostgreSQL server:
 ```bash
