@@ -18,6 +18,8 @@ public interface PlayerService {
 
     List<Player> getAllPlayersExcept(Player player);
 
+    List<Player> sortPlayers(List<Player> players);
+
     void insertRootPlayers();
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -52,15 +53,20 @@ public class MainController {
         return "playerHome";
     }
 
-//    @PostMapping(value="/interact")
-//    public String interact() {
-//        return "redirect:/playerHome/"+id;
-//    }
-
     @GetMapping(value="/initGame")
     public String initGame(){
         init();
         return "redirect:/";
+    }
+
+    @PostMapping(value="/interact")
+    public String interact(@ModelAttribute("ownerId") Long ownerId,
+                           @ModelAttribute("contactId") Long contactId) {
+        Player owner = playerService.getPlayer(ownerId).get();
+        Player contact = playerService.getPlayer(contactId).get();
+        Information information = informationService.getInformationForOwnerAndContact(owner, contact).get();
+        informationService.incInteractions(information);
+        return "redirect:/playerHome/"+ownerId;
     }
 
     private void init() {

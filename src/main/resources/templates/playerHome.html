@@ -25,7 +25,9 @@
             <td><span th:text="${information.contact.realName}"/></td>
             <td><span th:text="${information.interactions}"/></td>
             <td>
-                <form th:action="@{/}">
+                <form method="post" th:action="@{/interact}">
+                    <input type="hidden" th:value="${player.id}" name="ownerId"/>
+                    <input type="hidden" th:value="${information.contact.id}" name="contactId"/>
                     <button type="submit">Interact</button>
                 </form>
             </td>
@@ -34,7 +36,7 @@
                 <span th:if="${information.interactions}<5"><em>Unknown</em></span>
             </td>
             <td>
-                <button th:if="${information.contact}==${player.target}">Kill</button>
+                <button th:if="${information.contact}==${player.target} and ${information.interactions}>=5">Kill</button>
             </td>
         </tr>
     </table>

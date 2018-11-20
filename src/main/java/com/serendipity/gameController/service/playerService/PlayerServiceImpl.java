@@ -43,6 +43,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public List<Player> sortPlayers(List<Player> players) {
+        return new ArrayList<>();
+    }
+
+    @Override
     @PostConstruct
     public void insertRootPlayers() {
         if (playerRepository.count() == 0) {

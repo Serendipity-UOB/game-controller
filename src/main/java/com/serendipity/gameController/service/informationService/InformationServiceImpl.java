@@ -29,4 +29,15 @@ public class InformationServiceImpl implements InformationService {
         return informationRepository.findInformationsByOwner(owner);
     }
 
+    @Override
+    public Optional<Information> getInformationForOwnerAndContact(Player owner, Player contact) {
+        return informationRepository.findInformationByOwnerAndContact(owner, contact);
+    }
+
+    @Override
+    public void incInteractions(Information information) {
+        information.setInteractions(information.getInteractions()+1);
+        informationRepository.save(information);
+    }
+
 }

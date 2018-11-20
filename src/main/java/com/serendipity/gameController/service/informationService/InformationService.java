@@ -16,4 +16,8 @@ public interface InformationService {
 
     List<Information> getAllInformationForOwner(Player owner);
 
+    Optional<Information> getInformationForOwnerAndContact(Player owner, Player contact);
+
+    void incInteractions(Information information);
+
 }
