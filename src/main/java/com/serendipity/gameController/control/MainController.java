@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
 
+// TODO: Make weight a attribute of each player? Saves calculating each time can just update. 
+
 
 @Controller
 public class MainController {
@@ -73,8 +75,24 @@ public class MainController {
             }
         }
         if (!contacts.isEmpty()) {
+            List<Player> potentialInformation = new ArrayList<>();
+            // Create a list of player id's weighted by kills & intel to randomly choose over
+            List<Player> players = playerService.getAllPlayersExcept(contact);
+            for (Player player : players) {
+                if (player.equals(owner)) { // TODO remove this continue bit
+                    continue;
+                }
+                int totalInformation = playerService.getTotalInformation(player);
+                int averageInformation = totalInformation/players.size();
+                int kills = player.getKills();
+                potentialInformation.add(player);
+                for (int i = 0; i < kills+averageInformation; i++) {
+                    potentialInformation.add(player);
+                }
+            }
+            // Select random player for secondary information
             Random random = new Random();
-            Player randomContact = contacts.get(random.nextInt(contacts.size()));
+            Player randomContact = potentialInformation.get(random.nextInt(potentialInformation.size()));
             Information randomInfo = informationService.getInformationForOwnerAndContact(owner, randomContact).get();
             informationService.incInteractions(randomInfo);
         }
@@ -82,7 +100,7 @@ public class MainController {
     }
 
     private void newTarget(Player player, Player oldTarget) {
-        //Make list of all player ids, weighted by kills
+        //Make list of all player ids, weighted by kills & intel
         List<Player> targets = new ArrayList<>();
         List<Player> otherPlayers = playerService.getAllPlayersExcept(player);
         for (Player p : otherPlayers) {
