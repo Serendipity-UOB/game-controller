@@ -81,6 +81,23 @@ public class MainController {
         return "redirect:/playerHome/"+ownerId;
     }
 
+    private void newTarget(Player player) {
+        //Make list of all player ids, weighted by kills
+        List<Player> targets = new ArrayList<>();
+        List<Player> otherPlayers = playerService.getAllPlayersExcept(player);
+        for (Player p : otherPlayers) {
+            int kills = p.getKills();
+            targets.add(p);
+            for (int i = 0; i < kills; i++) {
+                targets.add(p);
+            }
+        }
+        //Choose random player from that list
+        Random random = new Random();
+        player.setTarget(targets.get(random.nextInt(targets.size())));
+        playerService.savePlayer(player);
+    }
+
     @PostMapping(value="/killPlayer")
     public String kill(@ModelAttribute("ownerId") Long ownerId,
                        @ModelAttribute("contactId") Long contactId) {
@@ -88,11 +105,8 @@ public class MainController {
         Player contact = playerService.getPlayer(contactId).get();
         //Add 1 to killer's kills
         playerService.incKills(owner);
-        //Killer gets assigned new random target from other players
-        List<Player> otherPlayers = playerService.getAllPlayersExcept(owner);
-        Random random = new Random();
-        owner.setTarget(otherPlayers.get(random.nextInt(otherPlayers.size())));
-        playerService.savePlayer(owner);
+        //Killer gets assigned new target from other players
+        newTarget(owner);
         //Killed person gets half their information wiped
         playerService.halfInformation(contact);
         return "redirect:/playerHome/"+ownerId;
