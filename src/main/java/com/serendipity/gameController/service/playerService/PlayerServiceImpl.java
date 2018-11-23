@@ -115,5 +115,15 @@ public class PlayerServiceImpl implements PlayerService {
         }
     }
 
+    @Override
+    public int getTotalInformation(Player player) {
+        List<Information> information = informationService.getAllInformationForOwner(player);
+        int total = 0;
+        for (Information info : information) {
+            total += info.getInteractions();
+        }
+        return total;
+    }
+
 
 }

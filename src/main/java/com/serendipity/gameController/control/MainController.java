@@ -81,15 +81,19 @@ public class MainController {
         return "redirect:/playerHome/"+ownerId;
     }
 
-    private void newTarget(Player player) {
+    private void newTarget(Player player, Player oldTarget) {
         //Make list of all player ids, weighted by kills
         List<Player> targets = new ArrayList<>();
         List<Player> otherPlayers = playerService.getAllPlayersExcept(player);
         for (Player p : otherPlayers) {
-            int kills = p.getKills();
-            targets.add(p);
-            for (int i = 0; i < kills; i++) {
+            if (!p.equals(oldTarget)) {
+                int totalInformation = playerService.getTotalInformation(p);
+                int averageInformation = totalInformation/otherPlayers.size();
+                int kills = p.getKills();
                 targets.add(p);
+                for (int i = 0; i < kills+averageInformation; i++) {
+                    targets.add(p);
+                }
             }
         }
         //Choose random player from that list
@@ -106,7 +110,7 @@ public class MainController {
         //Add 1 to killer's kills
         playerService.incKills(owner);
         //Killer gets assigned new target from other players
-        newTarget(owner);
+        newTarget(owner, contact);
         //Killed person gets half their information wiped
         playerService.halfInformation(contact);
         return "redirect:/playerHome/"+ownerId;

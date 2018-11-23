@@ -26,4 +26,6 @@ public interface PlayerService {
 
     void halfInformation(Player player);
 
+    int getTotalInformation(Player player);
+
 }
