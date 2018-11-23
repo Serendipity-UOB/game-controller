@@ -93,6 +93,7 @@ public class MainController {
         Random random = new Random();
         owner.setTarget(otherPlayers.get(random.nextInt(otherPlayers.size())));
         playerService.savePlayer(owner);
+        //Killed person gets half their information wiped
         playerService.halfInformation(contact);
         return "redirect:/playerHome/"+ownerId;
     }

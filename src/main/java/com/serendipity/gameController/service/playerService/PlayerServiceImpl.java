@@ -50,8 +50,8 @@ public class PlayerServiceImpl implements PlayerService {
             informationService.deleteAll();
             playerRepository.deleteAll();
         }
-        List<String> hackerNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero"/*, "Cutiekitten"/*, "Jackedjones"*/);
-        List<String> realNames = Arrays.asList("Tom", "Tilly", "Louis", /*"Nuha",*/ "Jack"/*, "David"*/);
+        List<String> hackerNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero", "Cutiekitten"/*, "Jackedjones"*/);
+        List<String> realNames = Arrays.asList("Tom", "Tilly", "Louis", "Nuha", "Jack"/*, "David"*/);
         Collections.shuffle(hackerNames);
         for (int i = 0; i < realNames.size(); i++) {
             savePlayer(new Player(realNames.get(i), hackerNames.get(i)));
