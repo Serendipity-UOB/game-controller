@@ -40,8 +40,10 @@ public class InformationServiceImpl implements InformationService {
 
     @Override
     public void incInteractions(Information information) {
-        information.setInteractions(information.getInteractions() + 1);
-        informationRepository.save(information);
+        if (information.getInteractions() < 5) {
+            information.setInteractions(information.getInteractions() + 1);
+            informationRepository.save(information);
+        }
     }
 
     @Override
