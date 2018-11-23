@@ -85,6 +85,7 @@ public class MainController {
     public String kill(@ModelAttribute("ownerId") Long ownerId,
                        @ModelAttribute("contactId") Long contactId) {
         Player owner = playerService.getPlayer(ownerId).get();
+        Player contact = playerService.getPlayer(contactId).get();
         //Add 1 to killer's kills
         playerService.incKills(owner);
         //Killer gets assigned new random target from other players
@@ -92,6 +93,7 @@ public class MainController {
         Random random = new Random();
         owner.setTarget(otherPlayers.get(random.nextInt(otherPlayers.size())));
         playerService.savePlayer(owner);
+        playerService.halfInformation(contact);
         return "redirect:/playerHome/"+ownerId;
     }
 

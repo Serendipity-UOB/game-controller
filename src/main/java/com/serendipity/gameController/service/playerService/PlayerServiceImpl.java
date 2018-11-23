@@ -1,5 +1,6 @@
 package com.serendipity.gameController.service.playerService;
 
+import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
 import com.serendipity.gameController.service.informationService.InformationServiceImpl;
@@ -103,6 +104,15 @@ public class PlayerServiceImpl implements PlayerService {
             savePlayer(player);
         }
 
+    }
+
+    @Override
+    public void halfInformation(Player player) {
+        List<Information> information = informationService.getAllInformationForOwner(player);
+        for (Information info : information) {
+            info.setInteractions(info.getInteractions()/2);
+            informationService.saveInformation(info);
+        }
     }
 
 

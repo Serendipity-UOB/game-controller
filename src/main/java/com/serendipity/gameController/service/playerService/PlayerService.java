@@ -23,4 +23,7 @@ public interface PlayerService {
     void assignTargets();
 
     void incKills(Player player);
+
+    void halfInformation(Player player);
+
 }
