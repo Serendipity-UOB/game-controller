@@ -45,6 +45,15 @@ public class PlayerServiceImpl implements PlayerService {
         return players;
     }
 
+    @Override
+    public List<Player> getAllPlayersExcept(List<Player> exceptPlayers) {
+        List<Player> players = new ArrayList<>();
+        for (Player p : getAllPlayers()) {
+            if (!exceptPlayers.contains(p)) players.add(p);
+        }
+        return players;
+    }
+
     public void createPlayers() {
         if (playerRepository.count() != 0) {
             informationService.deleteAll();

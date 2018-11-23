@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
 
-// TODO: Make weight a attribute of each player? Saves calculating each time can just update. 
+// TODO: Make weight a attribute of each player? Saves calculating each time can just update.
 
 
 @Controller
@@ -77,11 +77,8 @@ public class MainController {
         if (!contacts.isEmpty()) {
             List<Player> potentialInformation = new ArrayList<>();
             // Create a list of player id's weighted by kills & intel to randomly choose over
-            List<Player> players = playerService.getAllPlayersExcept(contact);
+            List<Player> players = playerService.getAllPlayersExcept(new ArrayList<>(Arrays.asList(contact, owner)));
             for (Player player : players) {
-                if (player.equals(owner)) { // TODO remove this continue bit
-                    continue;
-                }
                 int totalInformation = playerService.getTotalInformation(player);
                 int averageInformation = totalInformation/players.size();
                 int kills = player.getKills();

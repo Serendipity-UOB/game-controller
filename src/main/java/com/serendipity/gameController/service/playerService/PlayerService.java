@@ -20,6 +20,8 @@ public interface PlayerService {
 
     List<Player> getAllPlayersExcept(Player player);
 
+    List<Player> getAllPlayersExcept(List<Player> exceptPlayers);
+
     void assignTargets();
 
     void incKills(Player player);
