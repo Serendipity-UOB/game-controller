@@ -2,7 +2,6 @@ package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
-import com.serendipity.gameController.service.informationService.InformationService;
 import com.serendipity.gameController.service.informationService.InformationServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
-
-// TODO: Make weight a attribute of each player? Saves calculating each time can just update.
-
 
 @Controller
 public class MainController {
@@ -46,7 +42,8 @@ public class MainController {
             Player player = playerOptional.get();
             model.addAttribute("player", player);
             model.addAttribute("informations", informationService.getAllInformationForOwner(player));
-        } else {
+        }
+        else {
             //TODO Error
         }
         return "playerHome";
@@ -61,11 +58,42 @@ public class MainController {
     @PostMapping(value="/interact")
     public String interact(@ModelAttribute("ownerId") Long ownerId,
                            @ModelAttribute("contactId") Long contactId) {
-        Player owner = playerService.getPlayer(ownerId).get();
-        Player contact = playerService.getPlayer(contactId).get();
+        Optional<Player> owner = playerService.getPlayer(ownerId);
+        Optional<Player> contact = playerService.getPlayer(contactId);
+        if (owner.isPresent() && contact.isPresent()) {
+            interact(owner.get(), contact.get());
+        }
+        else {
+            // TODO Error
+        }
+        return "redirect:/playerHome/"+ownerId;
+    }
+
+    @PostMapping(value="/killPlayer")
+    public String kill(@ModelAttribute("ownerId") Long ownerId,
+                       @ModelAttribute("contactId") Long contactId) {
+        Optional<Player> owner = playerService.getPlayer(ownerId);
+        Optional<Player> contact = playerService.getPlayer(contactId);
+        if (owner.isPresent() && contact.isPresent()) {
+            //Add 1 to killer's kills
+            playerService.incKills(owner.get());
+            //Killer gets assigned new target from other players
+            newTarget(owner.get(), contact.get());
+            //Killed person gets half their information wiped
+            playerService.halfInformation(contact.get());
+        }
+        return "redirect:/playerHome/"+ownerId;
+    }
+
+    private void interact(Player owner, Player contact) {
         //Information about the person you are interacting with
-        Information primaryInformation = informationService.getInformationForOwnerAndContact(owner, contact).get();
-        informationService.incInteractions(primaryInformation);
+        Optional<Information> primaryInformation = informationService.getInformationForOwnerAndContact(owner, contact);
+        if (primaryInformation.isPresent()) {
+            informationService.incInteractions(primaryInformation.get());
+        }
+        else {
+            // TODO Error
+        }
         //Information about a random one of their contacts
         List<Information> secondaryInformation = informationService.getAllInformationForOwner(contact);
         List<Player> contacts = new ArrayList<>();
@@ -77,23 +105,24 @@ public class MainController {
         if (!contacts.isEmpty()) {
             List<Player> potentialInformation = new ArrayList<>();
             // Create a list of player id's weighted by kills & intel to randomly choose over
-            List<Player> players = playerService.getAllPlayersExcept(new ArrayList<>(Arrays.asList(contact, owner)));
-            for (Player player : players) {
-                int totalInformation = playerService.getTotalInformation(player);
-                int averageInformation = totalInformation/players.size();
-                int kills = player.getKills();
+            for (Player player : contacts) {
+                int playerWeight = playerService.getPlayerWeight(player);
                 potentialInformation.add(player);
-                for (int i = 0; i < kills+averageInformation; i++) {
+                for (int i = 0; i < playerWeight; i++) {
                     potentialInformation.add(player);
                 }
             }
             // Select random player for secondary information
             Random random = new Random();
             Player randomContact = potentialInformation.get(random.nextInt(potentialInformation.size()));
-            Information randomInfo = informationService.getInformationForOwnerAndContact(owner, randomContact).get();
-            informationService.incInteractions(randomInfo);
+            Optional<Information> randomInfo = informationService.getInformationForOwnerAndContact(owner, randomContact);
+            if (randomInfo.isPresent()) {
+                informationService.incInteractions(randomInfo.get());
+            }
+            else {
+                // TODO Error
+            }
         }
-        return "redirect:/playerHome/"+ownerId;
     }
 
     private void newTarget(Player player, Player oldTarget) {
@@ -102,11 +131,9 @@ public class MainController {
         List<Player> otherPlayers = playerService.getAllPlayersExcept(player);
         for (Player p : otherPlayers) {
             if (!p.equals(oldTarget)) {
-                int totalInformation = playerService.getTotalInformation(p);
-                int averageInformation = totalInformation/otherPlayers.size();
-                int kills = p.getKills();
+                int playerWeight = playerService.getPlayerWeight(p);
                 targets.add(p);
-                for (int i = 0; i < kills+averageInformation; i++) {
+                for (int i = 0; i < playerWeight; i++) {
                     targets.add(p);
                 }
             }
@@ -117,19 +144,6 @@ public class MainController {
         playerService.savePlayer(player);
     }
 
-    @PostMapping(value="/killPlayer")
-    public String kill(@ModelAttribute("ownerId") Long ownerId,
-                       @ModelAttribute("contactId") Long contactId) {
-        Player owner = playerService.getPlayer(ownerId).get();
-        Player contact = playerService.getPlayer(contactId).get();
-        //Add 1 to killer's kills
-        playerService.incKills(owner);
-        //Killer gets assigned new target from other players
-        newTarget(owner, contact);
-        //Killed person gets half their information wiped
-        playerService.halfInformation(contact);
-        return "redirect:/playerHome/"+ownerId;
-    }
 
     private void init() {
         playerService.createPlayers();

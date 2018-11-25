@@ -30,4 +30,6 @@ public interface PlayerService {
 
     int getTotalInformation(Player player);
 
+    int getPlayerWeight(Player player);
+
 }

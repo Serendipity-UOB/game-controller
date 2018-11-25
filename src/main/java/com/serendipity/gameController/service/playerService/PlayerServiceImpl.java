@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
 import com.serendipity.gameController.service.informationService.InformationServiceImpl;
+import org.aspectj.apache.bcel.util.Play;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,5 +135,13 @@ public class PlayerServiceImpl implements PlayerService {
         return total;
     }
 
+    @Override
+    public int getPlayerWeight(Player player) {
+        int totalInformation = getTotalInformation(player);
+        int averageInformation = totalInformation/getAllPlayers().size();
+        int kills = player.getKills();
+        int weight = averageInformation + kills;
+        return weight;
+    }
 
 }
