@@ -74,6 +74,7 @@ public class MainController {
                        @ModelAttribute("contactId") Long contactId) {
         Optional<Player> owner = playerService.getPlayer(ownerId);
         Optional<Player> contact = playerService.getPlayer(contactId);
+        // TODO check they can still kill them
         if (owner.isPresent() && contact.isPresent()) {
             //Add 1 to killer's kills
             playerService.incKills(owner.get());
