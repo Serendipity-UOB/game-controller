@@ -1,6 +1,10 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -8,9 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.Gson;
 
 @Controller
 public class MobileController {
+
+    @Autowired
+    PlayerServiceImpl playerService;
 
     @RequestMapping(value = "/getTest", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -27,11 +39,17 @@ public class MobileController {
     }
 
     //    POST /registerPlayer { real_name, hacker_name, nfc_id }
-    @RequestMapping(value="/registerPlayer", method=RequestMethod.GET)
+    @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity registerPlayer() {
+    public ResponseEntity registerPlayer(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        String real = input.getString("real_name");
+        String hacker = input.getString("hacker_name");
+        Long nfc = input.getLong("nfc_id");
+//        TODO
+//        add player to player table
 //        200 OK if all dandy. Assume nfc_id == player_id
-//        400 get a new hackerna
+//        400 get a new hackername
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -39,24 +57,43 @@ public class MobileController {
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getGameInfo() {
-//        { start_time, number_players }
-        return "";
+        JSONObject output = new JSONObject();
+        output.put("start_time", LocalTime.now().plus(10, ChronoUnit.SECONDS));
+        output.put("number_players", 0);
+//        TODO
+//        Draw values from game table
+        return output.toString();
     }
 
     //    POST /joinGame { player_id }
-    @RequestMapping(value="/joinGame", method=RequestMethod.POST)
+    @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public String joinGame(@RequestBody String json) {
-//        { home_beacon }
-        return "";
+        JSONObject input = new JSONObject(json);
+        Long id = input.getLong("player_id");
+
+        JSONObject output = new JSONObject();
+        output.put("home_beacon_minor", 0);
+        output.put("home_beacon_name", "home");
+//        TODO
+//        deal with player id
+//        assignment of home beacon
+//        fetch mapping of minor to name
+        return output.toString();
     }
 
     //    GET /startInfo
     @RequestMapping(value="/startInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-//        { all_players[{id, real_name, hacker_name}] }
-        return "";
+        List<Player> ret = new ArrayList<>();
+        ret.add(new Player("Jack", "Cutiekitten"));
+        ret.add(new Player("Tilly", "Puppylover"));
+        ret.add(new Player("Tom", "Cookingking"));
+        String output = new Gson().toJson(ret);
+//        TODO
+//        draw list of players from player table
+        return output;
     }
 
     //    POST /playerUpdate { player_id, beacons[{beacon_minor, rssi}] }
@@ -93,10 +130,11 @@ public class MobileController {
     }
 
     //    GET /endInfo
-    @RequestMapping(value="/endInfo", method=RequestMethod.GET)
+    @RequestMapping(value=" /endInfo", method=RequestMethod.GET)
     @ResponseBody
     public String endInfo() {
 //        { leaderboard[{player_id, player_name, score}] }
+
         return "";
     }
 
