@@ -1,14 +1,10 @@
 package com.serendipity.gameController.service.playerService;
 
-import com.serendipity.gameController.model.Information;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
-import com.serendipity.gameController.service.informationService.InformationServiceImpl;
-import org.aspectj.apache.bcel.util.Play;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service("playerService")
@@ -16,9 +12,6 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     PlayerRepository playerRepository;
-
-    @Autowired
-    InformationServiceImpl informationService;
 
     @Override
     public void savePlayer(Player player){
@@ -57,7 +50,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     public void createPlayers() {
         if (playerRepository.count() != 0) {
-            informationService.deleteAll();
+//            informationService.deleteAll();
             playerRepository.deleteAll();
         }
         List<String> hackerNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero", "Cutiekitten", "Jackedjones");
@@ -118,20 +111,20 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public void halfInformation(Player player) {
-        List<Information> information = informationService.getAllInformationForOwner(player);
-        for (Information info : information) {
-            info.setInteractions(info.getInteractions()/2);
-            informationService.saveInformation(info);
-        }
+//        List<Information> information = informationService.getAllInformationForOwner(player);
+//        for (Information info : information) {
+//            info.setInteractions(info.getInteractions()/2);
+//            informationService.saveInformation(info);
+//        }
     }
 
     @Override
     public int getTotalInformation(Player player) {
-        List<Information> information = informationService.getAllInformationForOwner(player);
+//        List<Information> information = informationService.getAllInformationForOwner(player);
         int total = 0;
-        for (Information info : information) {
-            total += info.getInteractions();
-        }
+//        for (Information info : information) {
+//            total += info.getInteractions();
+//        }
         return total;
     }
 
