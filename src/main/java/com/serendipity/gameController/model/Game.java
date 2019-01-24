@@ -18,8 +18,8 @@ public class Game {
     private LocalTime endTime;
 
     public Game() {
-        this.startTime = LocalTime.now().plus(10, ChronoUnit.MINUTES);
-        this.endTime = LocalTime.now().plus(20, ChronoUnit.MINUTES);
+        this.startTime = LocalTime.now().plus(10, ChronoUnit.SECONDS);
+        this.endTime = this.startTime.plus(10, ChronoUnit.MINUTES);
     }
 
     public Game(LocalTime startTime) {
