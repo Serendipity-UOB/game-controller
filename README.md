@@ -1,6 +1,6 @@
-# Game Controller
+# Hacker Hunt Server
 
-A simple web app used for testing early Hacker Hunt game mechanics.
+A Spring server for the Hacker Hunt game to be used by both iOS and Andriod app.
 
 The app is currently hosted on Heroku:
 
