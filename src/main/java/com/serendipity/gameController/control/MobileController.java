@@ -3,6 +3,7 @@ package com.serendipity.gameController.control;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.sun.xml.internal.bind.v2.TODO;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -96,46 +97,76 @@ public class MobileController {
         return output;
     }
 
-    //    POST /playerUpdate { player_id, beacons[{beacon_minor, rssi}] }
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
-//        { nearby_players[], state{[points], position}, [update[]] }
-        return "";
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        JSONArray beacons = input.getJSONArray("beacons");
+        // TODO: Find closest beacon
+        // TODO: Find players who are 'nearby'
+        List<Long> nearbyPlayerIds = new ArrayList<>();
+        nearbyPlayerIds.add(0l);
+        nearbyPlayerIds.add(1l);
+        JSONObject output = new JSONObject();
+        output.put("nearby_players", nearbyPlayerIds);
+        int kills = 3;
+        output.put("points", kills);
+        int position = 1;
+        output.put("position", position);
+        int takenDown = 0;
+        output.put("taken_down", takenDown);
+        int reqNewTarget = 0;
+        output.put("req_new_target", reqNewTarget);
+        return output.toString();
     }
 
-    //    POST /newTarget { player_id }
-    @RequestMapping(value="/newTarget", method=RequestMethod.POST)
+    @RequestMapping(value="/newTarget", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public String getNewTarget(@RequestBody String json) {
-//        { target_player_id }
-        return "";
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        // TODO: Assign target to player
+        Long targetId = 0l;
+        JSONObject output = new JSONObject();
+        output.put("target_player_id", targetId);
+        return output.toString();
     }
 
-    //    POST /exchange { interacter_id, interactee_id }
     @RequestMapping(value="/exchange", method=RequestMethod.POST)
     @ResponseBody
-    public String exchange(@RequestBody String json) {
-//        200 OK {secondary_id} or 100 Continue
-        return "";
+    public ResponseEntity exchange(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long interacterId = input.getLong("interacter_id");
+        Long interacteeId = input.getLong("interactee_id");
+        // TODO: Exchange or error
+        Long secondaryId = 0l;
+        JSONObject output = new JSONObject();
+        output.put("secondary_id", secondaryId);
+        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        return response;
     }
 
-    //    POST /takeDown { player_id, target_id }
     @RequestMapping(value="/takeDown", method=RequestMethod.POST)
     @ResponseBody
-    public String takeDown(@RequestBody String json) {
-//        200 OK or 400 Bad Requestt
-//        400 needs to specify “Not your target” or “Insufficient intel”
-        return "";
+    public ResponseEntity takeDown(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Long targetId = input.getLong("target_id");
+        // TODO: Takedown or error
+        return new ResponseEntity(HttpStatus.OK);
+        // 400 Bad Request to specify “Not your target” or “Insufficient intel”
     }
 
-    //    GET /endInfo
-    @RequestMapping(value=" /endInfo", method=RequestMethod.GET)
+    @RequestMapping(value="/endInfo", method=RequestMethod.GET)
     @ResponseBody
     public String endInfo() {
-//        { leaderboard[{player_id, player_name, score}] }
-
-        return "";
+        // TODO: Get all players, sorted by kills
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("Tilly","Headshot"));
+        players.add(new Player("Tom","Cutiekitten"));
+        String output = new Gson().toJson(players);
+        return output;
     }
 
 }
