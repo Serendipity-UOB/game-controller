@@ -87,7 +87,7 @@ public class MobileController {
     @RequestMapping(value="/takeDown", method=RequestMethod.POST)
     @ResponseBody
     public String takeDown(@RequestBody String json) {
-//        200 OK or 400 Bad Request
+//        200 OK or 400 Bad Requestt
 //        400 needs to specify “Not your target” or “Insufficient intel”
         return "";
     }
