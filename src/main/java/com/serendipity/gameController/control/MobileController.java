@@ -31,7 +31,7 @@ public class MobileController {
     @ResponseBody
     public ResponseEntity registerPlayer() {
 //        200 OK if all dandy. Assume nfc_id == player_id
-//        400 get a new hackername
+//        400 get a new hackernam
         return new ResponseEntity(HttpStatus.OK);
     }
 
