@@ -21,7 +21,3 @@ ALTER ROLE serendipity CREATEDB;
 CREATE DATABASE serendipitydb;
 GRANT ALL PRIVILEGES ON DATABASE serendipitydb TO serendipity;
 ```
-
-### Entity Relation Diagram
-
-![entity-relation](/docs/entity-relation.png)
