@@ -18,7 +18,9 @@ public class Beacon {
     @NotNull
     private String name;
 
-    public Beacon(@NotNull  int minor, @NotNull  String name) {
+    public Beacon() {  }
+
+    public Beacon(@NotNull int minor, @NotNull String name) {
         this.minor = minor;
         this.name = name;
     }

@@ -24,6 +24,12 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public Player findHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
+
+    @Override
+    public long countPlayer() { return playerRepository.count(); }
+
+    @Override
     public List<Player> getAllPlayers(){
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
@@ -64,6 +70,12 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public void incKills(Player player) {
         player.setKills(player.getKills()+1);
+        playerRepository.save(player);
+    }
+
+    @Override
+    public void assignHome(Player player, int home) {
+        player.setHomeBeacon(home);
         playerRepository.save(player);
     }
 

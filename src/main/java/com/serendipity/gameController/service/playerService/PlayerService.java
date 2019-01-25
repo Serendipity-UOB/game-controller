@@ -13,6 +13,10 @@ public interface PlayerService {
 
     Optional<Player> getPlayer(Long id);
 
+    Player findHackerName(String hackerName);
+
+    long countPlayer();
+
     List<Player> getAllPlayers();
 
     void createPlayers();
@@ -20,6 +24,8 @@ public interface PlayerService {
     List<Player> getAllPlayersExcept(Player player);
 
     List<Player> getAllPlayersExcept(List<Player> exceptPlayers);
+
+    void assignHome(Player player, int home);
 
     void assignTargets();
 

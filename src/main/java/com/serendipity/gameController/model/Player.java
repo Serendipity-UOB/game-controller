@@ -18,6 +18,11 @@ public class Player {
     @NotNull
     private String hackerName;
 
+    @NotNull
+    private Long nfcId;
+
+    private int homeBeacon;
+
     @ManyToOne
     private Player target;
 
@@ -25,17 +30,39 @@ public class Player {
 
     public Player() {
         this.kills = 0;
+        this.homeBeacon = -1;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName) {
         this.realName = realName;
         this.hackerName = hackerName;
+        this.homeBeacon = -1;
+        this.nfcId = this.id;
         this.kills = 0;
     }
 
-    public Player(String realName, String hackerName, Player target) {
+    public Player(@NotNull String realName, @NotNull String hackerName, @NotNull Long nfcId) {
         this.realName = realName;
         this.hackerName = hackerName;
+        this.homeBeacon = -1;
+        this.nfcId = nfcId;
+        this.kills = 0;
+    }
+
+    public Player(@NotNull String realName, @NotNull String hackerName, Player target) {
+        this.realName = realName;
+        this.hackerName = hackerName;
+        this.homeBeacon = -1;
+        this.nfcId = this.id;
+        this.target = target;
+        this.kills = 0;
+    }
+
+    public Player(@NotNull String realName, @NotNull String hackerName, @NotNull Long nfcId, Player target) {
+        this.realName = realName;
+        this.hackerName = hackerName;
+        this.homeBeacon = -1;
+        this.nfcId = nfcId;
         this.target = target;
         this.kills = 0;
     }
@@ -64,6 +91,14 @@ public class Player {
         this.hackerName = hackerName;
     }
 
+    public Long getNfcId() { return nfcId; }
+
+    public void setNfcId(Long nfcId) { this.nfcId = nfcId; }
+
+    public int getHomeBeacon() { return homeBeacon; }
+
+    public void setHomeBeacon(int homeBeacon) { this.homeBeacon = homeBeacon; }
+
     public Player getTarget() {
         return target;
     }
@@ -86,6 +121,8 @@ public class Player {
                 "id=" + id +
                 ", realName='" + realName + '\'' +
                 ", hackerName='" + hackerName + '\'' +
+                ", nfcId=" + nfcId +
+                ", homeBeacon=" + homeBeacon +
                 ", target=" + target.getHackerName() +
                 ", kills=" + kills +
                 '}';
