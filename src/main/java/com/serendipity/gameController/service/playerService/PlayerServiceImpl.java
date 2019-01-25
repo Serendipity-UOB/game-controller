@@ -24,9 +24,16 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Player> getAllPlayers(){
+    public List<Player> getAllPlayers() {
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
+        return ps;
+    }
+
+    @Override
+    public List<Player> getAllPlayersByScore() {
+        List<Player> ps = new ArrayList<>();
+        playerRepository.findAllByOrderByKillsDesc().forEach(ps::add);
         return ps;
     }
 
@@ -135,6 +142,28 @@ public class PlayerServiceImpl implements PlayerService {
         int kills = player.getKills();
         int weight = averageInformation + kills;
         return weight;
+    }
+
+    @Override
+    public Long newTarget(Long playerId){
+        Player player = getPlayer(playerId).get();
+        List<Player> except = new ArrayList<>();
+        except.add(player);
+        if (player.getTarget() != null) except.add(player.getTarget());
+        List<Player> players = getAllPlayersExcept(except);
+        List<Player> weightedPlayers = new ArrayList<>();
+        for (Player p : players) {
+            int playerWeight = getPlayerWeight(p);
+            weightedPlayers.add(p);
+            for (int i = 0; i < playerWeight; i++) {
+                weightedPlayers.add(p);
+            }
+        }
+        Random random = new Random();
+        Player newTarget = weightedPlayers.get(random.nextInt(weightedPlayers.size()));
+        player.setTarget(newTarget);
+        savePlayer(player);
+        return newTarget.getId();
     }
 
 }

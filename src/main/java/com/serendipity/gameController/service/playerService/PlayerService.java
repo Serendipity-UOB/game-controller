@@ -15,6 +15,8 @@ public interface PlayerService {
 
     List<Player> getAllPlayers();
 
+    List<Player> getAllPlayersByScore();
+
     void createPlayers();
 
     List<Player> getAllPlayersExcept(Player player);
@@ -30,5 +32,7 @@ public interface PlayerService {
     int getTotalInformation(Player player);
 
     int getPlayerWeight(Player player);
+
+    Long newTarget(Long playerId);
 
 }

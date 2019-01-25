@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import com.google.gson.Gson;
 
 @Controller
@@ -126,10 +129,9 @@ public class MobileController {
     public String getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
-        // TODO: Assign target to player
-        Long targetId = 0l;
+        Long newTargetId = playerService.newTarget(playerId);
         JSONObject output = new JSONObject();
-        output.put("target_player_id", targetId);
+        output.put("target_player_id", newTargetId);
         return output.toString();
     }
 
@@ -161,12 +163,15 @@ public class MobileController {
     @RequestMapping(value="/endInfo", method=RequestMethod.GET)
     @ResponseBody
     public String endInfo() {
-        // TODO: Get all players, sorted by kills
-        List<Player> players = new ArrayList<>();
-        players.add(new Player("Tilly","Headshot"));
-        players.add(new Player("Tom","Cutiekitten"));
-        String output = new Gson().toJson(players);
-        return output;
+        JSONArray leaderboard = new JSONArray();
+        List<Player> players = playerService.getAllPlayersByScore();
+        for (Player player : players) {
+            JSONObject playerInfo = new JSONObject();
+            playerInfo.put("player_id", player.getId());
+            playerInfo.put("score", player.getKills());
+            leaderboard.put(playerInfo);
+        }
+        return leaderboard.toString();
     }
 
 }
