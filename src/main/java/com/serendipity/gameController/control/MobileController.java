@@ -87,14 +87,14 @@ public class MobileController {
     @RequestMapping(value="/startInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-        List<Player> ret = new ArrayList<>();
-        ret.add(new Player("Jack", "Cutiekitten"));
-        ret.add(new Player("Tilly", "Puppylover"));
-        ret.add(new Player("Tom", "Cookingking"));
-        String output = new Gson().toJson(ret);
+//        List<Player> ret = new ArrayList<>();
+//        ret.add(new Player("Jack", "Cutiekitten"));
+//        ret.add(new Player("Tilly", "Puppylover"));
+//        ret.add(new Player("Tom", "Cookingking"));
+//        String output = new Gson().toJson(ret);
 //        TODO
 //        draw list of players from player table
-        return output;
+        return "{ \"all_players\": [{ \"realName\": \"Jack\", \"hackerName\": \"CutieKitten\", \"id\": 0}, { \"realName\": \"Tilly\", \"hackerName\": \"PuppyLover\", \"id\": 1}, { \"realName\": \"Tom\", \"hackerName\": \"Cookingking\", \"id\": 2} ]}";
     }
 
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
