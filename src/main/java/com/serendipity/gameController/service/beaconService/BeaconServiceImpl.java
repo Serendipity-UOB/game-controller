@@ -20,4 +20,7 @@ public class BeaconServiceImpl implements BeaconService {
     public Optional<Beacon> getBeacon(Long id){
         return beaconRepository.findById(id);
     }
+
+    @Override
+    public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.getBeaconByMinor(minor); }
 }

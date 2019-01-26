@@ -2,6 +2,7 @@ package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class PlayerServiceImpl implements PlayerService {
     public long countPlayer() { return playerRepository.count(); }
 
     @Override
-    public List<Player> getAllPlayers(){
+    public List<Player> getAllPlayers() {
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
         return ps;
@@ -51,6 +52,20 @@ public class PlayerServiceImpl implements PlayerService {
         for (Player p : getAllPlayers()) {
             if (!exceptPlayers.contains(p)) players.add(p);
         }
+        return players;
+    }
+
+    @Override
+    public List<JSONObject> getAllPlayersStartInfo() {
+        List<JSONObject> players = new ArrayList<>();
+        for (Player p : getAllPlayers()) {
+            JSONObject obj = new JSONObject();
+            obj.put("id", p.getId());
+            obj.put("real_name", p.getRealName());
+            obj.put("hacker_name", p.getHackerName());
+            players.add(obj);
+        }
+
         return players;
     }
 

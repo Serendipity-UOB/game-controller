@@ -72,9 +72,7 @@ public class MobileController {
 //            add player to player table
             playerService.savePlayer(toRegister);
             response = new ResponseEntity(HttpStatus.OK);
-        }
-        else { response = new ResponseEntity(HttpStatus.BAD_REQUEST); }
-
+        } else { response = new ResponseEntity(HttpStatus.BAD_REQUEST); }
         return response;
     }
 
@@ -108,19 +106,27 @@ public class MobileController {
 //        ensure optional has a value
         if(opPlayer.isPresent()) {
             Player player = opPlayer.get();
-//            re-Initialise set of beacons
+//            re-Initialise set of beacons if empty
             if (beacons.isEmpty()) {
-                for(long i = 1; i < beaconService.countBeacons() + 1; i++) {
+                for (long i = 1; i < beaconService.countBeacons() + 1; i++) {
                     beacons.add(i);
                 }
             }
-            if(player.getHomeBeacon() == -1) {
-//                generate randomly take from beacon list using random number
+            if (beacons.isEmpty()) {
+                output.put("BAD_REQUEST", "No beacons in beacon table");
+            } else {
+                System.out.println(beacons);
+                Optional<Beacon> opBeacon;
+//                randomly take from beacon list using random number
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
-                long index = beacons.get(n);
-//                get beacon randomly chosen from beacon table
-                Optional<Beacon> opBeacon = beaconService.getBeacon(index);
+                if (player.getHomeBeacon() == -1) {
+                    long index = beacons.get(n);
+//                    get beacon randomly chosen from beacon table
+                    opBeacon = beaconService.getBeacon(index);
+                } else {
+                    opBeacon = beaconService.getBeaconByMinor(player.getHomeBeacon());
+                }
 //                ensure optional has a value
                 if (opBeacon.isPresent()) {
 //                    unpack optional object
@@ -132,21 +138,18 @@ public class MobileController {
                     output.put("home_beacon_name", name);
 //                    set status value
                     responseStatus = HttpStatus.OK;
+                    if (player.getHomeBeacon() == -1) {
 //                    assign home beacon to player
-                    playerService.assignHome(player, minor);
+                        playerService.assignHome(player, minor);
 //                    remove index selected
-                    beacons.remove(n);
-                }
-                else {
-//                  TODO: Error
+                        beacons.remove(n);
+                    }
+                } else {
+                    output.put("BAD_REQUEST", "Couldn't find beacon to allocate");
                 }
             }
-            else {
-//                TODO: Error
-            }
-        }
-        else {
-//          TODO: Error
+        } else {
+            output.put("BAD_REQUEST", "Couldn't find player id given");
         }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -155,16 +158,11 @@ public class MobileController {
     @RequestMapping(value="/startInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-        List<Player> ret = new ArrayList<>();
-        ret.add(new Player("Jack", "Cutiekitten"));
-        ret.add(new Player("Tilly", "Puppylover"));
-        ret.add(new Player("Tom", "Cookingking"));
-        String output = new Gson().toJson(ret);
-        JSONObject obj = new JSONObject();
-        obj.put("all_players", output);
-//        TODO
-//        draw list of players from player table
-        return obj.toString();
+//        playerService.createPlayers();
+//        create JSON object for response
+        JSONObject output = new JSONObject();
+        output.put("all_players", playerService.getAllPlayersStartInfo());
+        return output.toString();
     }
 
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)

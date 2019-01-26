@@ -37,7 +37,7 @@ public class Player {
         this.realName = realName;
         this.hackerName = hackerName;
         this.homeBeacon = -1;
-        this.nfcId = this.id;
+        this.nfcId = Long.valueOf(0);
         this.kills = 0;
     }
 
@@ -53,7 +53,7 @@ public class Player {
         this.realName = realName;
         this.hackerName = hackerName;
         this.homeBeacon = -1;
-        this.nfcId = this.id;
+        this.nfcId = Long.valueOf(0);
         this.target = target;
         this.kills = 0;
     }
