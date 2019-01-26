@@ -1,6 +1,9 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.service.exchangeService.ExchangeService;
+import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 //import com.sun.xml.internal.bind.v2.TODO;
 import org.json.JSONArray;
@@ -19,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import com.google.gson.Gson;
 
@@ -27,6 +31,9 @@ public class MobileController {
 
     @Autowired
     PlayerServiceImpl playerService;
+
+    @Autowired
+    ExchangeServiceImpl exchangeService;
 
     @RequestMapping(value = "/getTest", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -138,14 +145,63 @@ public class MobileController {
     @RequestMapping(value="/exchange", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity exchange(@RequestBody String json) {
+        ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
         Long interacterId = input.getLong("interacter_id");
         Long interacteeId = input.getLong("interactee_id");
-        // TODO: Exchange or error
-        Long secondaryId = 0l;
-        JSONObject output = new JSONObject();
-        output.put("secondary_id", secondaryId);
-        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        JSONArray jsonContactIds = input.getJSONArray("contact_ids");
+        Player interacter = playerService.getPlayer(interacterId).get();
+        Player interactee = playerService.getPlayer(interacteeId).get();
+        List<Long> contactIds = new ArrayList<>();
+        for (int i = 0; i < jsonContactIds.length(); i++) {
+            contactIds.add(jsonContactIds.getJSONObject(i).getLong("contact_id"));
+        }
+        Optional<Exchange> exchangeOptional = exchangeService.getExchangeByPlayers(interactee, interacter);
+        if (exchangeOptional.isPresent()) {
+            // TODO: Accept the exchange
+            // Return the request player contact as secondary id
+            Exchange exchange = exchangeOptional.get();
+            JSONObject output = new JSONObject();
+            output.put("secondary_id", exchange.getRequestPlayerContact().getId());
+            exchange.setAccepted(true);
+            exchangeService.saveExchange(exchange);
+
+            // Respond with 200 Ok (complete on interactee side)
+            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        } else {
+            exchangeOptional = exchangeService.getExchangeByPlayers(interacter, interactee);
+            if (exchangeOptional.isPresent()) {
+                Exchange exchange = exchangeOptional.get();
+                if (exchange.isAccepted()) {
+                    // TODO: Complete the exchange
+                    // Return the target player contact as secondary id
+                    JSONObject output = new JSONObject();
+                    output.put("secondary_id", exchange.getTargetPlayerContact().getId());
+                    exchange.setCompleted(true);
+                    exchangeService.saveExchange(exchange);
+
+                    // Respond with 200 Ok (complete on interacter side)
+                    response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+                } else {
+                    // TODO: Poll the exchange
+                    // Respond with 202 Accepted
+                    response = new ResponseEntity<>(HttpStatus.ACCEPTED);
+                }
+            } else {
+                // TODO: Make a new exchange
+                // Pick a random secondary contact
+                Random random = new Random();
+                Long contactId = contactIds.get(random.nextInt(contactIds.size()));
+                Player requestPlayerContact = playerService.getPlayer(contactId).get();
+
+                // Create the exchange
+                Exchange exchange = new Exchange(interacter, interactee, requestPlayerContact);
+                exchangeService.saveExchange(exchange);
+
+                // Respond with 201 Created
+                response = new ResponseEntity<>(HttpStatus.CREATED);
+            }
+        }
         return response;
     }
 
