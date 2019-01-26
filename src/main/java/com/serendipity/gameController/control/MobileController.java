@@ -145,7 +145,7 @@ public class MobileController {
     @RequestMapping(value="/exchange", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity exchange(@RequestBody String json) {
-        ResponseEntity<String> response;
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
         JSONObject input = new JSONObject(json);
         Long interacterId = input.getLong("interacter_id");
         Long interacteeId = input.getLong("interactee_id");
@@ -158,15 +158,10 @@ public class MobileController {
         }
         Optional<Exchange> exchangeOptional = exchangeService.getExchangeByPlayers(interactee, interacter);
         if (exchangeOptional.isPresent()) {
-            // TODO: Accept the exchange
-            // Return the request player contact as secondary id
-            Exchange exchange = exchangeOptional.get();
+            // TODO: Accept the exchange and return the secondary_id
+            Long secondaryId = exchangeService.acceptExchange(exchangeOptional.get());
             JSONObject output = new JSONObject();
-            output.put("secondary_id", exchange.getRequestPlayerContact().getId());
-            exchange.setAccepted(true);
-            exchangeService.saveExchange(exchange);
-
-            // Respond with 200 Ok (complete on interactee side)
+            output.put("secondary_id", secondaryId);
             response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         } else {
             exchangeOptional = exchangeService.getExchangeByPlayers(interacter, interactee);
@@ -174,31 +169,24 @@ public class MobileController {
                 Exchange exchange = exchangeOptional.get();
                 if (exchange.isAccepted()) {
                     // TODO: Complete the exchange
-                    // Return the target player contact as secondary id
+                    Random random = new Random();
+                    Long contactId = contactIds.get(random.nextInt(contactIds.size()));
+                    Player targetPlayerContact = playerService.getPlayer(contactId).get();
+                    Long secondaryId = exchangeService.completeExchange(exchange, targetPlayerContact);
                     JSONObject output = new JSONObject();
-                    output.put("secondary_id", exchange.getTargetPlayerContact().getId());
-                    exchange.setCompleted(true);
-                    exchangeService.saveExchange(exchange);
-
-                    // Respond with 200 Ok (complete on interacter side)
+                    output.put("secondary_id", secondaryId);
                     response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
                 } else {
                     // TODO: Poll the exchange
-                    // Respond with 202 Accepted
                     response = new ResponseEntity<>(HttpStatus.ACCEPTED);
                 }
             } else {
                 // TODO: Make a new exchange
-                // Pick a random secondary contact
                 Random random = new Random();
                 Long contactId = contactIds.get(random.nextInt(contactIds.size()));
                 Player requestPlayerContact = playerService.getPlayer(contactId).get();
-
-                // Create the exchange
                 Exchange exchange = new Exchange(interacter, interactee, requestPlayerContact);
                 exchangeService.saveExchange(exchange);
-
-                // Respond with 201 Created
                 response = new ResponseEntity<>(HttpStatus.CREATED);
             }
         }
