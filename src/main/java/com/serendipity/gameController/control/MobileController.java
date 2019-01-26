@@ -1,11 +1,12 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.service.beaconService.BeaconService;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
+import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Instant;
@@ -25,7 +25,6 @@ import java.util.Random;
 import java.util.Optional;
 import com.google.gson.Gson;
 
-import javax.xml.ws.Response;
 
 @Controller
 public class MobileController {
@@ -35,6 +34,9 @@ public class MobileController {
 
     @Autowired
     BeaconServiceImpl beaconService;
+
+    @Autowired
+    GameService gameService;
 
     private List<Long> beacons = new ArrayList<>();
 
@@ -83,7 +85,11 @@ public class MobileController {
 //         create JSON object for return
         JSONObject output = new JSONObject();
 //         set JSON values
-        output.put("start_time", Instant.now().getEpochSecond() + 10);
+        long time;
+        time = Instant.now().getEpochSecond() + 10;
+//        Optional<Game> opGame = gameService.getGame(game_id);
+//        if (opGame.isPresent()) { time = opGame.get().getStartTime(); }
+        output.put("start_time", time);
 //        count number of players in table for number of players in game
         output.put("number_players", playerService.countPlayer());
 //        TODO: Draw time value from game table (Initialised by admin)
@@ -99,6 +105,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
 //        create JSON object for response body
         JSONObject output = new JSONObject();
+//        set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
 //        fetch player making request
         Long id = input.getLong("player_id");
@@ -115,7 +122,6 @@ public class MobileController {
             if (beacons.isEmpty()) {
                 output.put("BAD_REQUEST", "No beacons in beacon table");
             } else {
-                System.out.println(beacons);
                 Optional<Beacon> opBeacon;
 //                randomly take from beacon list using random number
                 Random randNum = new Random();
@@ -215,15 +221,48 @@ public class MobileController {
         return response;
     }
 
+    //    POST /takeDown { player_id, target_id }
     @RequestMapping(value="/takeDown", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity takeDown(@RequestBody String json) {
+    public ResponseEntity<String> takeDown(@RequestBody String json) {
+//        receive JSON object
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-        // TODO: Takedown or error
-        return new ResponseEntity(HttpStatus.OK);
-        // 400 Bad Request to specify “Not your target” or “Insufficient intel”
+//        create JSON object for response body
+        JSONObject output = new JSONObject();
+//        set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+//        fetch player making request and target given
+        Optional<Player> opPlayer = playerService.getPlayer(playerId);
+        Optional<Player> opTarget = playerService.getPlayer(targetId);
+//        ensure optionals have a value
+        if(opPlayer.isPresent() && opTarget.isPresent()) {
+//            unpack optional objects
+            Player player = opPlayer.get();
+            Player target = opTarget.get();
+//            ensure given target matches player's assign target and they haven't been taken down
+            if(player.getTarget().getId().equals(target.getId())) {
+                if(!player.isTakenDown() && !player.isReturnHome()) {
+//                    set targets returnHome attribute
+                    player.setReturnHome(true);
+                    playerService.savePlayer(player);
+//                    set targets takenDown attribute
+                    target.setTakenDown(true);
+                    playerService.savePlayer(target);
+//                    set output elements
+                    responseStatus = HttpStatus.OK;
+                    output.put("SUCCESS", "Valid take down");
+                } else {
+                    output.put("BAD_REQUEST", "Player has been taken down or player must return home");
+                }
+            } else {
+                output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target");
+            }
+        } else {
+            output.put("BAD_REQUEST", "Couldn't find player or target id given");
+        }
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/endInfo", method=RequestMethod.GET)

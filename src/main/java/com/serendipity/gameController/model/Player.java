@@ -28,9 +28,15 @@ public class Player {
 
     private int kills;
 
+    private boolean takenDown;
+
+    private boolean returnHome;
+
     public Player() {
         this.kills = 0;
         this.homeBeacon = -1;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName) {
@@ -39,6 +45,8 @@ public class Player {
         this.homeBeacon = -1;
         this.nfcId = Long.valueOf(0);
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName, @NotNull Long nfcId) {
@@ -47,6 +55,8 @@ public class Player {
         this.homeBeacon = -1;
         this.nfcId = nfcId;
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName, Player target) {
@@ -56,6 +66,8 @@ public class Player {
         this.nfcId = Long.valueOf(0);
         this.target = target;
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName, @NotNull Long nfcId, Player target) {
@@ -65,6 +77,8 @@ public class Player {
         this.nfcId = nfcId;
         this.target = target;
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Long getId() {
@@ -114,6 +128,14 @@ public class Player {
     public void setKills(int kills) {
         this.kills = kills;
     }
+
+    public boolean isTakenDown() { return takenDown; }
+
+    public void setTakenDown(boolean takenDown) { this.takenDown = takenDown; }
+
+    public boolean isReturnHome() { return returnHome; }
+
+    public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
 
     @Override
     public String toString() {

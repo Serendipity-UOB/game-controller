@@ -22,5 +22,5 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.getBeaconByMinor(minor); }
+    public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.findBeaconByMinor(minor); }
 }
