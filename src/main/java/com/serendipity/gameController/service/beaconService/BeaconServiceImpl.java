@@ -16,6 +16,11 @@ public class BeaconServiceImpl implements BeaconService {
     BeaconRepository beaconRepository;
 
     @Override
+    public void saveBeacon(Beacon beacon){
+        beaconRepository.save(beacon);
+    }
+
+    @Override
     public int getClosestBeaconMinor(JSONArray beacons) {
         JSONObject beacon = beacons.getJSONObject(0);
         int closestBeaconRssi = beacon.getInt("rssi");
@@ -39,4 +44,18 @@ public class BeaconServiceImpl implements BeaconService {
 
     @Override
     public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.findBeaconByMinor(minor); }
+
+    @Override
+    public void deleteBeacons() {
+        if (beaconRepository.count() != 0) {
+            beaconRepository.deleteAll();
+        }
+    }
+
+    @Override
+    public void deleteBeaconById(long beacon_id) {
+        if (getBeacon(beacon_id).isPresent()) {
+            beaconRepository.deleteBeaconById(beacon_id);
+        }
+    }
 }

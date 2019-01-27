@@ -90,4 +90,11 @@ public class ExchangeServiceImpl implements ExchangeService{
         return exists;
     }
 
+    @Override
+    public void deleteExchanges() {
+        if (exchangeRepository.count() != 0) {
+            exchangeRepository.deleteAll();
+        }
+    }
+
 }
