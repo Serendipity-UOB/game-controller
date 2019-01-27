@@ -25,4 +25,8 @@ public interface BeaconService {
     Optional<Beacon> getBeacon(Long id);
 
     Optional<Beacon> getBeaconByMinor(int minor);
+
+    void deleteBeacons();
+
+    void deleteBeaconById(long beacon_id);
 }

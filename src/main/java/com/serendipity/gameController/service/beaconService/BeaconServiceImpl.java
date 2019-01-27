@@ -48,4 +48,18 @@ public class BeaconServiceImpl implements BeaconService {
 
     @Override
     public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.findBeaconByMinor(minor); }
+
+    @Override
+    public void deleteBeacons() {
+        if (beaconRepository.count() != 0) {
+            beaconRepository.deleteAll();
+        }
+    }
+
+    @Override
+    public void deleteBeaconById(long beacon_id) {
+        if (getBeacon(beacon_id).isPresent()) {
+            beaconRepository.deleteBeaconById(beacon_id);
+        }
+    }
 }

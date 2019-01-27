@@ -3,6 +3,7 @@ package com.serendipity.gameController.control;
 import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.service.beaconService.BeaconService;
+import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Controller
 public class WebController {
@@ -22,6 +24,9 @@ public class WebController {
 
     @Autowired
     GameService gameService;
+
+    @Autowired
+    ExchangeService exchangeService;
 
     @GetMapping(value="/")
     @ResponseBody
@@ -51,11 +56,21 @@ public class WebController {
         beaconService.saveBeacon(beacon);
     }
 
+    @PostMapping(value="/delBeacons")
+    public void delBeacons() {
+        beaconService.deleteBeacons();
+    }
+
+    @PostMapping(value="/delBeacon")
+    public void delBeacon(@ModelAttribute("beacon_id") long beacon_id) {
+        beaconService.deleteBeaconById(beacon_id);
+    }
+
     private void resetTables() {
         playerService.deletePlayers();
 //        TODO: Are we having multiple games, if so do we index which game to delete
         gameService.deleteGames();
-//        TODO: delete all entries in exchange table
+        exchangeService.deleteExchanges();
     }
 //
 //    @GetMapping(value="/selectPlayer")
