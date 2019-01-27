@@ -13,9 +13,7 @@ public class WebController {
 
     @GetMapping(value="/")
     @ResponseBody
-    public String home() {
-        return "Hello World";
-    }
+    public String home() { return "Hello World"; }
 
 //    @GetMapping(value="/")
 //    public String home() {
