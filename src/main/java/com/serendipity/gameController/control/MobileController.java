@@ -320,7 +320,9 @@ public class MobileController {
             playerInfo.put("score", player.getKills());
             leaderboard.put(playerInfo);
         }
-        return leaderboard.toString();
+        JSONObject output = new JSONObject();
+        output.put("leaderboard", leaderboard);
+        return output.toString();
     }
 
 }
