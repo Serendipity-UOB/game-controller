@@ -2,6 +2,7 @@ package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,13 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Player> getAllPlayers(){
+    public Player getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
+
+    @Override
+    public long countPlayer() { return playerRepository.count(); }
+
+    @Override
+    public List<Player> getAllPlayers() {
         List<Player> ps = new ArrayList<>();
         playerRepository.findAll().forEach(ps::add);
         return ps;
@@ -48,6 +55,20 @@ public class PlayerServiceImpl implements PlayerService {
         return players;
     }
 
+    @Override
+    public List<JSONObject> getAllPlayersStartInfo() {
+        List<JSONObject> players = new ArrayList<>();
+        for (Player p : getAllPlayers()) {
+            JSONObject obj = new JSONObject();
+            obj.put("id", p.getId());
+            obj.put("real_name", p.getRealName());
+            obj.put("hacker_name", p.getHackerName());
+            players.add(obj);
+        }
+
+        return players;
+    }
+
     public void createPlayers() {
         if (playerRepository.count() != 0) {
 //            informationService.deleteAll();
@@ -64,6 +85,12 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public void incKills(Player player) {
         player.setKills(player.getKills()+1);
+        playerRepository.save(player);
+    }
+
+    @Override
+    public void assignHome(Player player, int home) {
+        player.setHomeBeacon(home);
         playerRepository.save(player);
     }
 

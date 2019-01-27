@@ -1,6 +1,7 @@
 package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +14,21 @@ public interface PlayerService {
 
     Optional<Player> getPlayer(Long id);
 
+    Player getPlayerByHackerName(String hackerName);
+
+    long countPlayer();
+
     List<Player> getAllPlayers();
+
+    List<JSONObject> getAllPlayersStartInfo();
 
     void createPlayers();
 
     List<Player> getAllPlayersExcept(Player player);
 
     List<Player> getAllPlayersExcept(List<Player> exceptPlayers);
+
+    void assignHome(Player player, int home);
 
     void assignTargets();
 

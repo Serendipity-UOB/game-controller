@@ -18,26 +18,41 @@ public class Player {
     @NotNull
     private String hackerName;
 
+    private int homeBeacon;
+
     @ManyToOne
     private Player target;
 
     private int kills;
 
+    private boolean takenDown;
+
+    private boolean returnHome;
+
     public Player() {
         this.kills = 0;
+        this.homeBeacon = -1;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Player(@NotNull String realName, @NotNull String hackerName) {
         this.realName = realName;
         this.hackerName = hackerName;
+        this.homeBeacon = -1;
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
-    public Player(String realName, String hackerName, Player target) {
+    public Player(@NotNull String realName, @NotNull String hackerName, Player target) {
         this.realName = realName;
         this.hackerName = hackerName;
+        this.homeBeacon = -1;
         this.target = target;
         this.kills = 0;
+        this.takenDown = false;
+        this.returnHome = false;
     }
 
     public Long getId() {
@@ -64,6 +79,10 @@ public class Player {
         this.hackerName = hackerName;
     }
 
+    public int getHomeBeacon() { return homeBeacon; }
+
+    public void setHomeBeacon(int homeBeacon) { this.homeBeacon = homeBeacon; }
+
     public Player getTarget() {
         return target;
     }
@@ -80,14 +99,25 @@ public class Player {
         this.kills = kills;
     }
 
+    public boolean isTakenDown() { return takenDown; }
+
+    public void setTakenDown(boolean takenDown) { this.takenDown = takenDown; }
+
+    public boolean isReturnHome() { return returnHome; }
+
+    public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
+
     @Override
     public String toString() {
         return "Player{" +
                 "id=" + id +
                 ", realName='" + realName + '\'' +
                 ", hackerName='" + hackerName + '\'' +
-                ", target=" + target.getHackerName() +
+                ", homeBeacon=" + homeBeacon +
+                ", target=" + target +
                 ", kills=" + kills +
+                ", takenDown=" + takenDown +
+                ", returnHome=" + returnHome +
                 '}';
     }
 }
