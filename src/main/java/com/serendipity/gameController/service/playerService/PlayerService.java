@@ -48,4 +48,10 @@ public interface PlayerService {
 
     int getLeaderboardPosition(Player player);
 
+    /*
+     * @param player The current player
+     * @return List of ids of the nearby players
+     */
+    List<Long> getNearbyPlayerIds(Player player, int beaconMinor);
+
 }

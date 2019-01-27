@@ -214,6 +214,16 @@ public class PlayerServiceImpl implements PlayerService {
         return position;
     }
 
+    @Override
+    public List<Long> getNearbyPlayerIds(Player player, int beaconMinor) {
+        List<Player> players = playerRepository.findAllByNearestBeaconMinor(beaconMinor);
+        List<Long> ids = new ArrayList<>();
+        for (Player p : players) {
+            ids.add(p.getId());
+        }
+        return ids;
+    }
+
 //    @PostConstruct
 //    public void insertRootPlayers() {
 //        Player p1 = new Player("Tilly", "Headshot");

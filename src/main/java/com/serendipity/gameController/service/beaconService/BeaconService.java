@@ -12,10 +12,11 @@ import java.util.Optional;
 @Service
 public interface BeaconService {
 
+    /*
+     * @param beacons A JSONArray of {beacon_minor, rssi}
+     * @return The minor of the closest beacon
+     */
     int getClosestBeaconMinor(JSONArray beacons);
-
-    List<Long> getNearbyPlayerIds(Player player, int beaconMinor);
-
 
     long countBeacons();
 

@@ -27,6 +27,8 @@ public class Player {
 
     private boolean returnHome;
 
+    private int nearestBeaconMinor;
+
     public Player() {
         this.kills = 0;
         this.homeBeacon = -1;
@@ -104,6 +106,14 @@ public class Player {
     public boolean isReturnHome() { return returnHome; }
 
     public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
+
+    public int getNearestBeaconMinor() {
+        return nearestBeaconMinor;
+    }
+
+    public void setNearestBeaconMinor(int nearestBeaconMinor) {
+        this.nearestBeaconMinor = nearestBeaconMinor;
+    }
 
     @Override
     public String toString() {

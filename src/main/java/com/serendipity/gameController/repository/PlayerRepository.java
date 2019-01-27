@@ -11,7 +11,8 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     List<Player> findAllByOrderByKillsDesc();
 
-
     Player findByHackerName(String hackerName);
+
+    List<Player> findAllByNearestBeaconMinor(int nearestBeaconMinor);
 
 }

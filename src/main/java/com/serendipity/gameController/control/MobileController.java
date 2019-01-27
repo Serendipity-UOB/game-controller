@@ -159,7 +159,9 @@ public class MobileController {
         Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
         int closestBeaconMinor = beaconService.getClosestBeaconMinor(beacons);
-        List<Long> nearbyPlayerIds = beaconService.getNearbyPlayerIds(player, closestBeaconMinor);
+        player.setNearestBeaconMinor(closestBeaconMinor);
+        playerService.savePlayer(player);
+        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMinor);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
         output.put("points", player.getKills());

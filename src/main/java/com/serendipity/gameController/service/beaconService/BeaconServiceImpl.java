@@ -34,11 +34,6 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public List<Long> getNearbyPlayerIds(Player player, int beaconMinor) {
-        return new ArrayList<>();
-    }
-
-    @Override
     public long countBeacons() { return beaconRepository.count(); }
 
     @Override
