@@ -1,6 +1,8 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.model.Game;
+import com.serendipity.gameController.service.beaconService.BeaconService;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class WebController {
 
     @Autowired
     PlayerServiceImpl playerService;
+
+    @Autowired
+    BeaconService beaconService;
 
     @Autowired
     GameService gameService;
@@ -33,7 +38,17 @@ public class WebController {
     public void initGame(@ModelAttribute("startTime") LocalTime startTime) {
 //        reset player and exchange tables
         resetTables();
+//        get start time and save new game
         Game game = new Game(startTime);
+        gameService.saveGame(game);
+    }
+
+    @PostMapping(value="/initBeacon")
+    public void initBeacon(@ModelAttribute("name") String name,
+                           @ModelAttribute("minor") int minor) {
+//        receive beacon attributes and construct beacon to add to beacon table
+        Beacon beacon = new Beacon(minor, name);
+        beaconService.saveBeacon(beacon);
     }
 
     private void resetTables() {

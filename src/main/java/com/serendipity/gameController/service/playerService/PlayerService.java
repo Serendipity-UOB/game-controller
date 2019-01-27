@@ -14,7 +14,7 @@ public interface PlayerService {
 
     Optional<Player> getPlayer(Long id);
 
-    Player getPlayerByHackerName(String hackerName);
+    Optional<Player> getPlayerByHackerName(String hackerName);
 
     long countPlayer();
 

@@ -26,7 +26,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
+    public Optional<Player> getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
 
     @Override
     public long countPlayer() { return playerRepository.count(); }

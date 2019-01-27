@@ -1,6 +1,7 @@
 package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Exchange;
+import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Optional;
-import com.google.gson.Gson;
 
 @Controller
 public class MobileController {
@@ -53,37 +53,39 @@ public class MobileController {
 //        create player to be added to player table
         Player toRegister = new Player(real, hacker);
 //        find if the hacker name exists
-//        will return null if not
-        Player exists = playerService.getPlayerByHackerName(hacker);
+        Optional<Player> opExists = playerService.getPlayerByHackerName(hacker);
 //        create JSON object for response body
         JSONObject output = new JSONObject();
 //        set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        if (exists == null) {
+        if (!(opExists.isPresent())) {
 //            add player to player table
             playerService.savePlayer(toRegister);
-            Player registered = playerService.getPlayerByHackerName(hacker);
+            Optional<Player> registered = playerService.getPlayerByHackerName(hacker);
             responseStatus = HttpStatus.OK;
-            output.put("player_id", registered.getId());
+            output.put("player_id", registered.get().getId());
         } else { output.put("BAD_REQUEST", "hacker name already exists"); }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
     @ResponseBody
-    public String getGameInfo() {
+    public String getGameInfo(){
+//        set variable for game to take time from
+        long game_id = 1;
 //         create JSON object for return
         JSONObject output = new JSONObject();
 //         set JSON values
         LocalTime time;
         time = LocalTime.now().plus(10, ChronoUnit.SECONDS);
-//        Optional<Game> opGame = gameService.getGame(game_id);
-//        if (opGame.isPresent()) { time = opGame.get().getStartTime(); }
+        Optional<Game> opGame = gameService.getGame(game_id);
+        if (opGame.isPresent()) { time = opGame.get().getStartTime(); }
         output.put("start_time", time);
 //        count number of players in table for number of players in game
         output.put("number_players", playerService.countPlayer());
 //        TODO: Draw time value from game table (Initialised by admin)
 //        TODO: Consider how we're counting number of players in game
+//        TODO: select which game to draw from if we're having multiple games
         return output.toString();
     }
 

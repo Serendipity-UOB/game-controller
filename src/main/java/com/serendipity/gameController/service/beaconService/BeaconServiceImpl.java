@@ -20,6 +20,11 @@ public class BeaconServiceImpl implements BeaconService {
     BeaconRepository beaconRepository;
 
     @Override
+    public void saveBeacon(Beacon beacon){
+        beaconRepository.save(beacon);
+    }
+
+    @Override
     public int getClosestBeaconMinor(JSONArray beacons) {
         JSONObject beacon = beacons.getJSONObject(0);
         int closestBeaconRssi = beacon.getInt("rssi");

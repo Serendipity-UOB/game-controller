@@ -12,6 +12,8 @@ import java.util.Optional;
 @Service
 public interface BeaconService {
 
+    void saveBeacon(Beacon beacon);
+
     /*
      * @param beacons A JSONArray of {beacon_minor, rssi}
      * @return The minor of the closest beacon
