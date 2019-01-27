@@ -174,11 +174,14 @@ public class MobileController {
         if (player.isTakenDown()) {
             output.put("taken_down", 1);
             player.setTakenDown(false);
+            playerService.savePlayer(player);
         } else {
             output.put("taken_down", 0);
         }
         if (player.isReturnHome()) {
             output.put("req_new_target", 1);
+            player.setReturnHome(false);
+            playerService.savePlayer(player);
         } else {
             output.put("req_new_target", 0);
         }
