@@ -2,6 +2,7 @@ package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -34,6 +35,9 @@ public class MobileController {
 
     @Autowired
     ExchangeServiceImpl exchangeService;
+
+    @Autowired
+    BeaconServiceImpl beaconService;
 
     @RequestMapping(value = "/getTest", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -112,16 +116,15 @@ public class MobileController {
     public String playerUpdate(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
+        Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
         // TODO: Find closest beacon
+        int closestBeaconMinor = beaconService.getClosestBeaconMinor(beacons);
         // TODO: Find players who are 'nearby'
-        List<Long> nearbyPlayerIds = new ArrayList<>();
-        nearbyPlayerIds.add(0l);
-        nearbyPlayerIds.add(1l);
+        List<Long> nearbyPlayerIds = beaconService.getNearbyPlayerIds(player, closestBeaconMinor);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
-        int kills = 3;
-        output.put("points", kills);
+        output.put("points", player.getKills());
         int position = 1;
         output.put("position", position);
         int takenDown = 0;
@@ -148,7 +151,7 @@ public class MobileController {
 
         // Unpack JSON and choose secondary contact
 
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
         Long interacterId = input.getLong("interacter_id");
         Long interacteeId = input.getLong("interactee_id");
