@@ -3,10 +3,16 @@ package com.serendipity.gameController.service.gameService;
 import com.serendipity.gameController.model.Game;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public interface GameService {
+
+    /*
+     * @return A list of all the games in the database.
+     */
+    List<Game> getAllGames();
 
     /*
      * @param game The game to be saved.

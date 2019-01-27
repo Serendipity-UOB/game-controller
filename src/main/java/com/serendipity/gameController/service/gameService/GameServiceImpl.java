@@ -6,6 +6,7 @@ import com.serendipity.gameController.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service("gameService")
@@ -20,7 +21,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Optional <Game> getGame(Long id) { return gameRepository.findById(id); }
+    public Optional<Game> getGame(Long id) { return gameRepository.findById(id); }
+
+    @Override
+    public List<Game> getAllGames() {
+        return gameRepository.findAll();
+    }
 
     @Override
     public void deleteGames() {

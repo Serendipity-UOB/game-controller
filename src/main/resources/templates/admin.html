@@ -45,14 +45,14 @@
     Game
     <table>
         <tr th:each="game : ${games}">
-            <td>Current Game</td>
+            <td>Game Start Time</td>
             <td><span th:text="${game.startTime}"/></td>
             <td></td>
         </tr>
         <tr>
             <form method="post" th:action="@{/initGame}">
                 <td>New Game</td>
-                <td><input type="text" name="startTime" placeholder="HH:MM:SS.MSS"/></td>
+                <td><input type="text" name="start_time" placeholder="HH:MM:SS.MSS"/></td>
                 <td><button type="submit">+</button></td>
             </form>
         </tr>

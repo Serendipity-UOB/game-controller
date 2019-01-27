@@ -32,14 +32,15 @@ public class WebController {
     @GetMapping(value="/")
     public String home(Model model) {
         model.addAttribute("beacons", beaconService.getAllBeacons());
+        model.addAttribute("games", gameService.getAllGames());
         return "admin";
     }
 
     @PostMapping(value="/initGame")
-    public String initGame(@ModelAttribute("startTime") String start_Time) {
+    public String initGame(@ModelAttribute("start_time") String startTime) {
 //        reset player and exchange tables
         resetTables();
-        LocalTime start = LocalTime.parse(start_Time);
+        LocalTime start = LocalTime.parse(startTime);
 //        get start time and save new game
         Game game = new Game(start);
         gameService.saveGame(game);
