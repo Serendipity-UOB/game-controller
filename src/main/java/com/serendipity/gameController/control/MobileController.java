@@ -1,14 +1,10 @@
 package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Exchange;
-import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
-import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.model.Beacon;
-import com.serendipity.gameController.service.beaconService.BeaconService;
-import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
@@ -16,22 +12,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 import java.time.Instant;
-import java.util.Random;
-import java.util.Optional;
-import com.google.gson.Gson;
 
 @Controller
 public class MobileController {
@@ -50,21 +40,6 @@ public class MobileController {
 
     private List<Long> beacons = new ArrayList<>();
 
-    @RequestMapping(value = "/getTest", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public String getTest() {
-        JSONObject object = new JSONObject("{'aa':'bb'}");
-        return object.toString();
-    }
-
-    @RequestMapping(value="/postTest", method=RequestMethod.POST, consumes="application/json")
-    @ResponseBody
-    public String postTest(@RequestBody String json) {
-        JSONObject object = new JSONObject(json);
-        return object.toString();
-    }
-
-    //    POST /registerPlayer { real_name, hacker_name }
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
@@ -91,7 +66,6 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
-    //    GET /gameInfo { }
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getGameInfo() {
@@ -110,7 +84,6 @@ public class MobileController {
         return output.toString();
     }
 
-    //    POST /joinGame { player_id }
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> joinGame(@RequestBody String json) {
@@ -168,7 +141,6 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
-    //    GET /startInfo
     @RequestMapping(value="/startInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
@@ -186,19 +158,23 @@ public class MobileController {
         Long playerId = input.getLong("player_id");
         Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
-        // TODO: Find closest beacon
         int closestBeaconMinor = beaconService.getClosestBeaconMinor(beacons);
-        // TODO: Find players who are 'nearby'
         List<Long> nearbyPlayerIds = beaconService.getNearbyPlayerIds(player, closestBeaconMinor);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
         output.put("points", player.getKills());
-        int position = 1;
-        output.put("position", position);
-        int takenDown = 0;
-        output.put("taken_down", takenDown);
-        int reqNewTarget = 0;
-        output.put("req_new_target", reqNewTarget);
+        output.put("position", playerService.getLeaderboardPosition(player));
+        if (player.isTakenDown()) {
+            output.put("taken_down", 1);
+            player.setTakenDown(false);
+        } else {
+            output.put("taken_down", 0);
+        }
+        if (player.isReturnHome()) {
+            output.put("req_new_target", 1);
+        } else {
+            output.put("req_new_target", 0);
+        }
         return output.toString();
     }
 

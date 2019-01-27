@@ -46,4 +46,6 @@ public interface PlayerService {
 
     Player getRandomContact(List<Long> ids);
 
+    int getLeaderboardPosition(Player player);
+
 }

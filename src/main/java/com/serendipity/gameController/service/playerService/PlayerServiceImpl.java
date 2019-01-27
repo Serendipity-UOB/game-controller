@@ -202,6 +202,18 @@ public class PlayerServiceImpl implements PlayerService {
         return contact;
     }
 
+    @Override
+    public int getLeaderboardPosition(Player player) {
+        int position = 0;
+        List<Player> leaderboard = getAllPlayersByScore();
+        for (int i = 0; i < leaderboard.size(); i++) {
+            if (leaderboard.get(i).equals(player)) {
+                position = i + 1;
+            }
+        }
+        return position;
+    }
+
     @PostConstruct
     public void insertRootPlayers() {
         Player p1 = new Player("Tilly", "Headshot");
@@ -213,5 +225,7 @@ public class PlayerServiceImpl implements PlayerService {
         savePlayer(p3);
         savePlayer(p4);
     }
+
+
 
 }
