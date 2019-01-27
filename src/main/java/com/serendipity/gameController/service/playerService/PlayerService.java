@@ -24,6 +24,10 @@ public interface PlayerService {
 
     List<JSONObject> getAllPlayersStartInfo();
 
+    List<Player> getAllPlayersByTarget(Player target);
+
+    void deletePlayers();
+
     void createPlayers();
 
     List<Player> getAllPlayersExcept(Player player);
