@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hacker Hunt Admin</title>
+</head>
+<body>
+
+<div>
+    Beacons
+    <table>
+        <tr>
+            <td>Name</td>
+            <td>Minor</td>
+            <td></td>
+        </tr>
+        <tr th:each="beacon : ${beacons}">
+            <form>
+                <input type="hidden" th:value="${beacon.id}" name="beaconId"/>
+                <td><span th:text="${beacon.name}"/></td>
+                <td><span th:text="${beacon.minor}"/></td>
+                <td><button type="submit">-</button></td>
+            </form>
+        </tr>
+        <tr>
+            <form>
+                <td><input type="text"/></td>
+                <td><input type="text"/></td>
+                <td><button type="submit">+</button></td>
+            </form>
+        </tr>
+        <tr>
+            <form>
+                <td>
+                    <button type="submit">Delete all</button>
+                </td>
+            </form>
+        </tr>
+    </table>
+</div>
+
+<div>
+    Game
+    <table>
+        <tr th:each="game : ${games}">
+            <td>Last Game</td>
+            <td><span th:text="${game.startTime}"/></td>
+            <td></td>
+        </tr>
+        <tr>
+            <form>
+                <td>New Game</td>
+                <td><input type="datetime-local"/></td>
+                <td><button type="submit">+</button></td>
+            </form>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

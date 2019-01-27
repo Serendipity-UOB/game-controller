@@ -66,4 +66,5 @@ public interface ExchangeService {
      */
     boolean existsActiveExchangeByPlayers(Player interacter, Player interactee);
 
+    void deleteExchanges();
 }
