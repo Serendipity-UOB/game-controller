@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service("beaconService")
@@ -44,6 +46,12 @@ public class BeaconServiceImpl implements BeaconService {
 
     @Override
     public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.findBeaconByMinor(minor); }
+
+    @Override
+    public List<Beacon> getAllBeacons() {
+        return beaconRepository.findAll();
+    }
+
 
     @Override
     public void deleteBeacons() {
