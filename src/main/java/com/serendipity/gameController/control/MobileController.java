@@ -288,6 +288,8 @@ public class MobileController {
 //            ensure given target matches player's assign target and they haven't been taken down
             if(player.getTarget().getId().equals(target.getId())) {
                 if(!player.isTakenDown() && !player.isReturnHome()) {
+//                    increment kill count for player
+                    playerService.incrementKills(player, 1);
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
