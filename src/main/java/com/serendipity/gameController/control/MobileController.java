@@ -54,28 +54,31 @@ public class MobileController {
         return object.toString();
     }
 
-    //    POST /registerPlayer { real_name, hacker_name, nfc_id }
+    //    POST /registerPlayer { real_name, hacker_name }
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity registerPlayer(@RequestBody String json) {
+    public ResponseEntity<String> registerPlayer(@RequestBody String json) {
 //        receive JSON object and split into variables
         JSONObject input = new JSONObject(json);
         String real = input.getString("real_name");
         String hacker = input.getString("hacker_name");
-        Long nfc = input.getLong("nfc_id");
 //        create player to be added to player table
-        Player toRegister = new Player(real, hacker, nfc);
+        Player toRegister = new Player(real, hacker);
 //        find if the hacker name exists
 //        will return null if not
-        Player exists = playerService.findHackerName(hacker);
-//        variable to hold http response code
-        ResponseEntity response;
+        Player exists = playerService.getPlayerByHackerName(hacker);
+//        create JSON object for response body
+        JSONObject output = new JSONObject();
+//        set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         if (exists == null) {
 //            add player to player table
             playerService.savePlayer(toRegister);
-            response = new ResponseEntity(HttpStatus.OK);
-        } else { response = new ResponseEntity(HttpStatus.BAD_REQUEST); }
-        return response;
+            Player registered = playerService.getPlayerByHackerName(hacker);
+            responseStatus = HttpStatus.OK;
+            output.put("player_id", registered.getId());
+        } else { output.put("BAD_REQUEST", "hacker name already exists"); }
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     //    GET /gameInfo { }
@@ -119,9 +122,8 @@ public class MobileController {
                     beacons.add(i);
                 }
             }
-            if (beacons.isEmpty()) {
-                output.put("BAD_REQUEST", "No beacons in beacon table");
-            } else {
+            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table"); }
+            else {
                 Optional<Beacon> opBeacon;
 //                randomly take from beacon list using random number
                 Random randNum = new Random();
@@ -150,13 +152,9 @@ public class MobileController {
 //                    remove index selected
                         beacons.remove(n);
                     }
-                } else {
-                    output.put("BAD_REQUEST", "Couldn't find beacon to allocate");
-                }
+                } else { output.put("BAD_REQUEST", "Couldn't find beacon to allocate"); }
             }
-        } else {
-            output.put("BAD_REQUEST", "Couldn't find player id given");
-        }
+        } else { output.put("BAD_REQUEST", "Couldn't find player id given"); }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -253,15 +251,9 @@ public class MobileController {
 //                    set output elements
                     responseStatus = HttpStatus.OK;
                     output.put("SUCCESS", "Valid take down");
-                } else {
-                    output.put("BAD_REQUEST", "Player has been taken down or player must return home");
-                }
-            } else {
-                output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target");
-            }
-        } else {
-            output.put("BAD_REQUEST", "Couldn't find player or target id given");
-        }
+                } else { output.put("BAD_REQUEST", "Player has been taken down or player must return home"); }
+            } else { output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target"); }
+        } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
