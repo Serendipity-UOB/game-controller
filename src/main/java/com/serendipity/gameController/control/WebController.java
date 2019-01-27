@@ -1,10 +1,12 @@
 package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Game;
+import com.serendipity.gameController.service.beaconService.BeaconService;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -18,16 +20,14 @@ public class WebController {
     @Autowired
     GameService gameService;
 
-    @GetMapping(value="/")
-    @ResponseBody
-    public String home() {
-        return "Hello World";
-    }
+    @Autowired
+    BeaconService beaconService;
 
-//    @GetMapping(value="/")
-//    public String home() {
-//        return "redirect:/selectPlayer";
-//    }
+    @GetMapping(value="/")
+    public String home(Model model) {
+        model.addAttribute("beacons", beaconService.getAllBeacons());
+        return "admin";
+    }
 
     @PostMapping(value="/initGame")
     public void initGame(@ModelAttribute("startTime") LocalTime startTime) {
