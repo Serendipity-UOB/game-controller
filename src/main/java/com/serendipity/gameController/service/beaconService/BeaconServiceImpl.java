@@ -1,15 +1,11 @@
 package com.serendipity.gameController.service.beaconService;
 
-import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.repository.BeaconRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.util.Optional;
 

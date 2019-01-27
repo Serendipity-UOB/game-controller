@@ -9,22 +9,61 @@ import java.util.Optional;
 @Service
 public interface ExchangeService {
 
+    /*
+     * @param exchange The exchange to save.
+     */
     void saveExchange(Exchange exchange);
 
+    /*
+     * @param interacter The player requesting the exchange.
+     * @param interactee The player with whom to request the exchange.
+     * @return An optional of the exchange from interacter to interactee.
+     */
     Optional<Exchange> getExchangeByPlayers(Player interacter, Player interactee);
 
-    Long acceptExchange(Exchange exchange, Player targetPlayerContact);
+    /*
+     * @param exchange The exchange to accept.
+     * @param contact The player about which they are giving secondary intel.
+     * @return The player about which they are receiving secondary intel.
+     */
+    Long acceptExchange(Exchange exchange, Player contact);
 
+    /*
+     * @param exchange The exchange to complete.
+     * @return The player about which they are receiving secondary intel.
+     */
     Long completeExchange(Exchange exchange);
 
-    void resetExchange(Exchange exchange, Player requestPlayerContact);
+    /*
+     * @param exchange The exchange to accept.
+     * @param contact The player about which they are giving secondary intel.
+     */
+    void resetExchange(Exchange exchange, Player contact);
 
+    /*
+     * @param interacter The player requesting the exchange.
+     * @param interactee The player with whom to request the exchange.
+     * @param contact The player about which they are giving secondary intel.
+     */
     void createExchange(Player interacter, Player interactee, Player contact);
 
+    /*
+     * @param exchange The exchange.
+     * @return True if the exchange is expired.
+     */
     boolean isExpired(Exchange exchange);
 
+    /*
+     * @param exchange The exchange.
+     * @return True if the exchange is active (incomplete and not expired)
+     */
     boolean isActive(Exchange exchange);
 
+    /*
+     * @param interacter The player requesting the exchange.
+     * @param interactee The player with whom to request the exchange.
+     * @return True if there exists an active exchange from interacter to interactee
+     */
     boolean existsActiveExchangeByPlayers(Player interacter, Player interactee);
 
 }

@@ -10,42 +10,89 @@ import java.util.Optional;
 @Service
 public interface PlayerService {
 
+    /*
+     * @param player The player to save
+     */
     void savePlayer(Player player);
 
+    /*
+     * @param id The id of the player you are looking for.
+     * @return An optional of the player with that id.
+     */
     Optional<Player> getPlayer(Long id);
 
+    /*
+     * @param hackername The hackername of the player you are looking for.
+     * @return The player with that hackername.
+     */
     Player getPlayerByHackerName(String hackerName);
 
+    /*
+     * @return The number of players in the database.
+     */
     long countPlayer();
 
+    /*
+     * @return A list of all the players in the database.
+     */
     List<Player> getAllPlayers();
 
+    /*
+     * @return A list of all the players in the database, ordered by score descending.
+     */
     List<Player> getAllPlayersByScore();
 
+    /*
+     * @return A list of JSONObject containing {id, real_name, hacker_name}.
+     */
     List<JSONObject> getAllPlayersStartInfo();
 
-    void createPlayers();
-
+    /*
+     * @param player The player you don't want to return.
+     * @return A list of all the players in the database except the given player.
+     */
     List<Player> getAllPlayersExcept(Player player);
 
-    List<Player> getAllPlayersExcept(List<Player> exceptPlayers);
+    /*
+     * @param players A list of the players you don't want to return.
+     * @return A list of all the players in the database except the given players.
+     */
+    List<Player> getAllPlayersExcept(List<Player> players);
 
+    /*
+     * @param player The player to assign a home to.
+     * @param home The home to assign to the player.
+     */
     void assignHome(Player player, int home);
 
-    void assignTargets();
-
-    void incKills(Player player);
-
-    void halfInformation(Player player);
-
-    int getTotalInformation(Player player);
-
+    /*
+     * @param player The player to get the weight for.
+     * @return The weight of the given player.
+     */
     int getPlayerWeight(Player player);
 
+    /*
+     * @param player The player the increment the kills for.
+     * @param n The number of kills to add.
+     */
+    void incrementKills(Player player, int n);
+
+    /*
+     * @param playerId The id of the player to get a new target for.
+     * @return The id of their new target.
+     */
     Long newTarget(Long playerId);
 
+    /*
+     * @param ids A list of the ids of all the player's contacts.
+     * @return A random player from that list.
+     */
     Player getRandomContact(List<Long> ids);
 
+    /*
+     * @param player The player whose position you want.
+     * @return The player's position on the leaderboard.
+     */
     int getLeaderboardPosition(Player player);
 
     /*
