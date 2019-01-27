@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Instant;
 import java.util.Random;
 import java.util.Optional;
 import com.google.gson.Gson;
@@ -87,8 +88,8 @@ public class MobileController {
 //         create JSON object for return
         JSONObject output = new JSONObject();
 //         set JSON values
-        long time;
-        time = Instant.now().getEpochSecond() + 10;
+        LocalTime time;
+        time = LocalTime.now().plus(10, ChronoUnit.SECONDS);
 //        Optional<Game> opGame = gameService.getGame(game_id);
 //        if (opGame.isPresent()) { time = opGame.get().getStartTime(); }
         output.put("start_time", time);
@@ -241,9 +242,15 @@ public class MobileController {
 //            ensure given target matches player's assign target and they haven't been taken down
             if(player.getTarget().getId().equals(target.getId())) {
                 if(!player.isTakenDown() && !player.isReturnHome()) {
-//                    set targets returnHome attribute
-                    player.setReturnHome(true);
-                    playerService.savePlayer(player);
+//                    set other players with the same targets returnHome attribute
+//                    assume player is locked to getNewTarget by app
+                    List<Player> players = playerService.getAllPlayersByTarget(target);
+                    for (Player p : players) {
+                        if (!(p.getId().equals(player.getId()))){
+                            p.setReturnHome(true);
+                            playerService.savePlayer(p);
+                        }
+                    }
 //                    set targets takenDown attribute
                     target.setTakenDown(true);
                     playerService.savePlayer(target);

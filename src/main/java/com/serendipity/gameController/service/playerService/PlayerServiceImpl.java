@@ -69,6 +69,22 @@ public class PlayerServiceImpl implements PlayerService {
         return players;
     }
 
+    @Override
+    public List<Player> getAllPlayersByTarget(Player target) {
+        List<Player> players = new ArrayList<>();
+        for (Player p : getAllPlayers()) {
+            if (p.getTarget().getId().equals(target.getId())) players.add(p);
+        }
+        return players;
+    }
+
+    @Override
+    public void deletePlayers() {
+        if (playerRepository.count() != 0) {
+            playerRepository.deleteAll();
+        }
+    }
+
     public void createPlayers() {
         if (playerRepository.count() != 0) {
 //            informationService.deleteAll();

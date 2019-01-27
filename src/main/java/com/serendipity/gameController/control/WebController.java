@@ -1,9 +1,13 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Game;
+import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalTime;
 
 @Controller
 public class WebController {
@@ -11,26 +15,33 @@ public class WebController {
     @Autowired
     PlayerServiceImpl playerService;
 
+    @Autowired
+    GameService gameService;
+
     @GetMapping(value="/")
     @ResponseBody
-    public String home() { return "Hello World"; }
+    public String home() {
+        return "Hello World";
+    }
 
 //    @GetMapping(value="/")
 //    public String home() {
 //        return "redirect:/selectPlayer";
 //    }
-//
-//    @GetMapping(value="/initGame")
-//    public String initGame(){
-//        init();
-//        return "redirect:/";
-//    }
-//
-//    private void init() {
-//        playerService.createPlayers();
-//        playerService.assignTargets();
-//        informationService.initInformation();
-//    }
+
+    @PostMapping(value="/initGame")
+    public void initGame(@ModelAttribute("startTime") LocalTime startTime) {
+//        reset player and exchange tables
+        resetTables();
+        Game game = new Game(startTime);
+    }
+
+    private void resetTables() {
+        playerService.deletePlayers();
+//        TODO: Are we having multiple games, if so do we index which game to delete
+        gameService.deleteGames();
+//        TODO: delete all entries in exchange table
+    }
 //
 //    @GetMapping(value="/selectPlayer")
 //    public String home(Model model) {
