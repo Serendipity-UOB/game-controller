@@ -4,8 +4,6 @@ import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.ExchangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;

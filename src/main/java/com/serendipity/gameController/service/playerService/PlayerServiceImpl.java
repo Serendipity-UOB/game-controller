@@ -214,17 +214,17 @@ public class PlayerServiceImpl implements PlayerService {
         return position;
     }
 
-    @PostConstruct
-    public void insertRootPlayers() {
-        Player p1 = new Player("Tilly", "Headshot");
-        Player p2 = new Player("Tom", "Cutiekitten");
-        Player p3 = new Player("Louis", "Puppylover");
-        Player p4 = new Player("Jack", "Cookingking");
-        savePlayer(p1);
-        savePlayer(p2);
-        savePlayer(p3);
-        savePlayer(p4);
-    }
+//    @PostConstruct
+//    public void insertRootPlayers() {
+//        Player p1 = new Player("Tilly", "Headshot");
+//        Player p2 = new Player("Tom", "Cutiekitten");
+//        Player p3 = new Player("Louis", "Puppylover");
+//        Player p4 = new Player("Jack", "Cookingking");
+//        savePlayer(p1);
+//        savePlayer(p2);
+//        savePlayer(p3);
+//        savePlayer(p4);
+//    }
 
 
 

@@ -259,7 +259,6 @@ public class MobileController {
         return response;
     }
 
-    //    POST /takeDown { player_id, target_id }
     @RequestMapping(value="/takeDown", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> takeDown(@RequestBody String json) {

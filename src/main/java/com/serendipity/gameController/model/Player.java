@@ -2,8 +2,6 @@ package com.serendipity.gameController.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 public class Player {
