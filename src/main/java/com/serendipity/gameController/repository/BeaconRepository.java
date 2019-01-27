@@ -11,4 +11,6 @@ public interface BeaconRepository extends CrudRepository<Beacon, Long> {
 
     Optional<Beacon> findBeaconByMinor (int minor);
 
+    void deleteBeaconById(long id);
+
 }
