@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Controller
 public class WebController {
@@ -40,30 +39,34 @@ public class WebController {
 //    }
 
     @PostMapping(value="/initGame")
-    public void initGame(@ModelAttribute("startTime") LocalTime startTime) {
+    public String initGame(@ModelAttribute("startTime") LocalTime startTime) {
 //        reset player and exchange tables
         resetTables();
 //        get start time and save new game
         Game game = new Game(startTime);
         gameService.saveGame(game);
+        return "redirect:/";
     }
 
     @PostMapping(value="/initBeacon")
-    public void initBeacon(@ModelAttribute("name") String name,
-                           @ModelAttribute("minor") int minor) {
+    public String initBeacon(@ModelAttribute("beacon_name") String beacon_name,
+                           @ModelAttribute("beacon_minor") int beacon_minor) {
 //        receive beacon attributes and construct beacon to add to beacon table
-        Beacon beacon = new Beacon(minor, name);
+        Beacon beacon = new Beacon(beacon_minor, beacon_name);
         beaconService.saveBeacon(beacon);
+        return "redirect:/";
     }
 
     @PostMapping(value="/delBeacons")
-    public void delBeacons() {
+    public String delBeacons() {
         beaconService.deleteBeacons();
+        return "redirect:/";
     }
 
     @PostMapping(value="/delBeacon")
-    public void delBeacon(@ModelAttribute("beacon_id") long beacon_id) {
+    public String delBeacon(@ModelAttribute("beacon_id") long beacon_id) {
         beaconService.deleteBeaconById(beacon_id);
+        return "redirect:/";
     }
 
     private void resetTables() {
