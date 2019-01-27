@@ -1,6 +1,6 @@
-# Game Controller
+# Hacker Hunt Server
 
-A simple web app used for testing early Hacker Hunt game mechanics.
+A Spring server for the Hacker Hunt game to be used by both iOS and Andriod app.
 
 The app is currently hosted on Heroku:
 
@@ -21,7 +21,3 @@ ALTER ROLE serendipity CREATEDB;
 CREATE DATABASE serendipitydb;
 GRANT ALL PRIVILEGES ON DATABASE serendipitydb TO serendipity;
 ```
-
-### Entity Relation Diagram
-
-![entity-relation](/docs/entity-relation.png)
