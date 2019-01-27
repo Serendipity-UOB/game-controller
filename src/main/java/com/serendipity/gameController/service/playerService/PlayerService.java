@@ -25,7 +25,7 @@ public interface PlayerService {
      * @param hackername The hackername of the player you are looking for.
      * @return The player with that hackername.
      */
-    Player getPlayerByHackerName(String hackerName);
+    Optional<Player> getPlayerByHackerName(String hackerName);
 
     /*
      * @return The number of players in the database.

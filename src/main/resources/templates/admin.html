@@ -17,22 +17,22 @@
             <td></td>
         </tr>
         <tr th:each="beacon : ${beacons}">
-            <form>
-                <input type="hidden" th:value="${beacon.id}" name="beaconId"/>
+            <form method="post" th:action="@{delBeacon}">
+                <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
                 <td><span th:text="${beacon.name}"/></td>
                 <td><span th:text="${beacon.minor}"/></td>
                 <td><button type="submit">-</button></td>
             </form>
         </tr>
         <tr>
-            <form>
-                <td><input type="text"/></td>
-                <td><input type="text"/></td>
+            <form method="post" th:action="@{/initBeacon}">
+                <td><input type="text" name="beacon_name"/></td>
+                <td><input type="text" name="beacon_minor"/></td>
                 <td><button type="submit">+</button></td>
             </form>
         </tr>
         <tr>
-            <form>
+            <form method="post" th:action="@{/delBeacons}">
                 <td>
                     <button type="submit">Delete all</button>
                 </td>
@@ -45,14 +45,14 @@
     Game
     <table>
         <tr th:each="game : ${games}">
-            <td>Last Game</td>
+            <td>Current Game</td>
             <td><span th:text="${game.startTime}"/></td>
             <td></td>
         </tr>
         <tr>
-            <form>
+            <form method="post" th:action="@{/initGame}">
                 <td>New Game</td>
-                <td><input type="datetime-local"/></td>
+                <td><input type="text" name="startTime" placeholder="HH:MM:SS.MSS"/></td>
                 <td><button type="submit">+</button></td>
             </form>
         </tr>
