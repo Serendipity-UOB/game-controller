@@ -36,11 +36,12 @@ public class WebController {
     }
 
     @PostMapping(value="/initGame")
-    public String initGame(@ModelAttribute("startTime") LocalTime startTime) {
+    public String initGame(@ModelAttribute("startTime") String start_Time) {
 //        reset player and exchange tables
         resetTables();
+        LocalTime start = LocalTime.parse(start_Time);
 //        get start time and save new game
-        Game game = new Game(startTime);
+        Game game = new Game(start);
         gameService.saveGame(game);
         return "redirect:/";
     }
