@@ -35,4 +35,6 @@ public interface PlayerService {
 
     Long newTarget(Long playerId);
 
+    Player getRandomContact(List<Long> ids);
+
 }

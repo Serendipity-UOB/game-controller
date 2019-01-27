@@ -5,6 +5,7 @@ import com.serendipity.gameController.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service("playerService")
@@ -164,6 +165,26 @@ public class PlayerServiceImpl implements PlayerService {
         player.setTarget(newTarget);
         savePlayer(player);
         return newTarget.getId();
+    }
+
+    @Override
+    public Player getRandomContact(List<Long> ids) {
+        Random random = new Random();
+        Long contactId = ids.get(random.nextInt(ids.size()));
+        Player contact = getPlayer(contactId).get();
+        return contact;
+    }
+
+    @PostConstruct
+    public void insertRootPlayers() {
+        Player p1 = new Player("Tilly", "Headshot");
+        Player p2 = new Player("Tom", "Cutiekitten");
+        Player p3 = new Player("Louis", "Puppylover");
+        Player p4 = new Player("Jack", "Cookingking");
+        savePlayer(p1);
+        savePlayer(p2);
+        savePlayer(p3);
+        savePlayer(p4);
     }
 
 }

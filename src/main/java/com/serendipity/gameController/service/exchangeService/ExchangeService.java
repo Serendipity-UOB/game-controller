@@ -13,8 +13,18 @@ public interface ExchangeService {
 
     Optional<Exchange> getExchangeByPlayers(Player interacter, Player interactee);
 
-    Long acceptExchange(Exchange exchange);
+    Long acceptExchange(Exchange exchange, Player targetPlayerContact);
 
-    Long completeExchange(Exchange exchange, Player targetPlayerContact);
+    Long completeExchange(Exchange exchange);
+
+    void resetExchange(Exchange exchange, Player requestPlayerContact);
+
+    void createExchange(Player interacter, Player interactee, Player contact);
+
+    boolean isExpired(Exchange exchange);
+
+    boolean isActive(Exchange exchange);
+
+    boolean existsActiveExchangeByPlayers(Player interacter, Player interactee);
 
 }
