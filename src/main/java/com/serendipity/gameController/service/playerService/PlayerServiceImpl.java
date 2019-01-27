@@ -73,7 +73,6 @@ public class PlayerServiceImpl implements PlayerService {
             obj.put("hacker_name", p.getHackerName());
             players.add(obj);
         }
-
         return players;
     }
 
@@ -107,8 +106,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void incKills(Player player) {
-        player.setKills(player.getKills()+1);
+    public void incrementKills(Player player, int n) {
+        player.setKills(player.getKills() + n);
         playerRepository.save(player);
     }
 
@@ -119,73 +118,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void assignTargets() {
-        List<Player> players = getAllPlayers();
-        List<Player> unassigned = getAllPlayers();
-        Random random = new Random();
-        for (Player player : players) {
-            //Get the list of players that are unassigned and not me
-            List<Player> chooseFrom = new ArrayList<>();
-            for (Player p : unassigned) {
-                if (!(p.equals(player))) {
-                    chooseFrom.add(p);
-                }
-            }
-            //Check to see if chooseFrom is empty
-            if (chooseFrom.isEmpty()) {
-                //Swap the last person's target with someone who doesn't have them as a target
-                //Try swapping with the first person's target
-                if (!(players.get(0).equals(player))) {
-                    //Then swap their targets
-                    players.get(0).setTarget(player);
-                    player.setTarget(players.get(0));
-
-                } else {
-                    players.get(1).setTarget(player);
-                    player.setTarget(players.get(1));
-                }
-            } else {
-                //Pick random from chooseFrom
-                int i = random.nextInt(chooseFrom.size());
-                Player target = chooseFrom.get(i);
-                player.setTarget(target);
-                //Reset unassigned
-                unassigned.remove(target);
-            }
-        }
-        //Update the database
-        for (Player player : players) {
-            savePlayer(player);
-        }
-
-    }
-
-    @Override
-    public void halfInformation(Player player) {
-//        List<Information> information = informationService.getAllInformationForOwner(player);
-//        for (Information info : information) {
-//            info.setInteractions(info.getInteractions()/2);
-//            informationService.saveInformation(info);
-//        }
-    }
-
-    @Override
-    public int getTotalInformation(Player player) {
-//        List<Information> information = informationService.getAllInformationForOwner(player);
-        int total = 0;
-//        for (Information info : information) {
-//            total += info.getInteractions();
-//        }
-        return total;
-    }
-
-    @Override
     public int getPlayerWeight(Player player) {
-        int totalInformation = getTotalInformation(player);
-        int averageInformation = totalInformation/getAllPlayers().size();
-        int kills = player.getKills();
-        int weight = averageInformation + kills;
-        return weight;
+        return player.getKills();
     }
 
     @Override
@@ -239,19 +173,5 @@ public class PlayerServiceImpl implements PlayerService {
         }
         return ids;
     }
-
-//    @PostConstruct
-//    public void insertRootPlayers() {
-//        Player p1 = new Player("Tilly", "Headshot");
-//        Player p2 = new Player("Tom", "Cutiekitten");
-//        Player p3 = new Player("Louis", "Puppylover");
-//        Player p4 = new Player("Jack", "Cookingking");
-//        savePlayer(p1);
-//        savePlayer(p2);
-//        savePlayer(p3);
-//        savePlayer(p4);
-//    }
-
-
 
 }

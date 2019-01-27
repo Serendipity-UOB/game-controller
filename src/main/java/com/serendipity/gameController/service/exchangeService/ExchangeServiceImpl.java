@@ -26,9 +26,9 @@ public class ExchangeServiceImpl implements ExchangeService{
     }
 
     @Override
-    public Long acceptExchange(Exchange exchange, Player targetPlayerContact) {
+    public Long acceptExchange(Exchange exchange, Player contact) {
         exchange.setAccepted(true);
-        exchange.setTargetPlayerContact(targetPlayerContact);
+        exchange.setTargetPlayerContact(contact);
         saveExchange(exchange);
         Long secondaryId = 0l;
         if (exchange.getRequestPlayerContact() != null) {
@@ -49,8 +49,8 @@ public class ExchangeServiceImpl implements ExchangeService{
     }
 
     @Override
-    public void resetExchange(Exchange exchange, Player requestPlayerContact) {
-        exchange.setRequestPlayerContact(requestPlayerContact);
+    public void resetExchange(Exchange exchange, Player contact) {
+        exchange.setRequestPlayerContact(contact);
         exchange.setAccepted(false);
         exchange.setCompleted(false);
         exchange.setStartTime(LocalTime.now());
