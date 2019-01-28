@@ -128,11 +128,18 @@ public class DummyController {
     @RequestMapping(value="/endInfoTest", method=RequestMethod.GET)
     @ResponseBody
     public String endInfo() {
-        List<Player> players = new ArrayList<>();
-        players.add(new Player("Tilly","Headshot"));
-        players.add(new Player("Tom","Cutiekitten"));
-        String output = new Gson().toJson(players);
-        return output;
+        JSONArray leaderboard = new JSONArray();
+        JSONObject p1 = new JSONObject();
+        p1.put("player_id",1);
+        p1.put("score",3);
+        leaderboard.put(p1);
+        JSONObject p2 = new JSONObject();
+        p2.put("player_id",2);
+        p2.put("score",1);
+        leaderboard.put(p2);
+        JSONObject output = new JSONObject();
+        output.put("leaderboard", leaderboard);
+        return output.toString();
     }
 
 }
