@@ -27,12 +27,13 @@ public class DummyController {
 
     @RequestMapping(value="/registerPlayerTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity registerPlayer(@RequestBody String json) {
+    public ResponseEntity<String> registerPlayer(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         String real = input.getString("real_name");
         String hacker = input.getString("hacker_name");
-        Long nfc = input.getLong("nfc_id");
-        return new ResponseEntity(HttpStatus.OK);
+        JSONObject output = new JSONObject();
+        output.put("player_id", 1);
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/gameInfoTest", method=RequestMethod.GET)
@@ -40,30 +41,31 @@ public class DummyController {
     public String getGameInfo() {
         JSONObject output = new JSONObject();
         output.put("start_time", LocalTime.now().plus(10, ChronoUnit.SECONDS));
-        output.put("number_players", 0);
+        output.put("number_players", 3);
         return output.toString();
     }
 
     @RequestMapping(value="/joinGameTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String joinGame(@RequestBody String json) {
+    public ResponseEntity<String> joinGame(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONObject output = new JSONObject();
         output.put("home_beacon_minor", 0);
         output.put("home_beacon_name", "home");
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/startInfoTest", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-        List<Player> ret = new ArrayList<>();
-        ret.add(new Player("Jack", "Cutiekitten"));
-        ret.add(new Player("Tilly", "Puppylover"));
-        ret.add(new Player("Tom", "Cookingking"));
-        String output = new Gson().toJson(ret);
-        return output;
+//        JSONObject output = new JSONObject();
+//        output.put("{ \"all_players\": [{ \"realName\": \"Jack\", \"hackerName\": \"CutieKitten\", \"id\": 0}, " +
+//                "{ \"realName\": \"Tilly\", \"hackerName\": \"PuppyLover\", \"id\": 1}, " +
+//                "{ \"realName\": \"Tom\", \"hackerName\": \"Cookingking\", \"id\": 2} ]}");
+        return "{ \"all_players\": [{ \"id\": 0, \"real_name\": \"jack jones\", \"hacker_name\": \"CutieKitten\"}, " +
+                "{ \"id\": 1, \"real_name\": \"tilly woodfield\", \"hacker_name\": \"PuppyLover\"}, " +
+                "{ \"id\": 2, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
     }
 
     @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST)
@@ -114,11 +116,13 @@ public class DummyController {
 
     @RequestMapping(value="/takeDownTest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity takeDown(@RequestBody String json) {
+    public ResponseEntity<String> takeDown(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-        return new ResponseEntity(HttpStatus.OK);
+        JSONObject output = new JSONObject();
+        output.put("SUCCESS", "Valid take down");
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/endInfoTest", method=RequestMethod.GET)
