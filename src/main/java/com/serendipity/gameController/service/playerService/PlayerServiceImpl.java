@@ -189,20 +189,4 @@ public class PlayerServiceImpl implements PlayerService {
         return ids;
     }
 
-    @PostConstruct
-    public void addPlayers() {
-        Player p1 = new Player("A","A");
-        Player p2 = new Player("B","B");
-        Player p3 = new Player("C","C");
-        Player p4 = new Player("D","D");
-        Player p5 = new Player("E","E");
-        Player p6 = new Player("F","F");
-        savePlayer(p1);
-        savePlayer(p2);
-        savePlayer(p3);
-        savePlayer(p4);
-        savePlayer(p5);
-        savePlayer(p6);
-    }
-
 }
