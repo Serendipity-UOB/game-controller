@@ -41,7 +41,7 @@ public class MobileController {
     @Autowired
     GameService gameService;
 
-    private List<Long> beacons = new ArrayList<>();
+    private List<Beacon> beacons = new ArrayList<>();
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -77,13 +77,14 @@ public class MobileController {
         JSONObject output = new JSONObject();
 //         set JSON values
         LocalTime time;
+//        default value for time
         time = LocalTime.now().plus(10, ChronoUnit.SECONDS);
-        Optional<Game> opGame = gameService.getGame(game_id);
-        if (opGame.isPresent()) { time = opGame.get().getStartTime(); }
+//        fetch all games and choose time from first index
+        List<Game> games = gameService.getAllGames();
+        if (!games.isEmpty()) { time = games.get(0).getStartTime(); }
         output.put("start_time", time);
 //        count number of players in table for number of players in game
         output.put("number_players", playerService.countPlayer());
-//        TODO: Draw time value from game table (Initialised by admin)
 //        TODO: Consider how we're counting number of players in game
 //        TODO: select which game to draw from if we're having multiple games
         return output.toString();
@@ -106,41 +107,35 @@ public class MobileController {
             Player player = opPlayer.get();
 //            re-Initialise set of beacons if empty
             if (beacons.isEmpty()) {
-                for (long i = 1; i < beaconService.countBeacons() + 1; i++) {
-                    beacons.add(i);
-                }
+                beacons = beaconService.getAllBeacons();
             }
             if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table"); }
             else {
-                Optional<Beacon> opBeacon;
+                Beacon beacon;
 //                randomly take from beacon list using random number
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
                 if (player.getHomeBeacon() == -1) {
-                    long index = beacons.get(n);
 //                    get beacon randomly chosen from beacon table
-                    opBeacon = beaconService.getBeacon(index);
+                    beacon = beacons.get(n);
                 } else {
-                    opBeacon = beaconService.getBeaconByMinor(player.getHomeBeacon());
+//                    if beacon has already been assigned then fetch it
+                    beacon = beaconService.getBeaconByMinor(player.getHomeBeacon()).get();
                 }
-//                ensure optional has a value
-                if (opBeacon.isPresent()) {
-//                    unpack optional object
-                    Beacon beacon = opBeacon.get();
-                    int minor = beacon.getMinor();
-                    String name = beacon.getName();
+//                if (beacon.equals(null)) {
+                int minor = beacon.getMinor();
+                String name = beacon.getName();
 //                    set JSON values
-                    output.put("home_beacon_minor", minor);
-                    output.put("home_beacon_name", name);
+                output.put("home_beacon_minor", minor);
+                output.put("home_beacon_name", name);
 //                    set status value
-                    responseStatus = HttpStatus.OK;
-                    if (player.getHomeBeacon() == -1) {
+                responseStatus = HttpStatus.OK;
+                if (player.getHomeBeacon() == -1) {
 //                    assign home beacon to player
-                        playerService.assignHome(player, minor);
+                    playerService.assignHome(player, minor);
 //                    remove index selected
-                        beacons.remove(n);
-                    }
-                } else { output.put("BAD_REQUEST", "Couldn't find beacon to allocate"); }
+                    beacons.remove(n);
+                }
             }
         } else { output.put("BAD_REQUEST", "Couldn't find player id given"); }
         return new ResponseEntity<>(output.toString(), responseStatus);
