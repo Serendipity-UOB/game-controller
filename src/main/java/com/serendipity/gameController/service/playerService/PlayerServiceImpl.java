@@ -47,20 +47,28 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public List<Player> getAllPlayersExcept(Player player) {
-        List<Player> players = new ArrayList<>();
-        for (Player p : getAllPlayers()) {
-            if (p != player) players.add(p);
-        }
-        return players;
+//
+//        List<Player> players = new ArrayList<>();
+//        List<Player> allPlayers = getAllPlayers();
+//        for (Player p : allPlayers) {
+//            if (!(p.equals(player))) players.add(p);
+//        }
+//        return players;
+        return playerRepository.findAllByHackerNameNot(player.getHackerName());
     }
 
     @Override
-    public List<Player> getAllPlayersExcept(List<Player> exceptPlayers) {
-        List<Player> players = new ArrayList<>();
-        for (Player p : getAllPlayers()) {
-            if (!exceptPlayers.contains(p)) players.add(p);
-        }
-        return players;
+    public List<Player> getAllPlayersExceptTwo(Player p1, Player p2) {
+//        List<Player> allPlayers = getAllPlayers();
+//        List<Player> returnPlayers = new ArrayList<>();
+//        for (Player player : allPlayers) {
+//
+//
+//
+//            if (!(exceptPlayers.contains(player))) returnPlayers.add(player);
+//        }
+//        return returnPlayers;
+        return playerRepository.findAllByHackerNameNotAndHackerNameNot(p1.getHackerName(), p2.getHackerName());
     }
 
     @Override
@@ -124,11 +132,15 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Long newTarget(Long playerId){
-        Player player = getPlayer(playerId).get();
-        List<Player> except = new ArrayList<>();
-        except.add(player);
-        if (player.getTarget() != null) except.add(player.getTarget());
-        List<Player> players = getAllPlayersExcept(except);
+        Player currentPlayer = getPlayer(playerId).get();
+        // Create a list containing just the current player and their old target
+        List<Player> players = new ArrayList<>();
+        if (currentPlayer.getTarget() == null) {
+            players = getAllPlayersExcept(currentPlayer);
+        } else {
+            players = getAllPlayersExceptTwo(currentPlayer, currentPlayer.getTarget());
+        }
+        // Weight all the players in this list by their current number of kills
         List<Player> weightedPlayers = new ArrayList<>();
         for (Player p : players) {
             int playerWeight = getPlayerWeight(p);
@@ -137,10 +149,13 @@ public class PlayerServiceImpl implements PlayerService {
                 weightedPlayers.add(p);
             }
         }
+        // Pick a random player from this list as the new target
         Random random = new Random();
         Player newTarget = weightedPlayers.get(random.nextInt(weightedPlayers.size()));
-        player.setTarget(newTarget);
-        savePlayer(player);
+        // Update the target and save the current player
+        currentPlayer.setTarget(newTarget);
+        savePlayer(currentPlayer);
+        // Return the id of the new target
         return newTarget.getId();
     }
 
@@ -169,9 +184,25 @@ public class PlayerServiceImpl implements PlayerService {
         List<Player> players = playerRepository.findAllByNearestBeaconMinor(beaconMinor);
         List<Long> ids = new ArrayList<>();
         for (Player p : players) {
-            ids.add(p.getId());
+            if (!(p.equals(player))) ids.add(p.getId());
         }
         return ids;
+    }
+
+    @PostConstruct
+    public void addPlayers() {
+        Player p1 = new Player("A","A");
+        Player p2 = new Player("B","B");
+        Player p3 = new Player("C","C");
+        Player p4 = new Player("D","D");
+        Player p5 = new Player("E","E");
+        Player p6 = new Player("F","F");
+        savePlayer(p1);
+        savePlayer(p2);
+        savePlayer(p3);
+        savePlayer(p4);
+        savePlayer(p5);
+        savePlayer(p6);
     }
 
 }

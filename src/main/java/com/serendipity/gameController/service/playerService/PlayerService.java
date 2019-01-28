@@ -60,10 +60,10 @@ public interface PlayerService {
     List<Player> getAllPlayersExcept(Player player);
 
     /*
-     * @param players A list of the players you don't want to return.
+     * @param players The two players that you don't want to return.
      * @return A list of all the players in the database except the given players.
      */
-    List<Player> getAllPlayersExcept(List<Player> players);
+    List<Player> getAllPlayersExceptTwo(Player p1, Player p2);
 
     /*
      * @param player The player to assign a home to.

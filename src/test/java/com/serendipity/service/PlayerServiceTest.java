@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GameControllerApplication.class)
 public class PlayerServiceTest {
@@ -22,5 +25,41 @@ public class PlayerServiceTest {
         Player player = new Player("Tilly","Headshot");
         playerService.savePlayer(player);
         Assert.assertNotNull(playerService.getPlayer(player.getId()));
+    }
+
+    @Test
+    public void getAllPlayersExceptTest() {
+        Player p1 = playerService.getPlayerByHackerName("A").get();
+        Player p2 = playerService.getPlayerByHackerName("B").get();
+        Player p3 = playerService.getPlayerByHackerName("C").get();
+        Player p4 = playerService.getPlayerByHackerName("D").get();
+        Player p5 = playerService.getPlayerByHackerName("E").get();
+        Player p6 = playerService.getPlayerByHackerName("F").get();
+        List<Player> expectedRemaining = new ArrayList<>();
+        expectedRemaining.add(p2);
+        expectedRemaining.add(p3);
+        expectedRemaining.add(p4);
+        expectedRemaining.add(p5);
+        expectedRemaining.add(p6);
+        List<Player> remainingPlayers = playerService.getAllPlayersExcept(p1);
+        Assert.assertEquals(expectedRemaining, remainingPlayers);
+
+    }
+
+    @Test
+    public void getAllPlayersExceptTwoTest() {
+        Player p1 = playerService.getPlayerByHackerName("A").get();
+        Player p2 = playerService.getPlayerByHackerName("B").get();
+        Player p3 = playerService.getPlayerByHackerName("C").get();
+        Player p4 = playerService.getPlayerByHackerName("D").get();
+        Player p5 = playerService.getPlayerByHackerName("E").get();
+        Player p6 = playerService.getPlayerByHackerName("F").get();
+        List<Player> expectedRemaining = new ArrayList<>();
+        expectedRemaining.add(p3);
+        expectedRemaining.add(p4);
+        expectedRemaining.add(p5);
+        expectedRemaining.add(p6);
+        List<Player> remainingPlayers = playerService.getAllPlayersExceptTwo(p1, p2);
+        Assert.assertEquals(expectedRemaining, remainingPlayers);
     }
 }
