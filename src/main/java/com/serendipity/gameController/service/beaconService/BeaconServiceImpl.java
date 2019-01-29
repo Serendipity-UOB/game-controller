@@ -24,13 +24,16 @@ public class BeaconServiceImpl implements BeaconService {
 
     @Override
     public int getClosestBeaconMinor(JSONArray beacons) {
-        JSONObject beacon = beacons.getJSONObject(0);
-        int closestBeaconRssi = beacon.getInt("rssi");
-        int closestBeaconMinor = beacon.getInt("beacon_minor");
-        for (int i = 1; i < beacons.length(); i++) {
-            beacon = beacons.getJSONObject(i);
-            if (beacon.getInt("rssi") > closestBeaconRssi) {
-                closestBeaconMinor = beacon.getInt("beacon_minor");
+        int closestBeaconMinor = 0;
+        if (beacons.length() != 0) {
+            JSONObject beacon = beacons.getJSONObject(0);
+            int closestBeaconRssi = beacon.getInt("rssi");
+            closestBeaconMinor = beacon.getInt("beacon_minor");
+            for (int i = 1; i < beacons.length(); i++) {
+                beacon = beacons.getJSONObject(i);
+                if (beacon.getInt("rssi") > closestBeaconRssi) {
+                    closestBeaconMinor = beacon.getInt("beacon_minor");
+                }
             }
         }
         return closestBeaconMinor;
