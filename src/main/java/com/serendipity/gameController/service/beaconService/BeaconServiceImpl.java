@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,4 +70,15 @@ public class BeaconServiceImpl implements BeaconService {
             beaconRepository.deleteBeaconById(beacon_id);
         }
     }
+
+    @PostConstruct
+    void addBeacons() {
+        Beacon b1 = new Beacon(1, "0KiC");
+        Beacon b2 = new Beacon(2, "nHX3");
+        Beacon b3 = new Beacon(3, "zP1C");
+        saveBeacon(b1);
+        saveBeacon(b2);
+        saveBeacon(b3);
+    }
+
 }
