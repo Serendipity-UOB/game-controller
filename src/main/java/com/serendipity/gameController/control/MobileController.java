@@ -204,6 +204,8 @@ public class MobileController {
         Player interacter = playerService.getPlayer(interacterId).get();
         Player interactee = playerService.getPlayer(interacteeId).get();
 
+        System.out.println("Unpacks json\n");
+
         // Get player contact
 
         Long contactId;
@@ -218,12 +220,16 @@ public class MobileController {
             contactId = contactIds.get(random.nextInt(contactIds.size()));
         }
 
+        System.out.println("Gets player contact\n");
+
         // Check for existing exchanges between these two players
 
         Optional<Exchange> exchangeOptional1 = exchangeService.getExchangeByPlayers(interacter, interactee);
         Optional<Exchange> exchangeOptional2 = exchangeService.getExchangeByPlayers(interactee, interacter);
         boolean activeExchange1 = exchangeService.existsActiveExchangeByPlayers(interacter, interactee);
         boolean activeExchange2 = exchangeService.existsActiveExchangeByPlayers(interactee, interacter);
+
+        System.out.println("Gets existing exchanges\n");
 
         // Use cases
 
