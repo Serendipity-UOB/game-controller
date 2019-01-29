@@ -70,10 +70,10 @@ public class WebController {
     }
 
     private void resetTables() {
+        exchangeService.deleteExchanges();
         playerService.deletePlayers();
 //        TODO: Are we having multiple games, if so do we index which game to delete
         gameService.deleteGames();
-        exchangeService.deleteExchanges();
     }
 
 }

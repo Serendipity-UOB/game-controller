@@ -27,6 +27,7 @@ public class ExchangeServiceImpl implements ExchangeService{
 
     @Override
     public Long acceptExchange(Exchange exchange, Long contactId) {
+        if (contactId == exchange.getRequestPlayer().getId()) contactId = 0l;
         exchange.setAccepted(true);
         exchange.setTargetPlayerContactId(contactId);
         saveExchange(exchange);
@@ -50,6 +51,7 @@ public class ExchangeServiceImpl implements ExchangeService{
 
     @Override
     public void resetExchange(Exchange exchange, Long contactId) {
+        if (contactId == exchange.getTargetPlayer().getId()) contactId = 0l;
         exchange.setRequestPlayerContact(contactId);
         exchange.setAccepted(false);
         exchange.setCompleted(false);
@@ -60,6 +62,7 @@ public class ExchangeServiceImpl implements ExchangeService{
     @Override
     public void createExchange(Player interacter, Player interactee, Long contactId) {
         Optional<Exchange> exchangeOptional = getExchangeByPlayers(interacter, interactee);
+        if (contactId == interactee.getId()) contactId = 0l;
         if (exchangeOptional.isPresent()) {
             Exchange exchange = exchangeOptional.get();
             resetExchange(exchange, contactId);
