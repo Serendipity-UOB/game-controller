@@ -26,13 +26,13 @@ public class ExchangeServiceImpl implements ExchangeService{
     }
 
     @Override
-    public Long acceptExchange(Exchange exchange, Player contact) {
+    public Long acceptExchange(Exchange exchange, Long contactId) {
         exchange.setAccepted(true);
-        exchange.setTargetPlayerContact(contact);
+        exchange.setTargetPlayerContactId(contactId);
         saveExchange(exchange);
         Long secondaryId = 0l;
-        if (exchange.getRequestPlayerContact() != null) {
-            secondaryId = exchange.getRequestPlayerContact().getId();
+        if (exchange.getRequestPlayerContactId() != null) {
+            secondaryId = exchange.getRequestPlayerContactId();
         }
         return secondaryId;
     }
@@ -42,15 +42,15 @@ public class ExchangeServiceImpl implements ExchangeService{
         exchange.setCompleted(true);
         saveExchange(exchange);
         Long secondaryId = 0l;
-        if (exchange.getTargetPlayerContact() != null) {
-            secondaryId = exchange.getTargetPlayerContact().getId();
+        if (exchange.getTargetPlayerContactId() != null) {
+            secondaryId = exchange.getTargetPlayerContactId();
         }
         return secondaryId;
     }
 
     @Override
-    public void resetExchange(Exchange exchange, Player contact) {
-        exchange.setRequestPlayerContact(contact);
+    public void resetExchange(Exchange exchange, Long contactId) {
+        exchange.setRequestPlayerContact(contactId);
         exchange.setAccepted(false);
         exchange.setCompleted(false);
         exchange.setStartTime(LocalTime.now());
@@ -58,13 +58,13 @@ public class ExchangeServiceImpl implements ExchangeService{
     }
 
     @Override
-    public void createExchange(Player interacter, Player interactee, Player contact) {
+    public void createExchange(Player interacter, Player interactee, Long contactId) {
         Optional<Exchange> exchangeOptional = getExchangeByPlayers(interacter, interactee);
         if (exchangeOptional.isPresent()) {
             Exchange exchange = exchangeOptional.get();
-            resetExchange(exchange, contact);
+            resetExchange(exchange, contactId);
         } else {
-            Exchange exchange = new Exchange(interacter, interactee, contact);
+            Exchange exchange = new Exchange(interacter, interactee, contactId);
             saveExchange(exchange);
         }
     }

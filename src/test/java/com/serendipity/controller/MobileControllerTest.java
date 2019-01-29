@@ -91,7 +91,7 @@ public class MobileControllerTest {
         playerService.savePlayer(p1);
         playerService.savePlayer(p2);
         playerService.savePlayer(p3);
-        Exchange exchange = new Exchange(p1, p2, p3);
+        Exchange exchange = new Exchange(p1, p2, p3.getId());
         exchangeService.saveExchange(exchange);
 
         // JSON input
@@ -119,7 +119,7 @@ public class MobileControllerTest {
         playerService.savePlayer(p1);
         playerService.savePlayer(p2);
         playerService.savePlayer(p3);
-        Exchange exchange = new Exchange(p1, p2, p3, p3, true, false);
+        Exchange exchange = new Exchange(p1, p2, p3.getId(), p3.getId(), true, false);
         exchangeService.saveExchange(exchange);
 
         // JSON input
@@ -150,7 +150,7 @@ public class MobileControllerTest {
         playerService.savePlayer(p1);
         playerService.savePlayer(p2);
         playerService.savePlayer(p3);
-        Exchange exchange = new Exchange(p1, p2, p3);
+        Exchange exchange = new Exchange(p1, p2, p3.getId());
         exchangeService.saveExchange(exchange);
 
         // JSON input

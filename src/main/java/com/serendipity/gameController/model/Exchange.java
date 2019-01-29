@@ -21,11 +21,9 @@ public class Exchange {
     @ManyToOne
     private Player targetPlayer;
 
-    @ManyToOne
-    private Player requestPlayerContact;
+    private Long requestPlayerContactId;
 
-    @ManyToOne
-    private Player targetPlayerContact;
+    private Long targetPlayerContactId;
 
     private boolean accepted;
 
@@ -44,31 +42,31 @@ public class Exchange {
         this.completed = false;
     }
 
-    public Exchange(Player requestPlayer, Player targetPlayer, Player requestPlayerContact) {
+    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId) {
         this.startTime = LocalTime.now();
         this.requestPlayer = requestPlayer;
         this.targetPlayer = targetPlayer;
-        this.requestPlayerContact = requestPlayerContact;
+        this.requestPlayerContactId = requestPlayerContactId;
         this.accepted = false;
         this.completed = false;
     }
 
-    public Exchange(Player requestPlayer, Player targetPlayer, Player requestPlayerContact, Player targetPlayerContact) {
+    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId, Long targetPlayerContactId) {
         this.startTime = LocalTime.now();
         this.requestPlayer = requestPlayer;
         this.targetPlayer = targetPlayer;
-        this.requestPlayerContact = requestPlayerContact;
-        this.targetPlayerContact = targetPlayerContact;
+        this.requestPlayerContactId = requestPlayerContactId;
+        this.targetPlayerContactId = targetPlayerContactId;
         this.accepted = false;
         this.completed = false;
     }
 
-    public Exchange(Player requestPlayer, Player targetPlayer, Player requestPlayerContact, Player targetPlayerContact, boolean accepted, boolean completed) {
+    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId, Long targetPlayerContactId, boolean accepted, boolean completed) {
         this.startTime = LocalTime.now();
         this.requestPlayer = requestPlayer;
         this.targetPlayer = targetPlayer;
-        this.requestPlayerContact = requestPlayerContact;
-        this.targetPlayerContact = targetPlayerContact;
+        this.requestPlayerContactId = requestPlayerContactId;
+        this.targetPlayerContactId = targetPlayerContactId;
         this.accepted = accepted;
         this.completed = completed;
     }
@@ -105,20 +103,20 @@ public class Exchange {
         this.targetPlayer = targetPlayer;
     }
 
-    public Player getRequestPlayerContact() {
-        return requestPlayerContact;
+    public Long getRequestPlayerContactId() {
+        return requestPlayerContactId;
     }
 
-    public void setRequestPlayerContact(Player requestPlayerContact) {
-        this.requestPlayerContact = requestPlayerContact;
+    public void setRequestPlayerContact(Long requestPlayerContactId) {
+        this.requestPlayerContactId = requestPlayerContactId;
     }
 
-    public Player getTargetPlayerContact() {
-        return targetPlayerContact;
+    public Long getTargetPlayerContactId() {
+        return targetPlayerContactId;
     }
 
-    public void setTargetPlayerContact(Player targetPlayerContact) {
-        this.targetPlayerContact = targetPlayerContact;
+    public void setTargetPlayerContactId(Long targetPlayerContactId) {
+        this.targetPlayerContactId = targetPlayerContactId;
     }
 
     public boolean isAccepted() {

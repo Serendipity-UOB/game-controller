@@ -26,7 +26,7 @@ public interface ExchangeService {
      * @param contact The player about which they are giving secondary intel.
      * @return The player about which they are receiving secondary intel.
      */
-    Long acceptExchange(Exchange exchange, Player contact);
+    Long acceptExchange(Exchange exchange, Long contactId);
 
     /*
      * @param exchange The exchange to complete.
@@ -38,14 +38,14 @@ public interface ExchangeService {
      * @param exchange The exchange to accept.
      * @param contact The player about which they are giving secondary intel.
      */
-    void resetExchange(Exchange exchange, Player contact);
+    void resetExchange(Exchange exchange, Long contactId);
 
     /*
      * @param interacter The player requesting the exchange.
      * @param interactee The player with whom to request the exchange.
      * @param contact The player about which they are giving secondary intel.
      */
-    void createExchange(Player interacter, Player interactee, Player contact);
+    void createExchange(Player interacter, Player interactee, Long contactId);
 
     /*
      * @param exchange The exchange.

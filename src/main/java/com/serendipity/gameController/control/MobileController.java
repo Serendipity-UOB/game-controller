@@ -203,11 +203,20 @@ public class MobileController {
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
         Player interacter = playerService.getPlayer(interacterId).get();
         Player interactee = playerService.getPlayer(interacteeId).get();
-        List<Long> contactIds = new ArrayList<>();
-        for (int i = 0; i < jsonContactIds.length(); i++) {
-            contactIds.add(jsonContactIds.getJSONObject(i).getLong("contact_id"));
+
+        // Get player contact
+
+        Long contactId;
+        if (jsonContactIds.length() == 0) {
+            contactId = 0l;
+        } else {
+            List<Long> contactIds = new ArrayList<>();
+            for (int i = 0; i < jsonContactIds.length(); i++) {
+                contactIds.add(jsonContactIds.getJSONObject(i).getLong("contact_id"));
+            }
+            Random random = new Random();
+            contactId = contactIds.get(random.nextInt(contactIds.size()));
         }
-        Player contact = playerService.getRandomContact(contactIds);
 
         // Check for existing exchanges between these two players
 
@@ -244,17 +253,17 @@ public class MobileController {
             } else {
             // They have already requested an exchange with you, you haven't accepted yet, accept
                 if (exchangeService.isExpired(exchange2)) {
-                    exchangeService.createExchange(interacter, interactee, contact);
+                    exchangeService.createExchange(interacter, interactee, contactId);
                     response = new ResponseEntity<>(HttpStatus.CREATED);
                 } else {
-                    Long secondaryId = exchangeService.acceptExchange(exchange2, contact);
+                    Long secondaryId = exchangeService.acceptExchange(exchange2, contactId);
                     JSONObject output = new JSONObject();
                     output.put("secondary_id", secondaryId);
                     response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
                 }
             }
         } else {
-            exchangeService.createExchange(interacter, interactee, contact);
+            exchangeService.createExchange(interacter, interactee, contactId);
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
         return response;
