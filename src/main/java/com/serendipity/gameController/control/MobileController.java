@@ -70,24 +70,20 @@ public class MobileController {
 
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
     @ResponseBody
-    public String getGameInfo(){
-//        set variable for game to take time from
-        long game_id = 1;
-//         create JSON object for return
+    public ResponseEntity<String> getGameInfo(){
+        ResponseEntity<String> response;
         JSONObject output = new JSONObject();
-//         set JSON values
-        LocalTime time;
-//        default value for time
-        time = LocalTime.now().plus(10, ChronoUnit.SECONDS);
-//        fetch all games and choose time from first index
         List<Game> games = gameService.getAllGames();
-        if (!games.isEmpty()) { time = games.get(0).getStartTime(); }
-        output.put("start_time", time);
-//        count number of players in table for number of players in game
-        output.put("number_players", playerService.countPlayer());
-//        TODO: Consider how we're counting number of players in game
-//        TODO: select which game to draw from if we're having multiple games
-        return output.toString();
+        if (games.isEmpty()) {
+            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            output.put("start_time", games.get(0).getStartTime());
+            output.put("number_players", playerService.countPlayer());
+            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        }
+        // TODO: Consider how we're counting number of players in game
+        // TODO: select which game to draw from if we're having multiple games
+        return response;
     }
 
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
