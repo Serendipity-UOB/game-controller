@@ -206,7 +206,7 @@ public class MobileController {
 
         // Get player contact
 
-        Long contactId;
+        Long contactId = 0l;
         if (jsonContactIds.length() == 0) {
             contactId = 0l;
         } else {
@@ -215,8 +215,10 @@ public class MobileController {
                 Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
                 if (id != interacteeId) contactIds.add(id);
             }
-            Random random = new Random();
-            contactId = contactIds.get(random.nextInt(contactIds.size()));
+            if (contactIds.size() != 0) {
+                Random random = new Random();
+                contactId = contactIds.get(random.nextInt(contactIds.size()));
+            }
         }
 
         // Check for existing exchanges between these two players
