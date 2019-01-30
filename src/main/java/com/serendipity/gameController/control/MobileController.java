@@ -204,18 +204,26 @@ public class MobileController {
         Player interacter = playerService.getPlayer(interacterId).get();
         Player interactee = playerService.getPlayer(interacteeId).get();
 
+        System.out.println("Player "+interacter.getRealName()+" requesting exchange with player "+interactee.getRealName());
+
+
         // Get player contact
+
+        System.out.println("jsonContactIds "+jsonContactIds);
 
         Long contactId;
         if (jsonContactIds.length() == 0) {
+            System.out.println("No contacts");
             contactId = 0l;
         } else {
             List<Long> contactIds = new ArrayList<>();
             for (int i = 0; i < jsonContactIds.length(); i++) {
                 contactIds.add(jsonContactIds.getJSONObject(i).getLong("contact_id"));
             }
+            System.out.println("contactIds "+contactIds);
             Random random = new Random();
             contactId = contactIds.get(random.nextInt(contactIds.size()));
+            System.out.println("Chosen contactId "+contactId);
         }
 
         // Check for existing exchanges between these two players
