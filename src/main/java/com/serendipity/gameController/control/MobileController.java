@@ -111,24 +111,25 @@ public class MobileController {
 //                randomly take from beacon list using random number
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
+
                 if (player.getHomeBeacon() == -1) {
 //                    get beacon randomly chosen from beacon table
                     beacon = beacons.get(n);
                 } else {
 //                    if beacon has already been assigned then fetch it
-                    beacon = beaconService.getBeaconByMinor(player.getHomeBeacon()).get();
+                    beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
                 }
 //                if (beacon.equals(null)) {
-                int minor = beacon.getMinor();
+                int major = beacon.getMajor();
                 String name = beacon.getName();
 //                    set JSON values
-                output.put("home_beacon_minor", minor);
+                output.put("home_beacon_major", major);
                 output.put("home_beacon_name", name);
 //                    set status value
                 responseStatus = HttpStatus.OK;
                 if (player.getHomeBeacon() == -1) {
 //                    assign home beacon to player
-                    playerService.assignHome(player, minor);
+                    playerService.assignHome(player, major);
 //                    remove index selected
                     beacons.remove(n);
                 }
@@ -154,10 +155,10 @@ public class MobileController {
         Long playerId = input.getLong("player_id");
         Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
-        int closestBeaconMinor = beaconService.getClosestBeaconMinor(beacons);
-        player.setNearestBeaconMinor(closestBeaconMinor);
+        int closestBeaconMajor = beaconService.getClosestBeaconMajor(beacons);
+        player.setNearestBeaconMajor(closestBeaconMajor);
         playerService.savePlayer(player);
-        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMinor);
+        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMajor);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
         output.put("points", player.getKills());

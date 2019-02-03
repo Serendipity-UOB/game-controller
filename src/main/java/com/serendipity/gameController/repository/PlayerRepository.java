@@ -14,7 +14,7 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     Optional<Player> findByHackerName(String hackerName);
 
-    List<Player> findAllByNearestBeaconMinor(int nearestBeaconMinor);
+    List<Player> findAllByNearestBeaconMajor(int nearestBeaconMajor);
 
     List<Player> findAllByHackerNameNot(String hackername);
 

@@ -49,9 +49,10 @@ public class WebController {
 
     @PostMapping(value="/initBeacon")
     public String initBeacon(@ModelAttribute("beacon_name") String beacon_name,
-                           @ModelAttribute("beacon_minor") int beacon_minor) {
+                           @ModelAttribute("beacon_minor") int beacon_minor,
+                             @ModelAttribute("beacon_major") int beacon_major) {
 //        receive beacon attributes and construct beacon to add to beacon table
-        Beacon beacon = new Beacon(beacon_minor, beacon_name);
+        Beacon beacon = new Beacon(beacon_major, beacon_minor, beacon_name);
         beaconService.saveBeacon(beacon);
         return "redirect:/";
     }

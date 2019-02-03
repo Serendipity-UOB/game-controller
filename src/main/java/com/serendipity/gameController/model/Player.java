@@ -27,7 +27,7 @@ public class Player {
 
     private boolean returnHome;
 
-    private int nearestBeaconMinor;
+    private int nearestBeaconMajor;
 
     public Player() {
         this.kills = 0;
@@ -107,12 +107,12 @@ public class Player {
 
     public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
 
-    public int getNearestBeaconMinor() {
-        return nearestBeaconMinor;
+    public int getNearestBeaconMajor() {
+        return nearestBeaconMajor;
     }
 
-    public void setNearestBeaconMinor(int nearestBeaconMinor) {
-        this.nearestBeaconMinor = nearestBeaconMinor;
+    public void setNearestBeaconMajor(int nearestBeaconMajor) {
+        this.nearestBeaconMajor = nearestBeaconMajor;
     }
 
     @Override
@@ -126,6 +126,7 @@ public class Player {
                 ", kills=" + kills +
                 ", takenDown=" + takenDown +
                 ", returnHome=" + returnHome +
+                ", nearestBeaconMajor=" + nearestBeaconMajor +
                 '}';
     }
 }

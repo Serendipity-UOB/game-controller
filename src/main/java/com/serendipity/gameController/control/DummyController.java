@@ -51,7 +51,7 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONObject output = new JSONObject();
-        output.put("home_beacon_minor", 0);
+        output.put("home_beacon_major", 0);
         output.put("home_beacon_name", "home");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
@@ -59,10 +59,6 @@ public class DummyController {
     @RequestMapping(value="/startInfoTest", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-//        JSONObject output = new JSONObject();
-//        output.put("{ \"all_players\": [{ \"realName\": \"Jack\", \"hackerName\": \"CutieKitten\", \"id\": 0}, " +
-//                "{ \"realName\": \"Tilly\", \"hackerName\": \"PuppyLover\", \"id\": 1}, " +
-//                "{ \"realName\": \"Tom\", \"hackerName\": \"Cookingking\", \"id\": 2} ]}");
         return "{ \"all_players\": [{ \"id\": 0, \"real_name\": \"jack jones\", \"hacker_name\": \"CutieKitten\"}, " +
                 "{ \"id\": 1, \"real_name\": \"tilly woodfield\", \"hacker_name\": \"PuppyLover\"}, " +
                 "{ \"id\": 2, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";

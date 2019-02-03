@@ -24,20 +24,20 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public int getClosestBeaconMinor(JSONArray beacons) {
-        int closestBeaconMinor = 0;
+    public int getClosestBeaconMajor(JSONArray beacons) {
+        int closestBeaconMajor = 0;
         int closestBeaconRssi = -100000;
         if (beacons.length() != 0) {
             for (int i = 0; i < beacons.length(); i++) {
                 JSONObject beacon = beacons.getJSONObject(i);
                 int rssi = beacon.getInt("rssi");
                 if ((rssi != 0) && (rssi > closestBeaconRssi)) {
-                    closestBeaconMinor = beacon.getInt("beacon_minor");
+                    closestBeaconMajor = beacon.getInt("beacon_major");
                     closestBeaconRssi = rssi;
                 }
             }
         }
-        return closestBeaconMinor;
+        return closestBeaconMajor;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public Optional<Beacon> getBeaconByMinor(int minor) { return beaconRepository.findBeaconByMinor(minor); }
+    public List<Beacon> getBeaconByMajor(int major) { return beaconRepository.findAllByMajor(major); }
 
     @Override
     public List<Beacon> getAllBeacons() {
@@ -73,9 +73,9 @@ public class BeaconServiceImpl implements BeaconService {
 
     @PostConstruct
     void addBeacons() {
-        Beacon b1 = new Beacon(1, "0KiC");
-        Beacon b2 = new Beacon(2, "nHX3");
-        Beacon b3 = new Beacon(3, "zP1C");
+        Beacon b1 = new Beacon(1,1, "0KiC");
+        Beacon b2 = new Beacon(1,2, "nHX3");
+        Beacon b3 = new Beacon(1,3, "zP1C");
         saveBeacon(b1);
         saveBeacon(b2);
         saveBeacon(b3);

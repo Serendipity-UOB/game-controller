@@ -180,10 +180,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Long> getNearbyPlayerIds(Player player, int beaconMinor) {
+    public List<Long> getNearbyPlayerIds(Player player, int beaconMajor) {
         List<Long> ids = new ArrayList<>();
-        if (beaconMinor != 0) {
-            List<Player> players = playerRepository.findAllByNearestBeaconMinor(beaconMinor);
+        if (beaconMajor != 0) {
+            List<Player> players = playerRepository.findAllByNearestBeaconMajor(beaconMajor);
             ids = new ArrayList<>();
             for (Player p : players) {
                 if (!(p.equals(player))) ids.add(p.getId());

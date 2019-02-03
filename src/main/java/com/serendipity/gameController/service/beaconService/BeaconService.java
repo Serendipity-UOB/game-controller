@@ -13,10 +13,10 @@ public interface BeaconService {
     void saveBeacon(Beacon beacon);
 
     /*
-     * @param beacons A JSONArray of {beacon_minor, rssi}.
-     * @return The minor of the closest beacon.
+     * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.
+     * @return The major of the closest beacon.
      */
-    int getClosestBeaconMinor(JSONArray beacons);
+    int getClosestBeaconMajor(JSONArray beacons);
 
     /*
      * @return The number of beacons in the database.
@@ -30,10 +30,10 @@ public interface BeaconService {
     Optional<Beacon> getBeacon(Long id);
 
     /*
-     * @param minor The minor of the beacon you want.
-     * @return An optional of the beacon matching the given minor.
+     * @param major The major of the beacon you want.
+     * @return A list- of the beacon matching the given major.
      */
-    Optional<Beacon> getBeaconByMinor(int minor);
+    List<Beacon> getBeaconByMajor(int major);
 
     /*
      * @return A list containing all the beacons in the database.

@@ -13,6 +13,9 @@ public class Beacon {
     private Long id;
 
     @NotNull
+    private int major;
+
+    @NotNull
     private int minor;
 
     @NotNull
@@ -21,6 +24,12 @@ public class Beacon {
     public Beacon() {  }
 
     public Beacon(@NotNull int minor, @NotNull String name) {
+        this.minor = minor;
+        this.name = name;
+    }
+
+    public Beacon(@NotNull int major, @NotNull int minor, @NotNull String name) {
+        this.major = major;
         this.minor = minor;
         this.name = name;
     }
@@ -49,4 +58,7 @@ public class Beacon {
         this.name = name;
     }
 
+    public int getMajor() { return major; }
+
+    public void setMajor(int major) { this.major = major; }
 }

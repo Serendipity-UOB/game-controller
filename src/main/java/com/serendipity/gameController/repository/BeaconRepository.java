@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface BeaconRepository extends CrudRepository<Beacon, Long> {
 
-    Optional<Beacon> findBeaconByMinor (int minor);
+    List<Beacon> findAllByMajor (int major);
 
     List<Beacon> findAll();
 

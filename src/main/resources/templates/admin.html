@@ -13,6 +13,7 @@
     <table>
         <tr>
             <td>Name</td>
+            <td>Major</td>
             <td>Minor</td>
             <td></td>
         </tr>
@@ -20,6 +21,7 @@
             <form method="post" th:action="@{delBeacon}">
                 <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
                 <td><span th:text="${beacon.name}"/></td>
+                <td><span th:text="${beacon.major}"/></td>
                 <td><span th:text="${beacon.minor}"/></td>
                 <td><button type="submit">-</button></td>
             </form>
@@ -27,6 +29,7 @@
         <tr>
             <form method="post" th:action="@{/initBeacon}">
                 <td><input type="text" name="beacon_name"/></td>
+                <td><input type="text" name="beacon_major"/></td>
                 <td><input type="text" name="beacon_minor"/></td>
                 <td><button type="submit">+</button></td>
             </form>
