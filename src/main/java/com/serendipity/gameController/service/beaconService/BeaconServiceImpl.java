@@ -73,12 +73,14 @@ public class BeaconServiceImpl implements BeaconService {
 
     @PostConstruct
     void addBeacons() {
-        Beacon b1 = new Beacon(1,1, "0KiC");
-        Beacon b2 = new Beacon(1,2, "nHX3");
-        Beacon b3 = new Beacon(1,3, "zP1C");
+        Beacon b1 = new Beacon(2,1, "0KiC");
+        Beacon b2 = new Beacon(2,4, "u0dd");
+        Beacon b3 = new Beacon(1,2, "nHX3");
+        Beacon b4 = new Beacon(1,5, "jpMn");
         saveBeacon(b1);
         saveBeacon(b2);
         saveBeacon(b3);
+        saveBeacon(b4);
     }
 
 }
