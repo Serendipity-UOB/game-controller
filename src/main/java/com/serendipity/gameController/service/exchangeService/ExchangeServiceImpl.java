@@ -74,7 +74,7 @@ public class ExchangeServiceImpl implements ExchangeService{
 
     @Override
     public boolean isExpired(Exchange exchange) {
-        return LocalTime.now().isAfter(exchange.getStartTime().plusSeconds(10));
+        return LocalTime.now().isAfter(exchange.getStartTime().plusSeconds(5));
     }
 
     @Override
