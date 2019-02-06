@@ -16,7 +16,7 @@ public interface BeaconService {
      * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.
      * @return The major of the closest beacon.
      */
-    int getClosestBeaconMajor(JSONArray beacons);
+    int getClosestBeaconMajor(Long playerId, JSONArray beacons);
 
     /*
      * @return The number of beacons in the database.

@@ -1,7 +1,9 @@
 package com.serendipity.gameController.service.beaconService;
 
 import com.serendipity.gameController.model.Beacon;
+import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.BeaconRepository;
+import com.serendipity.gameController.service.playerService.PlayerService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service("beaconService")
 public class BeaconServiceImpl implements BeaconService {
@@ -18,23 +21,46 @@ public class BeaconServiceImpl implements BeaconService {
     @Autowired
     BeaconRepository beaconRepository;
 
+    @Autowired
+    PlayerService playerService;
+
     @Override
     public void saveBeacon(Beacon beacon){
         beaconRepository.save(beacon);
     }
 
     @Override
-    public int getClosestBeaconMajor(JSONArray beacons) {
+    public int getClosestBeaconMajor(Long playerId, JSONArray beacons) {
         int closestBeaconMajor = 0;
         int closestBeaconRssi = -100000;
+        JSONArray zeroBeacons = new JSONArray();
         if (beacons.length() != 0) {
             for (int i = 0; i < beacons.length(); i++) {
                 JSONObject beacon = beacons.getJSONObject(i);
                 int rssi = beacon.getInt("rssi");
-                if ((rssi != 0) && (rssi > closestBeaconRssi)) {
+                if(rssi == 0) { zeroBeacons.put(beacon); }
+                else if ((rssi > closestBeaconRssi)) {
                     closestBeaconMajor = beacon.getInt("beacon_major");
                     closestBeaconRssi = rssi;
                 }
+            }
+        }
+
+        if (closestBeaconMajor == 0 && zeroBeacons.length() != 0) {
+            Optional<Player> opPlayer = playerService.getPlayer(playerId);
+            if(opPlayer.isPresent()) {
+                Player player = opPlayer.get();
+                Random randNum = new Random();
+                int n = randNum.nextInt(zeroBeacons.length());
+                closestBeaconMajor = zeroBeacons.getJSONObject(n).getInt("beacon_major");
+                for(int i = 0; i < zeroBeacons.length(); i++) {
+                    if (zeroBeacons.getJSONObject(i).getInt("beacon_major") == player.getNearestBeaconMajor()) {
+                        closestBeaconMajor = zeroBeacons.getJSONObject(i).getInt("beacon_major");
+                    }
+                }
+            }
+            else {
+//                TODO: Error for no player matching id given
             }
         }
         return closestBeaconMajor;
