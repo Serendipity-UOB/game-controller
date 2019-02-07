@@ -41,7 +41,7 @@ public class MobileController {
     @Autowired
     GameService gameService;
 
-    private List<Beacon> beacons = new ArrayList<>();
+    public List<Beacon> beacons = new ArrayList<>();
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
