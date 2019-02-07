@@ -304,12 +304,15 @@ public class MobileController {
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
+                    System.out.println("Get all players by target successful");
                     for (Player p : players) {
                         if (!(p.getId().equals(player.getId()))){
                             p.setReturnHome(true);
                             playerService.savePlayer(p);
                         }
+                        System.out.println("Here");
                     }
+                    System.out.println("Return home flags sucessful");
 //                    set targets takenDown attribute
                     target.setTakenDown(true);
                     playerService.savePlayer(target);
