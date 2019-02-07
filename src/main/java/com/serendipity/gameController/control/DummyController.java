@@ -83,6 +83,7 @@ public class DummyController {
         output.put("taken_down", takenDown);
         int reqNewTarget = 0;
         output.put("req_new_target", reqNewTarget);
+        output.put("home", true);
         return output.toString();
     }
 
