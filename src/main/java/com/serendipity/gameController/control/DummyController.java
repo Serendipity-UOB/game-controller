@@ -64,6 +64,15 @@ public class DummyController {
                 "{ \"id\": 2, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
     }
 
+    @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity atHomeBeacon(@RequestBody String json) {
+        JSONObject output = new JSONObject();
+        output.put("home", true);
+        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        return response;
+    }
+
     @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST)
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {

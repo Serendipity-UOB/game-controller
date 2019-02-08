@@ -41,7 +41,7 @@ public class MobileController {
     @Autowired
     GameService gameService;
 
-    private List<Beacon> beacons = new ArrayList<>();
+    public List<Beacon> beacons = new ArrayList<>();
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -141,11 +141,30 @@ public class MobileController {
     @RequestMapping(value="/startInfo", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-//        playerService.createPlayers();
-//        create JSON object for response
         JSONObject output = new JSONObject();
         output.put("all_players", playerService.getAllPlayersStartInfo());
         return output.toString();
+    }
+
+    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity atHomeBeacon(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Player player = playerService.getPlayer(playerId).get();
+        JSONArray beacons = input.getJSONArray("beacons");
+        int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
+        player.setNearestBeaconMajor(closestBeaconMajor);
+        playerService.savePlayer(player);
+        int homeBeacon = player.getHomeBeacon();
+        JSONObject output = new JSONObject();
+        if (closestBeaconMajor == homeBeacon) {
+            output.put("home", true);
+        } else {
+            output.put("home", false);
+        }
+        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        return response;
     }
 
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
@@ -300,12 +319,15 @@ public class MobileController {
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
+                    System.out.println("Get all players by target successful");
                     for (Player p : players) {
                         if (!(p.getId().equals(player.getId()))){
                             p.setReturnHome(true);
                             playerService.savePlayer(p);
                         }
+                        System.out.println("Here");
                     }
+                    System.out.println("Return home flags sucessful");
 //                    set targets takenDown attribute
                     target.setTakenDown(true);
                     playerService.savePlayer(target);
