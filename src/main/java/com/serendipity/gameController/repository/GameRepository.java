@@ -11,4 +11,6 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     List<Game> findAll();
 
+    List<Game> findAllByOrderByStartTimeAsc();
+
 }

@@ -26,6 +26,11 @@ public interface GameService {
     Optional<Game> getGame(Long id);
 
     /*
+     * @return True if there is a game available to join.
+     */
+    boolean existsFutureGame();
+
+    /*
      * Deletes all games in the database.
      */
     void deleteGames();

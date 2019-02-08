@@ -192,4 +192,20 @@ public class PlayerServiceImpl implements PlayerService {
         return ids;
     }
 
+    @Override
+    public boolean isValidRealNameAndHackerName(String realName, String hackerName) {
+        return isValidRealName(realName) && isValidHackerName(hackerName);
+    }
+
+    @Override
+    public boolean isValidRealName(String realName) {
+        return true;
+    }
+
+    @Override
+    public boolean isValidHackerName(String hackerName) {
+        Optional<Player> playerOptional = getPlayerByHackerName(hackerName);
+        return !playerOptional.isPresent();
+    }
+
 }

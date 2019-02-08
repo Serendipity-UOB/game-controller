@@ -6,6 +6,7 @@ import com.serendipity.gameController.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,16 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<Game> getAllGames() {
         return gameRepository.findAll();
+    }
+
+    @Override
+    public boolean existsFutureGame() {
+        List<Game> games = gameRepository.findAllByOrderByStartTimeAsc();
+        if (games.size() > 0 && games.get(0).getStartTime().isAfter(LocalTime.now())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

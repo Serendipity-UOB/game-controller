@@ -46,26 +46,22 @@ public class MobileController {
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
-//        receive JSON object and split into variables
+        ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
-        String real = input.getString("real_name");
-        String hacker = input.getString("hacker_name");
-//        create player to be added to player table
-        Player toRegister = new Player(real, hacker);
-//        find if the hacker name exists
-        Optional<Player> opExists = playerService.getPlayerByHackerName(hacker);
-//        create JSON object for response body
-        JSONObject output = new JSONObject();
-//        set default response status
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        if (!(opExists.isPresent())) {
-//            add player to player table
-            playerService.savePlayer(toRegister);
-            Optional<Player> registered = playerService.getPlayerByHackerName(hacker);
-            responseStatus = HttpStatus.OK;
-            output.put("player_id", registered.get().getId());
-        } else { output.put("BAD_REQUEST", "hacker name already exists"); }
-        return new ResponseEntity<>(output.toString(), responseStatus);
+        String realName = input.getString("real_name");
+        String hackerName = input.getString("hacker_name");
+        if (!gameService.existsFutureGame()) {
+            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else if (!playerService.isValidRealNameAndHackerName(realName, hackerName)) {
+            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            Player player = new Player(realName, hackerName);
+            playerService.savePlayer(player);
+            JSONObject output = new JSONObject();
+            output.put("player_id", player.getId());
+            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        }
+        return response;
     }
 
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
