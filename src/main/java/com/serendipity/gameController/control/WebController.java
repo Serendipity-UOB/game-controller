@@ -59,7 +59,7 @@ public class WebController {
 
     @PostMapping(value="/delBeacons")
     public String delBeacons() {
-        beaconService.deleteBeacons();
+        beaconService.deleteAllBeacons();
         return "redirect:/";
     }
 
@@ -71,7 +71,7 @@ public class WebController {
     }
 
     private void resetTables() {
-        exchangeService.deleteExchanges();
+        exchangeService.deleteAllExchanges();
         playerService.deletePlayers();
 //        TODO: Are we having multiple games, if so do we index which game to delete
         gameService.deleteAllGames();

@@ -10,18 +10,10 @@ import java.util.Optional;
 @Service
 public interface BeaconService {
 
+    /*
+     * @param beacon The beacon object to save to the database.
+     */
     void saveBeacon(Beacon beacon);
-
-    /*
-     * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.
-     * @return The major of the closest beacon.
-     */
-    int getClosestBeaconMajor(Long playerId, JSONArray beacons);
-
-    /*
-     * @return The number of beacons in the database.
-     */
-    long countBeacons();
 
     /*
      * @param id The id of the beacon you want.
@@ -40,8 +32,25 @@ public interface BeaconService {
      */
     List<Beacon> getAllBeacons();
 
+    /*
+     * @return The number of beacons in the database.
+     */
+    long countAllBeacons();
 
-    void deleteBeacons();
+    /*
+     * Delete all the beacons in the database.
+     */
+    void deleteAllBeacons();
 
-    void deleteBeaconById(long beacon_id);
+    /*
+     * @param beaconId The id of the beacon to delete
+     */
+    void deleteBeaconById(long beaconId);
+
+    /*
+     * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.
+     * @return The major of the closest beacon.
+     */
+    int getClosestBeaconMajor(Long playerId, JSONArray beacons);
+
 }

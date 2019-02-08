@@ -21,7 +21,9 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Optional<Game> getGame(Long id) { return gameRepository.findById(id); }
+    public Optional<Game> getGame(Long id) {
+        return gameRepository.findById(id);
+    }
 
     @Override
     public Optional<Game> getNextGame() {

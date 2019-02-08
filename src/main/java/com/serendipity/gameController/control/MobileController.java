@@ -75,7 +75,7 @@ public class MobileController {
         } else {
             Game nextGame = optionalNextGame.get();
             output.put("start_time", nextGame.getStartTime());
-            output.put("number_players", playerService.countPlayer());
+            output.put("number_players", playerService.countAllPlayers());
             response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         }
         return response;
@@ -94,8 +94,8 @@ public class MobileController {
             if (beacons.isEmpty()) {
                 beacons = beaconService.getAllBeacons();
             }
-            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table"); }
-            else {
+            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table");
+            } else {
                 Beacon beacon;
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
@@ -115,7 +115,9 @@ public class MobileController {
                     beacons.remove(n);
                 }
             }
-        } else { output.put("BAD_REQUEST", "Couldn't find player id given"); }
+        } else {
+            output.put("BAD_REQUEST", "Couldn't find player id given");
+        }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 

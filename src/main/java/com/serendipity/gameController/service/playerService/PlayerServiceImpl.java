@@ -29,7 +29,7 @@ public class PlayerServiceImpl implements PlayerService {
     public Optional<Player> getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
 
     @Override
-    public long countPlayer() { return playerRepository.count(); }
+    public long countAllPlayers() { return playerRepository.count(); }
 
     @Override
     public List<Player> getAllPlayers() {

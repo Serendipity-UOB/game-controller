@@ -30,6 +30,37 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
+    public long countAllBeacons() { return beaconRepository.count(); }
+
+    @Override
+    public Optional<Beacon> getBeacon(Long id){
+        return beaconRepository.findById(id);
+    }
+
+    @Override
+    public List<Beacon> getBeaconByMajor(int major) { return beaconRepository.findAllByMajor(major); }
+
+    @Override
+    public List<Beacon> getAllBeacons() {
+        return beaconRepository.findAll();
+    }
+
+
+    @Override
+    public void deleteAllBeacons() {
+        if (beaconRepository.count() != 0) {
+            beaconRepository.deleteAll();
+        }
+    }
+
+    @Override
+    public void deleteBeaconById(long beaconId) {
+        if (getBeacon(beaconId).isPresent()) {
+            beaconRepository.deleteBeaconById(beaconId);
+        }
+    }
+
+    @Override
     public int getClosestBeaconMajor(Long playerId, JSONArray beacons) {
         int closestBeaconMajor = 0;
         int closestBeaconRssi = -100000;
@@ -64,37 +95,6 @@ public class BeaconServiceImpl implements BeaconService {
             }
         }
         return closestBeaconMajor;
-    }
-
-    @Override
-    public long countBeacons() { return beaconRepository.count(); }
-
-    @Override
-    public Optional<Beacon> getBeacon(Long id){
-        return beaconRepository.findById(id);
-    }
-
-    @Override
-    public List<Beacon> getBeaconByMajor(int major) { return beaconRepository.findAllByMajor(major); }
-
-    @Override
-    public List<Beacon> getAllBeacons() {
-        return beaconRepository.findAll();
-    }
-
-
-    @Override
-    public void deleteBeacons() {
-        if (beaconRepository.count() != 0) {
-            beaconRepository.deleteAll();
-        }
-    }
-
-    @Override
-    public void deleteBeaconById(long beacon_id) {
-        if (getBeacon(beacon_id).isPresent()) {
-            beaconRepository.deleteBeaconById(beacon_id);
-        }
     }
 
     @PostConstruct

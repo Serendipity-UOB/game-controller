@@ -30,7 +30,7 @@ public interface PlayerService {
     /*
      * @return The number of players in the database.
      */
-    long countPlayer();
+    long countAllPlayers();
 
     /*
      * @return A list of all the players in the database.
