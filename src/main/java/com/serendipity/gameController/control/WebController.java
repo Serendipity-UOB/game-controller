@@ -74,7 +74,7 @@ public class WebController {
         exchangeService.deleteExchanges();
         playerService.deletePlayers();
 //        TODO: Are we having multiple games, if so do we index which game to delete
-        gameService.deleteGames();
+        gameService.deleteAllGames();
     }
 
 }

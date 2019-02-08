@@ -39,10 +39,15 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void deleteGames() {
+    public void deleteAllGames() {
         if (gameRepository.count() != 0) {
             gameRepository.deleteAll();
         }
+    }
+
+    @Override
+    public boolean isGameOver(Game game) {
+        return game.getEndTime().isAfter(LocalTime.now());
     }
 
 

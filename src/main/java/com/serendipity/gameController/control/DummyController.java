@@ -1,7 +1,5 @@
 package com.serendipity.gameController.control;
 
-import com.google.gson.Gson;
-import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -76,22 +74,16 @@ public class DummyController {
     @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST)
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
-        JSONObject input = new JSONObject(json);
-        Long playerId = input.getLong("player_id");
-        JSONArray beacons = input.getJSONArray("beacons");
         List<Long> nearbyPlayerIds = new ArrayList<>();
         nearbyPlayerIds.add(1l);
         nearbyPlayerIds.add(2l);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
-        int kills = 3;
-        output.put("points", kills);
-        int position = 1;
-        output.put("position", position);
-        int takenDown = 0;
-        output.put("taken_down", takenDown);
-        int reqNewTarget = 0;
-        output.put("req_new_target", reqNewTarget);
+        output.put("points", 3);
+        output.put("position", 1);
+        output.put("taken_down", 0);
+        output.put("req_new_target", 0);
+        output.put("game_over", false);
         return output.toString();
     }
 

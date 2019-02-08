@@ -38,5 +38,12 @@ public interface GameService {
     /*
      * Deletes all games in the database.
      */
-    void deleteGames();
+    void deleteAllGames();
+
+    /*
+     * @param game The game you want to check the status of.
+     * @return Returns true if the end time is before the current time.
+     */
+    boolean isGameOver(Game game);
+
 }

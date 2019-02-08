@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -177,6 +176,14 @@ public class MobileController {
             playerService.savePlayer(player);
         } else {
             output.put("req_new_target", 0);
+        }
+        // For now assume that if we are calling /playerUpdate, that there is a game
+        // TODO: Add error checking for this
+        List<Game> games = gameService.getAllGamesByStartTimeAsc();
+        if (games.get(0).getEndTime().isBefore(LocalTime.now())) {
+            output.put("game_over", true);
+        } else {
+            output.put("game_over", false);
         }
         return output.toString();
     }
