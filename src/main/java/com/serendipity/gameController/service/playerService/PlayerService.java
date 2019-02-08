@@ -30,7 +30,7 @@ public interface PlayerService {
     /*
      * @return The number of players in the database.
      */
-    long countPlayer();
+    long countAllPlayers();
 
     /*
      * @return A list of all the players in the database.
@@ -106,5 +106,24 @@ public interface PlayerService {
      * @return List of ids of the nearby players
      */
     List<Long> getNearbyPlayerIds(Player player, int beaconMajor);
+
+    /*
+     * @param realName The real name that has been entered by the user
+     * @param hackerName The hacker name that has been entered by the user
+     * @return True if this is a valid combination of realName and hackerName
+     */
+    boolean isValidRealNameAndHackerName(String realName, String hackerName);
+
+    /*
+     * @param realName The real name that has been entered by the user
+     * @return True if this is a valid realName
+     */
+    boolean isValidRealName(String realName);
+
+    /*
+     * @param hackerName The hacker name that has been entered by the user
+     * @return True if this is a valid hackerName
+     */
+    boolean isValidHackerName(String hackerName);
 
 }

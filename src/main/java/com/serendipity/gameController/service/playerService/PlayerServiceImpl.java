@@ -29,7 +29,7 @@ public class PlayerServiceImpl implements PlayerService {
     public Optional<Player> getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
 
     @Override
-    public long countPlayer() { return playerRepository.count(); }
+    public long countAllPlayers() { return playerRepository.count(); }
 
     @Override
     public List<Player> getAllPlayers() {
@@ -190,6 +190,22 @@ public class PlayerServiceImpl implements PlayerService {
             }
         }
         return ids;
+    }
+
+    @Override
+    public boolean isValidRealNameAndHackerName(String realName, String hackerName) {
+        return isValidRealName(realName) && isValidHackerName(hackerName);
+    }
+
+    @Override
+    public boolean isValidRealName(String realName) {
+        return true;
+    }
+
+    @Override
+    public boolean isValidHackerName(String hackerName) {
+        Optional<Player> playerOptional = getPlayerByHackerName(hackerName);
+        return !playerOptional.isPresent();
     }
 
 }

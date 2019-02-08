@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,26 +45,23 @@ public class MobileController {
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
-//        receive JSON object and split into variables
+        ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
-        String real = input.getString("real_name");
-        String hacker = input.getString("hacker_name");
-//        create player to be added to player table
-        Player toRegister = new Player(real, hacker);
-//        find if the hacker name exists
-        Optional<Player> opExists = playerService.getPlayerByHackerName(hacker);
-//        create JSON object for response body
-        JSONObject output = new JSONObject();
-//        set default response status
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        if (!(opExists.isPresent())) {
-//            add player to player table
-            playerService.savePlayer(toRegister);
-            Optional<Player> registered = playerService.getPlayerByHackerName(hacker);
-            responseStatus = HttpStatus.OK;
-            output.put("player_id", registered.get().getId());
-        } else { output.put("BAD_REQUEST", "hacker name already exists"); }
-        return new ResponseEntity<>(output.toString(), responseStatus);
+        String realName = input.getString("real_name");
+        String hackerName = input.getString("hacker_name");
+        Optional<Game> optionalNextGame = gameService.getNextGame();
+        if (!optionalNextGame.isPresent()) {
+            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else if (!playerService.isValidRealNameAndHackerName(realName, hackerName)) {
+            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            Player player = new Player(realName, hackerName);
+            playerService.savePlayer(player);
+            JSONObject output = new JSONObject();
+            output.put("player_id", player.getId());
+            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        }
+        return response;
     }
 
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
@@ -73,68 +69,55 @@ public class MobileController {
     public ResponseEntity<String> getGameInfo(){
         ResponseEntity<String> response;
         JSONObject output = new JSONObject();
-        List<Game> games = gameService.getAllGames();
-        if (games.isEmpty()) {
+        Optional<Game> optionalNextGame = gameService.getNextGame();
+        if (!optionalNextGame.isPresent()) {
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            output.put("start_time", games.get(0).getStartTime());
-            output.put("number_players", playerService.countPlayer());
+            Game nextGame = optionalNextGame.get();
+            output.put("start_time", nextGame.getStartTime());
+            output.put("number_players", playerService.countAllPlayers());
             response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         }
-        // TODO: Consider how we're counting number of players in game
-        // TODO: select which game to draw from if we're having multiple games
         return response;
     }
 
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> joinGame(@RequestBody String json) {
-//        receive JSON object
         JSONObject input = new JSONObject(json);
-//        create JSON object for response body
         JSONObject output = new JSONObject();
-//        set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-//        fetch player making request
         Long id = input.getLong("player_id");
         Optional<Player> opPlayer = playerService.getPlayer(id);
-//        ensure optional has a value
         if(opPlayer.isPresent()) {
             Player player = opPlayer.get();
-//            re-Initialise set of beacons if empty
             if (beacons.isEmpty()) {
                 beacons = beaconService.getAllBeacons();
             }
-            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table"); }
-            else {
+            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table");
+            } else {
                 Beacon beacon;
-//                randomly take from beacon list using random number
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
 
                 if (player.getHomeBeacon() == -1) {
-//                    get beacon randomly chosen from beacon table
                     beacon = beacons.get(n);
                 } else {
-//                    if beacon has already been assigned then fetch it
                     beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
                 }
-//                if (beacon.equals(null)) {
                 int major = beacon.getMajor();
                 String name = beacon.getName();
-//                    set JSON values
                 output.put("home_beacon_major", major);
                 output.put("home_beacon_name", name);
-//                    set status value
                 responseStatus = HttpStatus.OK;
                 if (player.getHomeBeacon() == -1) {
-//                    assign home beacon to player
                     playerService.assignHome(player, major);
-//                    remove index selected
                     beacons.remove(n);
                 }
             }
-        } else { output.put("BAD_REQUEST", "Couldn't find player id given"); }
+        } else {
+            output.put("BAD_REQUEST", "Couldn't find player id given");
+        }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -195,6 +178,14 @@ public class MobileController {
             playerService.savePlayer(player);
         } else {
             output.put("req_new_target", 0);
+        }
+        // For now assume that if we are calling /playerUpdate, that there is a game
+        // TODO: Add error checking for this
+        List<Game> games = gameService.getAllGamesByStartTimeAsc();
+        if (games.get(0).getEndTime().isBefore(LocalTime.now())) {
+            output.put("game_over", true);
+        } else {
+            output.put("game_over", false);
         }
         return output.toString();
     }
