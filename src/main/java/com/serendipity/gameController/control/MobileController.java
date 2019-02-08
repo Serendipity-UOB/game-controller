@@ -146,6 +146,27 @@ public class MobileController {
         return output.toString();
     }
 
+    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity atHomeBeacon(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Player player = playerService.getPlayer(playerId).get();
+        JSONArray beacons = input.getJSONArray("beacons");
+        int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
+        player.setNearestBeaconMajor(closestBeaconMajor);
+        playerService.savePlayer(player);
+        int homeBeacon = player.getHomeBeacon();
+        JSONObject output = new JSONObject();
+        if (closestBeaconMajor == homeBeacon) {
+            output.put("home", true);
+        } else {
+            output.put("home", false);
+        }
+        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        return response;
+    }
+
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
@@ -154,7 +175,6 @@ public class MobileController {
         Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
         int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
-        int homeBeacon = player.getHomeBeacon();
         player.setNearestBeaconMajor(closestBeaconMajor);
         playerService.savePlayer(player);
         List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMajor);
@@ -175,11 +195,6 @@ public class MobileController {
             playerService.savePlayer(player);
         } else {
             output.put("req_new_target", 0);
-        }
-        if (closestBeaconMajor == homeBeacon) {
-            output.put("home", true);
-        } else {
-            output.put("home", false);
         }
         return output.toString();
     }
