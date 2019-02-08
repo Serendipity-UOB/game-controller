@@ -85,48 +85,34 @@ public class MobileController {
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> joinGame(@RequestBody String json) {
-//        receive JSON object
         JSONObject input = new JSONObject(json);
-//        create JSON object for response body
         JSONObject output = new JSONObject();
-//        set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-//        fetch player making request
         Long id = input.getLong("player_id");
         Optional<Player> opPlayer = playerService.getPlayer(id);
-//        ensure optional has a value
         if(opPlayer.isPresent()) {
             Player player = opPlayer.get();
-//            re-Initialise set of beacons if empty
             if (beacons.isEmpty()) {
                 beacons = beaconService.getAllBeacons();
             }
             if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table"); }
             else {
                 Beacon beacon;
-//                randomly take from beacon list using random number
                 Random randNum = new Random();
                 int n = randNum.nextInt(beacons.size());
 
                 if (player.getHomeBeacon() == -1) {
-//                    get beacon randomly chosen from beacon table
                     beacon = beacons.get(n);
                 } else {
-//                    if beacon has already been assigned then fetch it
                     beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
                 }
-//                if (beacon.equals(null)) {
                 int major = beacon.getMajor();
                 String name = beacon.getName();
-//                    set JSON values
                 output.put("home_beacon_major", major);
                 output.put("home_beacon_name", name);
-//                    set status value
                 responseStatus = HttpStatus.OK;
                 if (player.getHomeBeacon() == -1) {
-//                    assign home beacon to player
                     playerService.assignHome(player, major);
-//                    remove index selected
                     beacons.remove(n);
                 }
             }
