@@ -1,7 +1,6 @@
 package com.serendipity.gameController.service.gameService;
 
 import com.serendipity.gameController.model.Game;
-import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,18 +24,18 @@ public class GameServiceImpl implements GameService {
     public Optional<Game> getGame(Long id) { return gameRepository.findById(id); }
 
     @Override
+    public Optional<Game> getNextGame() {
+        return gameRepository.findFirstByStartTimeAfterOrderByStartTimeAsc(LocalTime.now());
+    }
+
+    @Override
     public List<Game> getAllGames() {
         return gameRepository.findAll();
     }
 
     @Override
-    public boolean existsFutureGame() {
-        List<Game> games = gameRepository.findAllByOrderByStartTimeAsc();
-        if (games.size() > 0 && games.get(0).getStartTime().isAfter(LocalTime.now())) {
-            return true;
-        } else {
-            return false;
-        }
+    public List<Game> getAllGamesByStartTimeAsc() {
+        return gameRepository.findAllByOrderByStartTimeAsc();
     }
 
     @Override

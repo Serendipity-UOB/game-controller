@@ -10,11 +10,6 @@ import java.util.Optional;
 public interface GameService {
 
     /*
-     * @return A list of all the games in the database.
-     */
-    List<Game> getAllGames();
-
-    /*
      * @param game The game to be saved.
      */
     void saveGame(Game game);
@@ -26,9 +21,19 @@ public interface GameService {
     Optional<Game> getGame(Long id);
 
     /*
-     * @return True if there is a game available to join.
+     * @return An optional containing the next game that will be starting, if one exists, empty otherwise.
      */
-    boolean existsFutureGame();
+    Optional<Game> getNextGame();
+
+    /*
+     * @return A list of all the games in the database.
+     */
+    List<Game> getAllGames();
+
+    /*
+     * @return A list of all the games in the database, ordered by start time, soonest first.
+     */
+    List<Game> getAllGamesByStartTimeAsc();
 
     /*
      * Deletes all games in the database.

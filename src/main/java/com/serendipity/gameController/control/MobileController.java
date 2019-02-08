@@ -50,7 +50,8 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         String realName = input.getString("real_name");
         String hackerName = input.getString("hacker_name");
-        if (!gameService.existsFutureGame()) {
+        Optional<Game> optionalNextGame = gameService.getNextGame();
+        if (!optionalNextGame.isPresent()) {
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else if (!playerService.isValidRealNameAndHackerName(realName, hackerName)) {
             response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -69,16 +70,15 @@ public class MobileController {
     public ResponseEntity<String> getGameInfo(){
         ResponseEntity<String> response;
         JSONObject output = new JSONObject();
-        List<Game> games = gameService.getAllGames();
-        if (games.isEmpty()) {
+        Optional<Game> optionalNextGame = gameService.getNextGame();
+        if (!optionalNextGame.isPresent()) {
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            output.put("start_time", games.get(0).getStartTime());
+            Game nextGame = optionalNextGame.get();
+            output.put("start_time", nextGame.getStartTime());
             output.put("number_players", playerService.countPlayer());
             response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         }
-        // TODO: Consider how we're counting number of players in game
-        // TODO: select which game to draw from if we're having multiple games
         return response;
     }
 
