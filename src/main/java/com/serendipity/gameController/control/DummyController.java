@@ -64,7 +64,7 @@ public class DummyController {
                 "{ \"id\": 2, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
     }
 
-    @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.GET)
+    @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity atHomeBeacon(@RequestBody String json) {
         JSONObject output = new JSONObject();

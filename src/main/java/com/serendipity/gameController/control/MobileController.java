@@ -146,7 +146,7 @@ public class MobileController {
         return output.toString();
     }
 
-    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.GET)
+    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity atHomeBeacon(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
