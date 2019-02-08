@@ -57,9 +57,9 @@ public class DummyController {
     @RequestMapping(value="/startInfoTest", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-        return "{ \"all_players\": [{ \"id\": 0, \"real_name\": \"jack jones\", \"hacker_name\": \"CutieKitten\"}, " +
-                "{ \"id\": 1, \"real_name\": \"tilly woodfield\", \"hacker_name\": \"PuppyLover\"}, " +
-                "{ \"id\": 2, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
+        return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"hacker_name\": \"CutieKitten\"}, " +
+                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"hacker_name\": \"PuppyLover\"}, " +
+                "{ \"id\": 4, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
     }
 
     @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST)
@@ -75,11 +75,11 @@ public class DummyController {
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
         List<Long> nearbyPlayerIds = new ArrayList<>();
-        nearbyPlayerIds.add(1l);
         nearbyPlayerIds.add(2l);
+        nearbyPlayerIds.add(3l);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
-        output.put("points", 3);
+        output.put("points", 0);
         output.put("position", 1);
         output.put("taken_down", 0);
         output.put("req_new_target", 0);
@@ -92,7 +92,7 @@ public class DummyController {
     public String getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
-        Long targetId = 0l;
+        Long targetId = 2l;
         JSONObject output = new JSONObject();
         output.put("target_player_id", targetId);
         return output.toString();
@@ -104,7 +104,7 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long interacterId = input.getLong("interacter_id");
         Long interacteeId = input.getLong("interactee_id");
-        Long secondaryId = 0l;
+        Long secondaryId = 4l;
         JSONObject output = new JSONObject();
         output.put("secondary_id", secondaryId);
         ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
@@ -127,11 +127,11 @@ public class DummyController {
     public String endInfo() {
         JSONArray leaderboard = new JSONArray();
         JSONObject p1 = new JSONObject();
-        p1.put("player_id",1);
+        p1.put("player_id",3);
         p1.put("score",3);
         leaderboard.put(p1);
         JSONObject p2 = new JSONObject();
-        p2.put("player_id",2);
+        p2.put("player_id",4);
         p2.put("score",1);
         leaderboard.put(p2);
         JSONObject output = new JSONObject();
