@@ -5,6 +5,7 @@ import com.serendipity.gameController.model.Beacon;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -53,4 +54,9 @@ public interface BeaconService {
      */
     int getClosestBeaconMajor(Long playerId, JSONArray beacons);
 
+    /*
+     * @return A map of beacon keys mapping to a value of how many
+     * times they've been assigned as a home beacon.
+     */
+    Map<Integer, Integer> sumBeacons();
 }

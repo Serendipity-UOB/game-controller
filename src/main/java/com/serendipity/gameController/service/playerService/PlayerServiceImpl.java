@@ -88,7 +88,10 @@ public class PlayerServiceImpl implements PlayerService {
     public List<Player> getAllPlayersByTarget(Player target) {
         List<Player> players = new ArrayList<>();
         for (Player p : getAllPlayers()) {
-            if (p.getTarget().getId().equals(target.getId())) players.add(p);
+            if (p.getTarget() == null) {
+//                TODO: What do we do if null, remove player maybe?
+            }
+            else if (p.getTarget().getId().equals(target.getId())) players.add(p);
         }
         return players;
     }
@@ -207,5 +210,4 @@ public class PlayerServiceImpl implements PlayerService {
         Optional<Player> playerOptional = getPlayerByHackerName(hackerName);
         return !playerOptional.isPresent();
     }
-
 }

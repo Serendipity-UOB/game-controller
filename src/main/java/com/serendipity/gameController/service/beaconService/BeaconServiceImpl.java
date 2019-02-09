@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service("beaconService")
 public class BeaconServiceImpl implements BeaconService {
@@ -95,6 +92,20 @@ public class BeaconServiceImpl implements BeaconService {
             }
         }
         return closestBeaconMajor;
+    }
+
+    @Override
+    public Map<Integer, Integer> sumBeacons() {
+        Map<Integer, Integer> beaconsAllocated = new HashMap<Integer, Integer>();
+        for(Beacon b : getAllBeacons()){
+            beaconsAllocated.putIfAbsent(b.getMajor(), 0);
+        }
+        for(Player p : playerService.getAllPlayers()) {
+            if(p.getHomeBeacon() != -1) {
+                beaconsAllocated.replace(p.getHomeBeacon(), (beaconsAllocated.get(p.getHomeBeacon()) + 1));
+            }
+        }
+        return beaconsAllocated;
     }
 
     @PostConstruct
