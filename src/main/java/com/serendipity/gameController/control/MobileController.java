@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class MobileController {
@@ -39,8 +36,6 @@ public class MobileController {
 
     @Autowired
     GameService gameService;
-
-    public List<Beacon> beacons = new ArrayList<>();
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -91,17 +86,21 @@ public class MobileController {
         Optional<Player> opPlayer = playerService.getPlayer(id);
         if(opPlayer.isPresent()) {
             Player player = opPlayer.get();
-            if (beacons.isEmpty()) {
-                beacons = beaconService.getAllBeacons();
-            }
+
+            Map<Integer, Integer> sumOfMajors = beaconService.sumBeacons();
+            List<Beacon> beacons = beaconService.getAllBeacons();
+
             if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table");
             } else {
-                Beacon beacon;
-                Random randNum = new Random();
-                int n = randNum.nextInt(beacons.size());
-
+                Beacon beacon = new Beacon();
                 if (player.getHomeBeacon() == -1) {
-                    beacon = beacons.get(n);
+                    int minAllocation = Integer.MAX_VALUE;
+                    for(Beacon b : beacons) {
+                        if (sumOfMajors.get(b.getMajor()) < minAllocation) {
+                            minAllocation = sumOfMajors.get(b.getMajor());
+                            beacon = b;
+                        }
+                    }
                 } else {
                     beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
                 }
@@ -112,7 +111,6 @@ public class MobileController {
                 responseStatus = HttpStatus.OK;
                 if (player.getHomeBeacon() == -1) {
                     playerService.assignHome(player, major);
-                    beacons.remove(n);
                 }
             }
         } else {
@@ -310,15 +308,12 @@ public class MobileController {
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
-                    System.out.println("Get all players by target successful");
                     for (Player p : players) {
                         if (!(p.getId().equals(player.getId()))){
                             p.setReturnHome(true);
                             playerService.savePlayer(p);
                         }
-                        System.out.println("Here");
                     }
-                    System.out.println("Return home flags sucessful");
 //                    set targets takenDown attribute
                     target.setTakenDown(true);
                     playerService.savePlayer(target);
