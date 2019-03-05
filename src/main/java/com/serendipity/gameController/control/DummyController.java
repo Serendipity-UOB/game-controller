@@ -28,7 +28,7 @@ public class DummyController {
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         String real = input.getString("real_name");
-        String hacker = input.getString("hacker_name");
+        String code = input.getString("code_name");
         JSONObject output = new JSONObject();
         output.put("player_id", 1);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
@@ -57,9 +57,9 @@ public class DummyController {
     @RequestMapping(value="/startInfoTest", method=RequestMethod.GET)
     @ResponseBody
     public String getStartInfo() {
-        return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"hacker_name\": \"CutieKitten\"}, " +
-                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"hacker_name\": \"PuppyLover\"}, " +
-                "{ \"id\": 4, \"real_name\": \"tom walker\", \"hacker_name\": \"Cookingking\"} ]}";
+        return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
+                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
+                "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
     }
 
     @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST)
@@ -81,8 +81,10 @@ public class DummyController {
         output.put("nearby_players", nearbyPlayerIds);
         output.put("points", 0);
         output.put("position", 1);
-        output.put("taken_down", 0);
-        output.put("req_new_target", 0);
+        output.put("exchange_pending", 0);
+        output.put("exposed", false);
+        output.put("req_new_target", false);
+        output.put("mission_description", "");
         output.put("game_over", false);
         return output.toString();
     }
@@ -98,45 +100,107 @@ public class DummyController {
         return output.toString();
     }
 
-    @RequestMapping(value="/exchangeTest", method=RequestMethod.POST)
+    @RequestMapping(value="/exchangeRequestTest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity exchange(@RequestBody String json) {
+    public ResponseEntity exchangeReq(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long interacterId = input.getLong("interacter_id");
         Long interacteeId = input.getLong("interactee_id");
+        JSONArray jsonContactIds = input.getJSONArray("contact_ids");
         Long secondaryId = 4l;
         JSONObject output = new JSONObject();
+        output.put("primary_id", interacteeId);
+        output.put("primary_evidence", 10);
         output.put("secondary_id", secondaryId);
-        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        output.put("secondary_evidence", 20);
+        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
         return response;
     }
 
-    @RequestMapping(value="/takeDownTest", method=RequestMethod.POST)
+    @RequestMapping(value="/exchangeResponseTest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> takeDown(@RequestBody String json) {
+    public ResponseEntity exchangeRes(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Long exchangerId = input.getLong("exchanger_id");
+        int res = input.getInt("response");
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (res == 0) {
+            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else if(res == 1) {
+            Long secondaryId = 4l;
+            JSONObject output = new JSONObject();
+            output.put("primary_id", exchangerId);
+            output.put("primary_evidence", 10);
+            output.put("secondary_id", secondaryId);
+            output.put("secondary_evidence", 20);
+            response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
+        } else if (res == 2){
+            response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+        }
+        return response;
+    }
+
+    @RequestMapping(value="/exposeTest", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<String> expose(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
         JSONObject output = new JSONObject();
-        output.put("SUCCESS", "Valid take down");
+        output.put("SUCCESS", "Valid expose");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
+    @RequestMapping(value="/interceptTest", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<String> intercept(@RequestBody String json) {
+        JSONObject input = new JSONObject(json);
+        Long targetId = input.getLong("target_id");
+        Long secondaryId = 4l;
+        JSONObject output = new JSONObject();
+        output.put("primary_id", targetId);
+        output.put("primary_evidence", 30);
+        output.put("secondary_id", secondaryId);
+        output.put("secondary_evidence", 30);
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/missionUpdateTest", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> missionUpdate() {
+        JSONArray rewards = new JSONArray();
+        JSONObject r1 = new JSONObject();
+        r1.put("player_id",3);
+        r1.put("evidence",10);
+        rewards.put(r1);
+        JSONObject r2 = new JSONObject();
+        r2.put("player_id",4);
+        r2.put("evidence",10);
+        rewards.put(r2);
+        JSONObject output = new JSONObject();
+        output.put("rewards", rewards);
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
+    }
+
+
     @RequestMapping(value="/endInfoTest", method=RequestMethod.GET)
     @ResponseBody
-    public String endInfo() {
+    public ResponseEntity<String> endInfo() {
         JSONArray leaderboard = new JSONArray();
         JSONObject p1 = new JSONObject();
         p1.put("player_id",3);
+        p1.put("position", 1);
         p1.put("score",3);
         leaderboard.put(p1);
         JSONObject p2 = new JSONObject();
         p2.put("player_id",4);
+        p1.put("position", 2);
         p2.put("score",1);
         leaderboard.put(p2);
         JSONObject output = new JSONObject();
         output.put("leaderboard", leaderboard);
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
 }

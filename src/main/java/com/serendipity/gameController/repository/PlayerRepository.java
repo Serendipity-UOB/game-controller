@@ -10,14 +10,14 @@ import java.util.Optional;
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
-    List<Player> findAllByOrderByKillsDesc();
+    List<Player> findAllByOrderByRepDesc();
 
-    Optional<Player> findByHackerName(String hackerName);
+    Optional<Player> findByCodeName(String codeName);
 
     List<Player> findAllByNearestBeaconMajor(int nearestBeaconMajor);
 
-    List<Player> findAllByHackerNameNot(String hackername);
+    List<Player> findAllByCodeNameNot(String codename);
 
-    List<Player> findAllByHackerNameNotAndHackerNameNot(String hackername1, String hackername2);
+    List<Player> findAllByCodeNameNotAndCodeNameNot(String codename1, String codename2);
 
 }

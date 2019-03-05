@@ -29,12 +29,12 @@ public class PlayerServiceTest {
 
     @Test
     public void getAllPlayersExceptTest() {
-        Player p1 = playerService.getPlayerByHackerName("A").get();
-        Player p2 = playerService.getPlayerByHackerName("B").get();
-        Player p3 = playerService.getPlayerByHackerName("C").get();
-        Player p4 = playerService.getPlayerByHackerName("D").get();
-        Player p5 = playerService.getPlayerByHackerName("E").get();
-        Player p6 = playerService.getPlayerByHackerName("F").get();
+        Player p1 = playerService.getPlayerByCodeName("A").get();
+        Player p2 = playerService.getPlayerByCodeName("B").get();
+        Player p3 = playerService.getPlayerByCodeName("C").get();
+        Player p4 = playerService.getPlayerByCodeName("D").get();
+        Player p5 = playerService.getPlayerByCodeName("E").get();
+        Player p6 = playerService.getPlayerByCodeName("F").get();
         List<Player> expectedRemaining = new ArrayList<>();
         expectedRemaining.add(p2);
         expectedRemaining.add(p3);
@@ -48,12 +48,12 @@ public class PlayerServiceTest {
 
     @Test
     public void getAllPlayersExceptTwoTest() {
-        Player p1 = playerService.getPlayerByHackerName("A").get();
-        Player p2 = playerService.getPlayerByHackerName("B").get();
-        Player p3 = playerService.getPlayerByHackerName("C").get();
-        Player p4 = playerService.getPlayerByHackerName("D").get();
-        Player p5 = playerService.getPlayerByHackerName("E").get();
-        Player p6 = playerService.getPlayerByHackerName("F").get();
+        Player p1 = playerService.getPlayerByCodeName("A").get();
+        Player p2 = playerService.getPlayerByCodeName("B").get();
+        Player p3 = playerService.getPlayerByCodeName("C").get();
+        Player p4 = playerService.getPlayerByCodeName("D").get();
+        Player p5 = playerService.getPlayerByCodeName("E").get();
+        Player p6 = playerService.getPlayerByCodeName("F").get();
         List<Player> expectedRemaining = new ArrayList<>();
         expectedRemaining.add(p3);
         expectedRemaining.add(p4);

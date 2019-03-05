@@ -23,27 +23,27 @@ public interface ExchangeService {
 
     /*
      * @param exchange The exchange to accept.
-     * @param contact The player about which they are giving secondary intel.
-     * @return The player about which they are receiving secondary intel.
+     * @param contact The player about which they are giving secondary evidence.
+     * @return The player about which they are receiving secondary evidence.
      */
     Long acceptExchange(Exchange exchange, Long contactId);
 
     /*
      * @param exchange The exchange to complete.
-     * @return The player about which they are receiving secondary intel.
+     * @return The player about which they are receiving secondary evidence.
      */
     Long completeExchange(Exchange exchange);
 
     /*
      * @param exchange The exchange to accept.
-     * @param contact The player about which they are giving secondary intel.
+     * @param contact The player about which they are giving secondary evidence.
      */
     void resetExchange(Exchange exchange, Long contactId);
 
     /*
      * @param interacter The player requesting the exchange.
      * @param interactee The player with whom to request the exchange.
-     * @param contact The player about which they are giving secondary intel.
+     * @param contact The player about which they are giving secondary evidence.
      */
     void createExchange(Player interacter, Player interactee, Long contactId);
 

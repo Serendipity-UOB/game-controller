@@ -43,14 +43,14 @@ public class MobileController {
         ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
         String realName = input.getString("real_name");
-        String hackerName = input.getString("hacker_name");
+        String codeName = input.getString("code_name");
         Optional<Game> optionalNextGame = gameService.getNextGame();
         if (!optionalNextGame.isPresent()) {
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else if (!playerService.isValidRealNameAndHackerName(realName, hackerName)) {
+        } else if (!playerService.isValidRealNameAndCodeName(realName, codeName)) {
             response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            Player player = new Player(realName, hackerName);
+            Player player = new Player(realName, codeName);
             playerService.savePlayer(player);
             JSONObject output = new JSONObject();
             output.put("player_id", player.getId());
@@ -161,21 +161,22 @@ public class MobileController {
         List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMajor);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
-        output.put("points", player.getKills());
+        //TODO: Consider evidence in points
+        output.put("points", player.getRep());
         output.put("position", playerService.getLeaderboardPosition(player));
-        if (player.isTakenDown()) {
-            output.put("taken_down", 1);
-            player.setTakenDown(false);
+        if (player.isExposed()) {
+            output.put("exposed", true);
+            player.setExposed(false);
             playerService.savePlayer(player);
         } else {
-            output.put("taken_down", 0);
+            output.put("exposed", false);
         }
         if (player.isReturnHome()) {
-            output.put("req_new_target", 1);
+            output.put("req_new_target", true);
             player.setReturnHome(false);
             playerService.savePlayer(player);
         } else {
-            output.put("req_new_target", 0);
+            output.put("req_new_target", false);
         }
         // For now assume that if we are calling /playerUpdate, that there is a game
         // TODO: Add error checking for this
@@ -281,9 +282,9 @@ public class MobileController {
         return response;
     }
 
-    @RequestMapping(value="/takeDown", method=RequestMethod.POST)
+    @RequestMapping(value="/expose", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> takeDown(@RequestBody String json) {
+    public ResponseEntity<String> expose(@RequestBody String json) {
 //        receive JSON object
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
@@ -300,11 +301,11 @@ public class MobileController {
 //            unpack optional objects
             Player player = opPlayer.get();
             Player target = opTarget.get();
-//            ensure given target matches player's assign target and they haven't been taken down
+//            ensure given target matches player's assign target and they haven't been exposed
             if(player.getTarget().getId().equals(target.getId())) {
-                if(!player.isTakenDown() && !player.isReturnHome()) {
-//                    increment kill count for player
-                    playerService.incrementKills(player, 1);
+                if(!player.isExposed() && !player.isReturnHome()) {
+//                    increment rep for player
+                    playerService.incrementRep(player, 1);
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
@@ -314,13 +315,13 @@ public class MobileController {
                             playerService.savePlayer(p);
                         }
                     }
-//                    set targets takenDown attribute
-                    target.setTakenDown(true);
+//                    set targets exposed attribute
+                    target.setExposed(true);
                     playerService.savePlayer(target);
 //                    set output elements
                     responseStatus = HttpStatus.OK;
-                    output.put("SUCCESS", "Valid take down");
-                } else { output.put("BAD_REQUEST", "Player has been taken down or player must return home"); }
+                    output.put("SUCCESS", "Valid expose");
+                } else { output.put("BAD_REQUEST", "Player has been exposed or player must return home"); }
             } else { output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target"); }
         } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
         return new ResponseEntity<>(output.toString(), responseStatus);
@@ -334,7 +335,7 @@ public class MobileController {
         for (Player player : players) {
             JSONObject playerInfo = new JSONObject();
             playerInfo.put("player_id", player.getId());
-            playerInfo.put("score", player.getKills());
+            playerInfo.put("score", player.getRep());
             leaderboard.put(playerInfo);
         }
         JSONObject output = new JSONObject();

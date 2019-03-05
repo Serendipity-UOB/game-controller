@@ -14,44 +14,44 @@ public class Player {
     private String realName;
 
     @NotNull
-    private String hackerName;
+    private String codeName;
 
     private int homeBeacon;
 
     @ManyToOne
     private Player target;
 
-    private int kills;
+    private int rep;
 
-    private boolean takenDown;
+    private boolean exposed;
 
     private boolean returnHome;
 
     private int nearestBeaconMajor;
 
     public Player() {
-        this.kills = 0;
+        this.rep = 0;
         this.homeBeacon = -1;
-        this.takenDown = false;
+        this.exposed = false;
         this.returnHome = false;
     }
 
-    public Player(@NotNull String realName, @NotNull String hackerName) {
+    public Player(@NotNull String realName, @NotNull String codeName) {
         this.realName = realName;
-        this.hackerName = hackerName;
+        this.codeName = codeName;
         this.homeBeacon = -1;
-        this.kills = 0;
-        this.takenDown = false;
+        this.rep = 0;
+        this.exposed = false;
         this.returnHome = false;
     }
 
-    public Player(@NotNull String realName, @NotNull String hackerName, Player target) {
+    public Player(@NotNull String realName, @NotNull String codeName, Player target) {
         this.realName = realName;
-        this.hackerName = hackerName;
+        this.codeName = codeName;
         this.homeBeacon = -1;
         this.target = target;
-        this.kills = 0;
-        this.takenDown = false;
+        this.rep = 0;
+        this.exposed = false;
         this.returnHome = false;
     }
 
@@ -71,12 +71,12 @@ public class Player {
         this.realName = realName;
     }
 
-    public String getHackerName() {
-        return hackerName;
+    public String getCodeName() {
+        return codeName;
     }
 
-    public void setHackerName(String hackerName) {
-        this.hackerName = hackerName;
+    public void getCodeName(String codeName) {
+        this.codeName = codeName;
     }
 
     public int getHomeBeacon() { return homeBeacon; }
@@ -91,17 +91,17 @@ public class Player {
         this.target = target;
     }
 
-    public int getKills() {
-        return kills;
+    public int getRep() {
+        return rep;
     }
 
-    public void setKills(int kills) {
-        this.kills = kills;
+    public void setRep(int rep) {
+        this.rep = rep;
     }
 
-    public boolean isTakenDown() { return takenDown; }
+    public boolean isExposed() { return exposed; }
 
-    public void setTakenDown(boolean takenDown) { this.takenDown = takenDown; }
+    public void setExposed(boolean exposed) { this.exposed = exposed; }
 
     public boolean isReturnHome() { return returnHome; }
 
@@ -120,11 +120,11 @@ public class Player {
         return "Player{" +
                 "id=" + id +
                 ", realName='" + realName + '\'' +
-                ", hackerName='" + hackerName + '\'' +
+                ", codeName='" + codeName + '\'' +
                 ", homeBeacon=" + homeBeacon +
                 ", target=" + target +
-                ", kills=" + kills +
-                ", takenDown=" + takenDown +
+                ", rep=" + rep +
+                ", exposed=" + exposed +
                 ", returnHome=" + returnHome +
                 ", nearestBeaconMajor=" + nearestBeaconMajor +
                 '}';

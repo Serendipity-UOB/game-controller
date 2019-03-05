@@ -22,10 +22,10 @@ public interface PlayerService {
     Optional<Player> getPlayer(Long id);
 
     /*
-     * @param hackername The hackername of the player you are looking for.
-     * @return The player with that hackername.
+     * @param codename The codename of the player you are looking for.
+     * @return The player with that codename.
      */
-    Optional<Player> getPlayerByHackerName(String hackerName);
+    Optional<Player> getPlayerByCodeName(String codeName);
 
     /*
      * @return The number of players in the database.
@@ -43,7 +43,7 @@ public interface PlayerService {
     List<Player> getAllPlayersByScore();
 
     /*
-     * @return A list of JSONObject containing {id, real_name, hacker_name}.
+     * @return A list of JSONObject containing {id, real_name, code_name}.
      */
     List<JSONObject> getAllPlayersStartInfo();
 
@@ -78,10 +78,10 @@ public interface PlayerService {
     int getPlayerWeight(Player player);
 
     /*
-     * @param player The player the increment the kills for.
-     * @param n The number of kills to add.
+     * @param player The player to increment the rep for.
+     * @param n The number of rep to add.
      */
-    void incrementKills(Player player, int n);
+    void incrementRep(Player player, int n);
 
     /*
      * @param playerId The id of the player to get a new target for.
@@ -109,10 +109,10 @@ public interface PlayerService {
 
     /*
      * @param realName The real name that has been entered by the user
-     * @param hackerName The hacker name that has been entered by the user
-     * @return True if this is a valid combination of realName and hackerName
+     * @param codeName The code name that has been entered by the user
+     * @return True if this is a valid combination of realName and codeName
      */
-    boolean isValidRealNameAndHackerName(String realName, String hackerName);
+    boolean isValidRealNameAndCodeName(String realName, String codeName);
 
     /*
      * @param realName The real name that has been entered by the user
@@ -121,9 +121,9 @@ public interface PlayerService {
     boolean isValidRealName(String realName);
 
     /*
-     * @param hackerName The hacker name that has been entered by the user
-     * @return True if this is a valid hackerName
+     * @param codeName The code name that has been entered by the user
+     * @return True if this is a valid codeName
      */
-    boolean isValidHackerName(String hackerName);
+    boolean isValidCodeName(String codeName);
 
 }

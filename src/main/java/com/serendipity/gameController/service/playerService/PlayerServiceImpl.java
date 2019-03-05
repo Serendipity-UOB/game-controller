@@ -26,7 +26,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Optional<Player> getPlayerByHackerName(String hackerName) { return playerRepository.findByHackerName(hackerName); }
+    public Optional<Player> getPlayerByCodeName(String codeName) { return playerRepository.findByCodeName(codeName); }
 
     @Override
     public long countAllPlayers() { return playerRepository.count(); }
@@ -41,7 +41,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public List<Player> getAllPlayersByScore() {
         List<Player> ps = new ArrayList<>();
-        playerRepository.findAllByOrderByKillsDesc().forEach(ps::add);
+        playerRepository.findAllByOrderByRepDesc().forEach(ps::add);
         return ps;
     }
 
@@ -54,7 +54,7 @@ public class PlayerServiceImpl implements PlayerService {
 //            if (!(p.equals(player))) players.add(p);
 //        }
 //        return players;
-        return playerRepository.findAllByHackerNameNot(player.getHackerName());
+        return playerRepository.findAllByCodeNameNot(player.getCodeName());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class PlayerServiceImpl implements PlayerService {
 //            if (!(exceptPlayers.contains(player))) returnPlayers.add(player);
 //        }
 //        return returnPlayers;
-        return playerRepository.findAllByHackerNameNotAndHackerNameNot(p1.getHackerName(), p2.getHackerName());
+        return playerRepository.findAllByCodeNameNotAndCodeNameNot(p1.getCodeName(), p2.getCodeName());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PlayerServiceImpl implements PlayerService {
             JSONObject obj = new JSONObject();
             obj.put("id", p.getId());
             obj.put("real_name", p.getRealName());
-            obj.put("hacker_name", p.getHackerName());
+            obj.put("code_name", p.getCodeName());
             players.add(obj);
         }
         return players;
@@ -108,17 +108,17 @@ public class PlayerServiceImpl implements PlayerService {
 //            informationService.deleteAll();
             playerRepository.deleteAll();
         }
-        List<String> hackerNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero", "Cutiekitten", "Jackedjones");
+        List<String> codeNames = Arrays.asList("Cookingking", "Puppylover", "Headshot", "Guitarhero", "Cutiekitten", "Jackedjones");
         List<String> realNames = Arrays.asList("Tom", "Tilly", "Louis", "Nuha", "Jack", "David");
-        Collections.shuffle(hackerNames);
+        Collections.shuffle(codeNames);
         for (int i = 0; i < realNames.size(); i++) {
-            savePlayer(new Player(realNames.get(i), hackerNames.get(i)));
+            savePlayer(new Player(realNames.get(i), codeNames.get(i)));
         }
     }
 
     @Override
-    public void incrementKills(Player player, int n) {
-        player.setKills(player.getKills() + n);
+    public void incrementRep(Player player, int n) {
+        player.setRep(player.getRep() + n);
         playerRepository.save(player);
     }
 
@@ -130,7 +130,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public int getPlayerWeight(Player player) {
-        return player.getKills();
+        return player.getRep();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class PlayerServiceImpl implements PlayerService {
         } else {
             players = getAllPlayersExceptTwo(currentPlayer, currentPlayer.getTarget());
         }
-        // Weight all the players in this list by their current number of kills
+        // Weight all the players in this list by their current rep
         List<Player> weightedPlayers = new ArrayList<>();
         for (Player p : players) {
             int playerWeight = getPlayerWeight(p);
@@ -196,8 +196,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public boolean isValidRealNameAndHackerName(String realName, String hackerName) {
-        return isValidRealName(realName) && isValidHackerName(hackerName);
+    public boolean isValidRealNameAndCodeName(String realName, String codeName) {
+        return isValidRealName(realName) && isValidCodeName(codeName);
     }
 
     @Override
@@ -206,8 +206,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public boolean isValidHackerName(String hackerName) {
-        Optional<Player> playerOptional = getPlayerByHackerName(hackerName);
+    public boolean isValidCodeName(String codeName) {
+        Optional<Player> playerOptional = getPlayerByCodeName(codeName);
         return !playerOptional.isPresent();
     }
 }
