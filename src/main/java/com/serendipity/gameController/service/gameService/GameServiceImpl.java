@@ -49,7 +49,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public boolean isGameOver(Game game) {
-        return game.getEndTime().isAfter(LocalTime.now());
+        return game.getEndTime().isBefore(LocalTime.now());
     }
 
 

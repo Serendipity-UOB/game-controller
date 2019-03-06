@@ -81,7 +81,7 @@ public interface PlayerService {
      * @param player The player to increment the rep for.
      * @param n The number of rep to add.
      */
-    void incrementRep(Player player, int n);
+    void incrementReputation(Player player, int n);
 
     /*
      * @param playerId The id of the player to get a new target for.
@@ -105,7 +105,7 @@ public interface PlayerService {
      * @param player The current player
      * @return List of ids of the nearby players
      */
-    List<Long> getNearbyPlayerIds(Player player, int beaconMajor);
+    List<Long> getNearbyPlayerIds(Player player);
 
     /*
      * @param realName The real name that has been entered by the user

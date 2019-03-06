@@ -21,7 +21,7 @@ public class Player {
     @ManyToOne
     private Player target;
 
-    private int rep;
+    private int reputation;
 
     private boolean exposed;
 
@@ -30,7 +30,7 @@ public class Player {
     private int nearestBeaconMajor;
 
     public Player() {
-        this.rep = 0;
+        this.reputation = 0;
         this.homeBeacon = -1;
         this.exposed = false;
         this.returnHome = false;
@@ -40,7 +40,7 @@ public class Player {
         this.realName = realName;
         this.codeName = codeName;
         this.homeBeacon = -1;
-        this.rep = 0;
+        this.reputation = 0;
         this.exposed = false;
         this.returnHome = false;
     }
@@ -50,7 +50,7 @@ public class Player {
         this.codeName = codeName;
         this.homeBeacon = -1;
         this.target = target;
-        this.rep = 0;
+        this.reputation = 0;
         this.exposed = false;
         this.returnHome = false;
     }
@@ -91,12 +91,12 @@ public class Player {
         this.target = target;
     }
 
-    public int getRep() {
-        return rep;
+    public int getReputation() {
+        return reputation;
     }
 
-    public void setRep(int rep) {
-        this.rep = rep;
+    public void setReputation(int reputation) {
+        this.reputation = reputation;
     }
 
     public boolean isExposed() { return exposed; }
@@ -123,7 +123,7 @@ public class Player {
                 ", codeName='" + codeName + '\'' +
                 ", homeBeacon=" + homeBeacon +
                 ", target=" + target +
-                ", rep=" + rep +
+                ", reputation=" + reputation +
                 ", exposed=" + exposed +
                 ", returnHome=" + returnHome +
                 ", nearestBeaconMajor=" + nearestBeaconMajor +

@@ -151,19 +151,30 @@ public class MobileController {
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
+
+        // Setup json
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
-        Player player = playerService.getPlayer(playerId).get();
         JSONArray beacons = input.getJSONArray("beacons");
+        JSONObject output = new JSONObject();
+
+        // Deal with beacon/zone
         int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
+        Player player = playerService.getPlayer(playerId).get();
         player.setNearestBeaconMajor(closestBeaconMajor);
         playerService.savePlayer(player);
-        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player, closestBeaconMajor);
-        JSONObject output = new JSONObject();
+
+        // Nearby players
+        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player);
         output.put("nearby_players", nearbyPlayerIds);
-        //TODO: Consider evidence in points
-        output.put("points", player.getRep());
+
+        // Reputation
+        output.put("reputation", player.getReputation());
+
+        // Position
         output.put("position", playerService.getLeaderboardPosition(player));
+
+        // Exposed
         if (player.isExposed()) {
             output.put("exposed", true);
             player.setExposed(false);
@@ -171,6 +182,9 @@ public class MobileController {
         } else {
             output.put("exposed", false);
         }
+
+        // Return home
+        // TODO: Make 'returnHome' clearer, what does this actually mean?
         if (player.isReturnHome()) {
             output.put("req_new_target", true);
             player.setReturnHome(false);
@@ -178,14 +192,25 @@ public class MobileController {
         } else {
             output.put("req_new_target", false);
         }
-        // For now assume that if we are calling /playerUpdate, that there is a game
-        // TODO: Add error checking for this
+
+        // Game over
+        // TODO: Review when add ability to attach players to games,
+        // TODO: and pass in the game that the current player is a part of, instead of games.get(0)
         List<Game> games = gameService.getAllGamesByStartTimeAsc();
-        if (games.get(0).getEndTime().isBefore(LocalTime.now())) {
+        if (gameService.isGameOver(games.get(0))) {
             output.put("game_over", true);
         } else {
             output.put("game_over", false);
         }
+
+        // Mission
+        // TODO: Implement
+        output.put("mission_description", "");
+
+        // Exchange pending
+        // TODO: Implement
+        output.put("exchange_pending", 0);
+
         return output.toString();
     }
 
@@ -198,6 +223,24 @@ public class MobileController {
         JSONObject output = new JSONObject();
         output.put("target_player_id", newTargetId);
         return output.toString();
+    }
+
+    @RequestMapping(value="/exchangeRequest", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity exchangeRequest(@RequestBody String json) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+        JSONObject input = new JSONObject(json);
+//        { requester_id, responder_id, contact_ids[{ contact_id }]}
+//        Long requesterId = input.getLong("requester_id");
+        return response;
+    }
+
+    @RequestMapping(value="/exchangeResponse", method=RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity exchangeResponse(@RequestBody String json) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+        JSONObject input = new JSONObject(json);
+        return response;
     }
 
     @RequestMapping(value="/exchange", method=RequestMethod.POST)
@@ -305,7 +348,7 @@ public class MobileController {
             if(player.getTarget().getId().equals(target.getId())) {
                 if(!player.isExposed() && !player.isReturnHome()) {
 //                    increment rep for player
-                    playerService.incrementRep(player, 1);
+                    playerService.incrementReputation(player, 1);
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);
@@ -335,7 +378,7 @@ public class MobileController {
         for (Player player : players) {
             JSONObject playerInfo = new JSONObject();
             playerInfo.put("player_id", player.getId());
-            playerInfo.put("score", player.getRep());
+            playerInfo.put("score", player.getReputation());
             leaderboard.put(playerInfo);
         }
         JSONObject output = new JSONObject();

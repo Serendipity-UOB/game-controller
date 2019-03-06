@@ -117,8 +117,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void incrementRep(Player player, int n) {
-        player.setRep(player.getRep() + n);
+    public void incrementReputation(Player player, int n) {
+        player.setReputation(player.getReputation() + n);
         playerRepository.save(player);
     }
 
@@ -130,7 +130,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public int getPlayerWeight(Player player) {
-        return player.getRep();
+        return player.getReputation();
     }
 
     @Override
@@ -183,16 +183,17 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Long> getNearbyPlayerIds(Player player, int beaconMajor) {
-        List<Long> ids = new ArrayList<>();
+    public List<Long> getNearbyPlayerIds(Player player) {
+        int beaconMajor = player.getNearestBeaconMajor();
+        List<Long> playerIds = new ArrayList<>();
         if (beaconMajor != 0) {
             List<Player> players = playerRepository.findAllByNearestBeaconMajor(beaconMajor);
-            ids = new ArrayList<>();
+            playerIds = new ArrayList<>();
             for (Player p : players) {
-                if (!(p.equals(player))) ids.add(p.getId());
+                if (!(p.equals(player))) playerIds.add(p.getId());
             }
         }
-        return ids;
+        return playerIds;
     }
 
     @Override
