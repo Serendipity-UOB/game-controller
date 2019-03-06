@@ -227,7 +227,7 @@ public class MobileController {
     public ResponseEntity exchangeRequest(@RequestBody String json) {
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        // JSON
+        // Handle JSON
         JSONObject input = new JSONObject(json);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
@@ -235,15 +235,18 @@ public class MobileController {
         Player requester = playerService.getPlayer(requesterId).get();
         Player responder = playerService.getPlayer(responderId).get();
 
-        // Exchange functionality
+        // Handle request
         Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(requester);
         if (optionalExchange.isPresent()) {
             Exchange exchange = optionalExchange.get();
             if (exchange.getResponsePlayer() == responder) {
+                // TODO: Instead of isExpired, change to timeRemaining, and check for =0
+                // TODO: As we can then reuse this method in the /exchangeResponse endpoint
                 if (exchangeService.isExpired(exchange)) {
                     response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
                 } else {
                     if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                        // TODO: Move this chunk into a service method
                         JSONArray jsonEvidences = new JSONArray();
                         for (Evidence evidence : exchange.getResponseEvidence()) {
                             JSONObject jsonEvidence = new JSONObject();
@@ -277,7 +280,7 @@ public class MobileController {
     public ResponseEntity exchangeResponse(@RequestBody String json) {
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        // JSON
+        // Handle JSON
         JSONObject input = new JSONObject(json);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
@@ -287,6 +290,17 @@ public class MobileController {
         Player requester = playerService.getPlayer(requesterId).get();
         Player responder = playerService.getPlayer(responderId).get();
 
+        // TODO: Validation, does the exchange that you're trying to respond to exist?
+
+        // Handle response
+        if (exchangeResponse.equals(ExchangeResponse.WAITING)) {
+            // TODO: If timeout then return 408 REQUEST TIMEOUT
+            // TODO: Else return 206 PARTIAL CONTENT { time_remaining }
+        } else if (exchangeResponse.equals(ExchangeResponse.ACCEPTED)) {
+            // TODO: Return 202 ACCEPTED { evidence[ { player_id, amount } ] }
+        } else if (exchangeResponse.equals(ExchangeResponse.REJECTED)) {
+            response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+        }
         return response;
     }
 
