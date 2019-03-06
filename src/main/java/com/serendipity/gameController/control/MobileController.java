@@ -265,6 +265,7 @@ public class MobileController {
             }
         } else {
             Exchange exchange = new Exchange(requester, responder);
+            // TODO: Set requesterEvidence
             exchangeService.saveExchange(exchange);
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
@@ -274,8 +275,18 @@ public class MobileController {
     @RequestMapping(value="/exchangeResponse", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity exchangeResponse(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // JSON
         JSONObject input = new JSONObject(json);
+        Long requesterId = input.getLong("requester_id");
+        Long responderId = input.getLong("responder_id");
+        int exchangeResponseIndex = input.getInt("response");
+        ExchangeResponse exchangeResponse = ExchangeResponse.values()[exchangeResponseIndex];
+        JSONArray jsonContactIds = input.getJSONArray("contact_ids");
+        Player requester = playerService.getPlayer(requesterId).get();
+        Player responder = playerService.getPlayer(responderId).get();
+
         return response;
     }
 
