@@ -78,8 +78,8 @@ public interface PlayerService {
     int getPlayerWeight(Player player);
 
     /*
-     * @param player The player to increment the rep for.
-     * @param n The number of rep to add.
+     * @param player The player to increment the reputation for.
+     * @param n The number of reputation to add.
      */
     void incrementReputation(Player player, int n);
 

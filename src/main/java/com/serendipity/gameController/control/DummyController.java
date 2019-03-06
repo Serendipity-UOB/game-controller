@@ -132,7 +132,7 @@ public class DummyController {
         if (res == 0) {
             JSONObject output = new JSONObject();
             output.put("time_remaining", LocalTime.now());
-            response = new ResponseEntity<>(output.toString(), HttpStatus.NO_CONTENT);
+            response = new ResponseEntity<>(output.toString(), HttpStatus.PARTIAL_CONTENT);
         } else if(res == 1) {
             Long secondaryId = 4l;
             JSONArray evidence = new JSONArray();
@@ -170,11 +170,11 @@ public class DummyController {
         JSONArray evidence = new JSONArray();
         JSONObject p1 = new JSONObject();
         p1.put("player_id",3);
-        p1.put("amount",10);
+        p1.put("amount",20);
         evidence.put(p1);
         JSONObject p2 = new JSONObject();
         p2.put("player_id",4);
-        p2.put("amount",10);
+        p2.put("amount",20);
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
@@ -210,7 +210,7 @@ public class DummyController {
         leaderboard.put(p1);
         JSONObject p2 = new JSONObject();
         p2.put("player_id",4);
-        p1.put("position", 2);
+        p2.put("position", 2);
         p2.put("score",1);
         leaderboard.put(p2);
         JSONObject output = new JSONObject();

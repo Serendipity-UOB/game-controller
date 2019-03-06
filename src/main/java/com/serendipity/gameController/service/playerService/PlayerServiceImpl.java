@@ -41,7 +41,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public List<Player> getAllPlayersByScore() {
         List<Player> ps = new ArrayList<>();
-        playerRepository.findAllByOrderByRepDesc().forEach(ps::add);
+        playerRepository.findAllByOrderByReputationDesc().forEach(ps::add);
         return ps;
     }
 

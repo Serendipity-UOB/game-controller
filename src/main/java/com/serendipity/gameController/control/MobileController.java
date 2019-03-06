@@ -347,7 +347,7 @@ public class MobileController {
 //            ensure given target matches player's assign target and they haven't been exposed
             if(player.getTarget().getId().equals(target.getId())) {
                 if(!player.isExposed() && !player.isReturnHome()) {
-//                    increment rep for player
+//                    increment reputation for player
                     playerService.incrementReputation(player, 1);
 //                    set other players with the same targets returnHome attribute
 //                    assume player is locked to getNewTarget by app
