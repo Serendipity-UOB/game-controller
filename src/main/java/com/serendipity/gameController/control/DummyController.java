@@ -79,12 +79,12 @@ public class DummyController {
         nearbyPlayerIds.add(3l);
         JSONObject output = new JSONObject();
         output.put("nearby_players", nearbyPlayerIds);
-        output.put("points", 0);
+        output.put("reputation", 0);
         output.put("position", 1);
         output.put("exchange_pending", 0);
         output.put("exposed", false);
         output.put("req_new_target", false);
-        output.put("mission_description", "");
+        output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30</b> seconds");
         output.put("game_over", false);
         return output.toString();
     }
@@ -104,15 +104,20 @@ public class DummyController {
     @ResponseBody
     public ResponseEntity exchangeReq(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
-        Long interacterId = input.getLong("interacter_id");
-        Long interacteeId = input.getLong("interactee_id");
-        JSONArray jsonContactIds = input.getJSONArray("contact_ids");
+        Long responderId = input.getLong("responder_id");
         Long secondaryId = 4l;
+        JSONArray evidence = new JSONArray();
+        JSONObject p1 = new JSONObject();
+        p1.put("player_id",responderId);
+        p1.put("amount",10);
+        evidence.put(p1);
+        JSONObject p2 = new JSONObject();
+        p2.put("player_id",secondaryId);
+        p2.put("amount",20);
+        evidence.put(p2);
         JSONObject output = new JSONObject();
-        output.put("primary_id", interacteeId);
-        output.put("primary_evidence", 10);
-        output.put("secondary_id", secondaryId);
-        output.put("secondary_evidence", 20);
+        output.put("evidence", evidence);
+
         ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
         return response;
     }
@@ -121,19 +126,26 @@ public class DummyController {
     @ResponseBody
     public ResponseEntity exchangeRes(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
-        Long playerId = input.getLong("player_id");
-        Long exchangerId = input.getLong("exchanger_id");
+        Long responderId = input.getLong("responder_id");
         int res = input.getInt("response");
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (res == 0) {
-            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            JSONObject output = new JSONObject();
+            output.put("time_remaining", LocalTime.now());
+            response = new ResponseEntity<>(output.toString(), HttpStatus.PARTIAL_CONTENT);
         } else if(res == 1) {
             Long secondaryId = 4l;
+            JSONArray evidence = new JSONArray();
+            JSONObject p1 = new JSONObject();
+            p1.put("player_id",responderId);
+            p1.put("amount",10);
+            evidence.put(p1);
+            JSONObject p2 = new JSONObject();
+            p2.put("player_id",secondaryId);
+            p2.put("amount",20);
+            evidence.put(p2);
             JSONObject output = new JSONObject();
-            output.put("primary_id", exchangerId);
-            output.put("primary_evidence", 10);
-            output.put("secondary_id", secondaryId);
-            output.put("secondary_evidence", 20);
+            output.put("evidence", evidence);
             response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
         } else if (res == 2){
             response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
@@ -147,9 +159,7 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-        JSONObject output = new JSONObject();
-        output.put("SUCCESS", "Valid expose");
-        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value="/interceptTest", method=RequestMethod.POST)
@@ -157,29 +167,34 @@ public class DummyController {
     public ResponseEntity<String> intercept(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long targetId = input.getLong("target_id");
-        Long secondaryId = 4l;
+        JSONArray evidence = new JSONArray();
+        JSONObject p1 = new JSONObject();
+        p1.put("player_id",3);
+        p1.put("amount",20);
+        evidence.put(p1);
+        JSONObject p2 = new JSONObject();
+        p2.put("player_id",4);
+        p2.put("amount",20);
+        evidence.put(p2);
         JSONObject output = new JSONObject();
-        output.put("primary_id", targetId);
-        output.put("primary_evidence", 30);
-        output.put("secondary_id", secondaryId);
-        output.put("secondary_evidence", 30);
+        output.put("evidence", evidence);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/missionUpdateTest", method=RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> missionUpdate() {
-        JSONArray rewards = new JSONArray();
-        JSONObject r1 = new JSONObject();
-        r1.put("player_id",3);
-        r1.put("evidence",10);
-        rewards.put(r1);
-        JSONObject r2 = new JSONObject();
-        r2.put("player_id",4);
-        r2.put("evidence",10);
-        rewards.put(r2);
+        JSONArray evidence = new JSONArray();
+        JSONObject p1 = new JSONObject();
+        p1.put("player_id",3);
+        p1.put("amount",10);
+        evidence.put(p1);
+        JSONObject p2 = new JSONObject();
+        p2.put("player_id",4);
+        p2.put("amount",10);
+        evidence.put(p2);
         JSONObject output = new JSONObject();
-        output.put("rewards", rewards);
+        output.put("evidence", evidence);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
@@ -195,7 +210,7 @@ public class DummyController {
         leaderboard.put(p1);
         JSONObject p2 = new JSONObject();
         p2.put("player_id",4);
-        p1.put("position", 2);
+        p2.put("position", 2);
         p2.put("score",1);
         leaderboard.put(p2);
         JSONObject output = new JSONObject();
