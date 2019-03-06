@@ -22,6 +22,12 @@ public interface ExchangeService {
     Optional<Exchange> getExchangeByPlayers(Player interacter, Player interactee);
 
     /*
+     * @param requester The player you want an exchange from.
+     * @return An optional of the active exchange from that player.
+     */
+    Optional<Exchange> getMostRecentExchangeFromPlayer(Player requester);
+
+    /*
      * @param exchange The exchange to accept.
      * @param contact The player about which they are giving secondary evidence.
      * @return The player about which they are receiving secondary evidence.

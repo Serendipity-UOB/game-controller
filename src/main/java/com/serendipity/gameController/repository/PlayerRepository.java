@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
-    List<Player> findAllByOrderByRepDesc();
+    List<Player> findAllByOrderByReputationDesc();
 
     Optional<Player> findByCodeName(String codeName);
 

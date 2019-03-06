@@ -1,10 +1,9 @@
 package com.serendipity.gameController.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Exchange {
@@ -19,56 +18,30 @@ public class Exchange {
     private Player requestPlayer;
 
     @ManyToOne
-    private Player targetPlayer;
+    private Player responsePlayer;
 
-    private Long requestPlayerContactId;
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Evidence> requestEvidence; // The evidence from the requester
 
-    private Long targetPlayerContactId;
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Evidence> responseEvidence; // The evidence from the responder
 
-    private boolean accepted;
-
-    private boolean completed;
+    private ExchangeResponse response;
 
     public Exchange() {
-        this.accepted = false;
-        this.completed = false;
+        this.startTime = LocalTime.now();
+        this.response = ExchangeResponse.WAITING;
+        this.requestEvidence = new ArrayList<>();
+        this.responseEvidence = new ArrayList<>();
     }
 
-    public Exchange(Player requestPlayer, Player targetPlayer) {
+    public Exchange(Player requestPlayer, Player responsePlayer) {
         this.startTime = LocalTime.now();
         this.requestPlayer = requestPlayer;
-        this.targetPlayer = targetPlayer;
-        this.accepted = false;
-        this.completed = false;
-    }
-
-    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId) {
-        this.startTime = LocalTime.now();
-        this.requestPlayer = requestPlayer;
-        this.targetPlayer = targetPlayer;
-        this.requestPlayerContactId = requestPlayerContactId;
-        this.accepted = false;
-        this.completed = false;
-    }
-
-    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId, Long targetPlayerContactId) {
-        this.startTime = LocalTime.now();
-        this.requestPlayer = requestPlayer;
-        this.targetPlayer = targetPlayer;
-        this.requestPlayerContactId = requestPlayerContactId;
-        this.targetPlayerContactId = targetPlayerContactId;
-        this.accepted = false;
-        this.completed = false;
-    }
-
-    public Exchange(Player requestPlayer, Player targetPlayer, Long requestPlayerContactId, Long targetPlayerContactId, boolean accepted, boolean completed) {
-        this.startTime = LocalTime.now();
-        this.requestPlayer = requestPlayer;
-        this.targetPlayer = targetPlayer;
-        this.requestPlayerContactId = requestPlayerContactId;
-        this.targetPlayerContactId = targetPlayerContactId;
-        this.accepted = accepted;
-        this.completed = completed;
+        this.responsePlayer = responsePlayer;
+        this.response = ExchangeResponse.WAITING;
+        this.requestEvidence = new ArrayList<>();
+        this.responseEvidence = new ArrayList<>();
     }
 
     public Long getId() {
@@ -95,43 +68,37 @@ public class Exchange {
         this.requestPlayer = requestPlayer;
     }
 
-    public Player getTargetPlayer() {
-        return targetPlayer;
+    public Player getResponsePlayer() {
+        return responsePlayer;
     }
 
-    public void setTargetPlayer(Player targetPlayer) {
-        this.targetPlayer = targetPlayer;
+    public void setResponsePlayer(Player responsePlayer) {
+        this.responsePlayer = responsePlayer;
     }
 
-    public Long getRequestPlayerContactId() {
-        return requestPlayerContactId;
+
+    public List<Evidence> getRequestEvidence() {
+        return requestEvidence;
     }
 
-    public void setRequestPlayerContact(Long requestPlayerContactId) {
-        this.requestPlayerContactId = requestPlayerContactId;
+    public void setRequestEvidence(List<Evidence> requestEvidence) {
+        this.requestEvidence = requestEvidence;
     }
 
-    public Long getTargetPlayerContactId() {
-        return targetPlayerContactId;
+    public List<Evidence> getResponseEvidence() {
+        return responseEvidence;
     }
 
-    public void setTargetPlayerContactId(Long targetPlayerContactId) {
-        this.targetPlayerContactId = targetPlayerContactId;
+    public void setResponseEvidence(List<Evidence> responseEvidence) {
+        this.responseEvidence = responseEvidence;
     }
 
-    public boolean isAccepted() {
-        return accepted;
+    public ExchangeResponse getResponse() {
+        return response;
     }
 
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
+    public void setResponse(ExchangeResponse response) {
+        this.response = response;
     }
 
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
 }
