@@ -181,7 +181,8 @@ public class MobileController {
                         int time = quarter + randomTime.nextInt(upper - lower);
                         LocalTime missionStart = gameStart.plus(time, ChronoUnit.SECONDS);
                         LocalTime missionEnd = missionStart.plus(30, ChronoUnit.SECONDS);
-
+//                        TODO: May need to make the player assignment more dynamic
+//                        TODO: May need to consider multiple missions
 //                        Save new mission
                         Mission mission = new Mission(missionStart, missionEnd, target1.getId(), target2.getId());
                         missionService.saveMission(mission);
