@@ -2,6 +2,7 @@ package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
+import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -205,8 +206,14 @@ public class MobileController {
         output.put("mission_description", "");
 
         // Exchange pending
-        // TODO: Implement
-        output.put("exchange_pending", 0);
+        Long requesterId = 0l;
+        Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+        if (optionalExchange.isPresent()) {
+            Exchange exchange = optionalExchange.get();
+            requesterId = exchange.getRequestPlayer().getId();
+            // TODO: Should exchange_pending be cleared after being set or persist until exchange complete?
+        }
+        output.put("exchange_pending", requesterId);
 
         return output.toString();
     }
@@ -241,7 +248,15 @@ public class MobileController {
             Exchange exchange = optionalExchange.get();
             if (exchange.getResponsePlayer() == responder) {
                 if (exchangeService.getTimeRemaining(exchange) == 0l) {
-                    response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
+                    if (exchange.isTimeoutTold()) {
+                        exchangeService.createExchange(requester, responder, jsonContactIds);
+                        response = new ResponseEntity<>(HttpStatus.CREATED);
+                    } else {
+                        // TODO: Set timeoutTold to true
+                        exchange.setTimeoutTold(true);
+                        exchangeService.saveExchange(exchange);
+                        response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
+                    }
                 } else {
                     if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
                         // TODO: Move this chunk into a service method?
@@ -265,15 +280,7 @@ public class MobileController {
                 response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
-            Exchange exchange = new Exchange(requester, responder);
-            List<Long> contactIds = new ArrayList<>();
-            for (int i = 0; i < jsonContactIds.length(); i++) {
-                Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
-                contactIds.add(id);
-            }
-            List<Evidence> evidenceList = exchangeService.calculateEvidence(exchange, requester, contactIds);
-            exchange.setRequestEvidence(evidenceList);
-            exchangeService.saveExchange(exchange);
+            exchangeService.createExchange(requester, responder, jsonContactIds);
             response = new ResponseEntity<>(HttpStatus.CREATED);
         }
         return response;
@@ -289,6 +296,7 @@ public class MobileController {
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
         int exchangeResponseIndex = input.getInt("response");
+        // TODO: Test that this line works
         ExchangeResponse exchangeResponse = ExchangeResponse.values()[exchangeResponseIndex];
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
         Player requester = playerService.getPlayer(requesterId).get();

@@ -3,6 +3,7 @@ package com.serendipity.gameController.service.exchangeService;
 import com.serendipity.gameController.model.Evidence;
 import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public interface ExchangeService {
      * @param exchange The exchange to save.
      */
     void saveExchange(Exchange exchange);
+
+    /*
+     *
+     */
+    void createExchange(Player requester, Player responder, JSONArray jsonContactIds);
 
     /*
      * @param exchange The exchange you're looking at.
@@ -34,6 +40,12 @@ public interface ExchangeService {
      * @return An optional of the active exchange from that player.
      */
     Optional<Exchange> getMostRecentExchangeFromPlayer(Player requester);
+
+    /*
+     * @param responder The player you want an exchange to.
+     * @return An optional of the active exchange to that player.
+     */
+    Optional<Exchange> getMostRecentExchangeToPlayer(Player responder);
 
     /*
      * @param exchange The exchange you are calculating evidence for.

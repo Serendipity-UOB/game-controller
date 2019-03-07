@@ -5,6 +5,7 @@ import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.ExchangeRepository;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,19 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public void createExchange(Player requester, Player responder, JSONArray jsonContactIds) {
+        Exchange exchange = new Exchange(requester, responder);
+        List<Long> contactIds = new ArrayList<>();
+        for (int i = 0; i < jsonContactIds.length(); i++) {
+            Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
+            contactIds.add(id);
+        }
+        List<Evidence> evidenceList = calculateEvidence(exchange, requester, contactIds);
+        exchange.setRequestEvidence(evidenceList);
+        saveExchange(exchange);
+    }
+
+    @Override
     public long getTimeRemaining(Exchange exchange) {
         long timeOutPeriod = 10l;
         long timeRemaining;
@@ -49,7 +63,16 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public Optional<Exchange> getMostRecentExchangeFromPlayer(Player requester) {
-        return exchangeRepository.getExchangeByRequestPlayerOrderByStartTimeDesc(requester);
+        List<Exchange> exchangeList = exchangeRepository.findAllByRequestPlayerOrderByStartTimeDesc(requester);
+        if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
+        else return Optional.empty();
+    }
+
+    @Override
+    public Optional<Exchange> getMostRecentExchangeToPlayer(Player responder) {
+        List<Exchange> exchangeList = exchangeRepository.findAllByResponsePlayerOrderByStartTimeDesc(responder);
+        if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
+        else return Optional.empty();
     }
 
     @Override

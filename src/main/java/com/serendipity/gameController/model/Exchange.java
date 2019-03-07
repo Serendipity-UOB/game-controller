@@ -28,11 +28,14 @@ public class Exchange {
 
     private ExchangeResponse response;
 
+    private boolean timeoutTold;
+
     public Exchange() {
         this.startTime = LocalTime.now();
         this.response = ExchangeResponse.WAITING;
         this.requestEvidence = new ArrayList<>();
         this.responseEvidence = new ArrayList<>();
+        this.timeoutTold = false;
     }
 
     public Exchange(Player requestPlayer, Player responsePlayer) {
@@ -42,6 +45,7 @@ public class Exchange {
         this.response = ExchangeResponse.WAITING;
         this.requestEvidence = new ArrayList<>();
         this.responseEvidence = new ArrayList<>();
+        this.timeoutTold = false;
     }
 
     public Long getId() {
@@ -99,6 +103,14 @@ public class Exchange {
 
     public void setResponse(ExchangeResponse response) {
         this.response = response;
+    }
+
+    public boolean isTimeoutTold() {
+        return timeoutTold;
+    }
+
+    public void setTimeoutTold(boolean timeoutTold) {
+        this.timeoutTold = timeoutTold;
     }
 
 }

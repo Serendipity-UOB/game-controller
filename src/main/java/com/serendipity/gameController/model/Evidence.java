@@ -13,18 +13,21 @@ public class Evidence {
     @GeneratedValue
     private Long id;
 
-    @NotNull
+//    @NotNull
     @ManyToOne
     private Exchange exchange;
 
-    @NotNull
+//    @NotNull
     @ManyToOne
     private Player player;
 
-    @NotNull
+//    @NotNull
     private int amount;
 
-    public Evidence(@NotNull Exchange exchange, @NotNull Player player, @NotNull int amount) {
+    public Evidence() {
+    }
+
+    public Evidence(Exchange exchange, Player player, int amount) {
         this.exchange = exchange;
         this.player = player;
         this.amount = amount;
