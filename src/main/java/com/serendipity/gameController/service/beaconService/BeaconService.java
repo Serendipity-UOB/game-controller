@@ -59,4 +59,10 @@ public interface BeaconService {
      * times they've been assigned as a home beacon.
      */
     Map<Integer, Integer> sumBeacons();
+
+    /*
+     * @param major The major that relates to the Beacon(s) you don't want to return.
+     * @return A list of all the beacons in the database except the given major.
+     */
+    List<Beacon> getAllBeaconsExcept(int major);
 }

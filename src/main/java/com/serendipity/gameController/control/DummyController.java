@@ -54,15 +54,15 @@ public class DummyController {
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value="/startInfoTest", method=RequestMethod.GET)
+    @RequestMapping(value="/startInfoTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String getStartInfo() {
+    public String getStartInfo(@RequestBody String json) {
         return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
                 "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
                 "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
     }
 
-    @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST)
+    @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity atHomeBeacon(@RequestBody String json) {
         JSONObject output = new JSONObject();
@@ -71,7 +71,7 @@ public class DummyController {
         return response;
     }
 
-    @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST)
+    @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public String playerUpdate(@RequestBody String json) {
         List<Long> nearbyPlayerIds = new ArrayList<>();
@@ -153,7 +153,7 @@ public class DummyController {
         return response;
     }
 
-    @RequestMapping(value="/exposeTest", method=RequestMethod.POST)
+    @RequestMapping(value="/exposeTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> expose(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
@@ -162,7 +162,7 @@ public class DummyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value="/interceptTest", method=RequestMethod.POST)
+    @RequestMapping(value="/interceptTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> intercept(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
