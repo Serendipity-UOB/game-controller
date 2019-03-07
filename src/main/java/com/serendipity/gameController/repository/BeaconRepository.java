@@ -16,4 +16,6 @@ public interface BeaconRepository extends CrudRepository<Beacon, Long> {
 
     void deleteBeaconById(long id);
 
+    List<Beacon> findAllByMajorNot(int major);
+
 }

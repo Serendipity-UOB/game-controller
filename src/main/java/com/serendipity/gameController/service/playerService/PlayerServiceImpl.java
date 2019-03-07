@@ -2,6 +2,7 @@ package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.PlayerRepository;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -177,6 +178,20 @@ public class PlayerServiceImpl implements PlayerService {
         for (int i = 0; i < leaderboard.size(); i++) {
             if (leaderboard.get(i).equals(player)) {
                 position = i + 1;
+                if(i > 0){
+                    boolean found = true;
+                    int index = i - 1;
+                    while(found){
+                        if( index >= 0 && leaderboard.get(index).getReputation() ==
+                                leaderboard.get(i).getReputation()) {
+                            position --;
+                            index --;
+                        }
+                        else{
+                            found = false;
+                        }
+                    }
+                }
             }
         }
         return position;
