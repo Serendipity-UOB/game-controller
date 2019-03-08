@@ -20,7 +20,7 @@ public interface BeaconService {
      * @param id The id of the beacon you want.
      * @return An optional of the beacon matching the given id.
      */
-    Optional<Beacon> getBeacon(Long id);
+    Optional<Beacon> getBeaconById(Long id);
 
     /*
      * @param major The major of the beacon you want.
@@ -36,7 +36,7 @@ public interface BeaconService {
     /*
      * @return The number of beacons in the database.
      */
-    long countAllBeacons();
+    Long countAllBeacons();
 
     /*
      * Delete all the beacons in the database.
@@ -46,7 +46,7 @@ public interface BeaconService {
     /*
      * @param beaconId The id of the beacon to delete
      */
-    void deleteBeaconById(long beaconId);
+    void deleteBeaconById(Long beaconId);
 
     /*
      * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.

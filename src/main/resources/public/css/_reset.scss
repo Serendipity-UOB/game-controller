@@ -18,69 +18,26 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
-
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
-
 body {
   line-height: 1;
 }
-
 ol, ul {
   list-style: none;
 }
-
 blockquote, q {
   quotes: none;
 }
-
 blockquote:before, blockquote:after,
 q:before, q:after {
-  content: "";
+  content: '';
   content: none;
 }
-
 table {
   border-collapse: collapse;
   border-spacing: 0;
-}
-
-div.container {
-  display: flex;
-}
-
-div.item {
-  border-radius: 20px;
-  background-color: #E0E0E0;
-  flex: 1 100%;
-  margin: 20px;
-  padding: 20px;
-}
-
-div.zone {
-  border: 1px solid black;
-  margin: 20px 0;
-}
-div.zone * {
-  margin: 10px 0;
-}
-
-html {
-  font-size: 16px;
-  font-family: "Raleway", sans-serif;
-  font-weight: 500;
-  color: #333333;
-}
-
-h1 {
-  font-size: 2rem;
-  font-weight: 400;
-  margin: 0 0 20px 0;
-}
-
-h2 {
-  font-size: 1.4em;
 }

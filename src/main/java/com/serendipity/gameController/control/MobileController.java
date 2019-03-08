@@ -111,7 +111,7 @@ public class MobileController {
                     beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
                 }
                 int major = beacon.getMajor();
-                String name = beacon.getName();
+                String name = beacon.getIdentifier();
                 output.put("home_beacon_major", major);
                 output.put("home_beacon_name", name);
                 responseStatus = HttpStatus.OK;
@@ -298,7 +298,7 @@ public class MobileController {
             List<Beacon> notHome = beaconService.getAllBeaconsExcept(player.getHomeBeacon());
             Random random = new Random();
             Beacon beacon = notHome.get(random.nextInt(notHome.size()));
-            missionDescription += " activities can be found at <b>" + beacon.getName() +
+            missionDescription += " activities can be found at <b>" + beacon.getIdentifier() +
                     "</b>.\n Get there in 30 Seconds to secure it.";
 
             mission.setSent(true);

@@ -27,10 +27,10 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public long countAllBeacons() { return beaconRepository.count(); }
+    public Long countAllBeacons() { return beaconRepository.count(); }
 
     @Override
-    public Optional<Beacon> getBeacon(Long id){
+    public Optional<Beacon> getBeaconById(Long id){
         return beaconRepository.findById(id);
     }
 
@@ -51,9 +51,9 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public void deleteBeaconById(long beaconId) {
-        if (getBeacon(beaconId).isPresent()) {
-            beaconRepository.deleteBeaconById(beaconId);
+    public void deleteBeaconById(Long id) {
+        if (getBeaconById(id).isPresent()) {
+            beaconRepository.deleteBeaconById(id);
         }
     }
 
@@ -89,6 +89,7 @@ public class BeaconServiceImpl implements BeaconService {
             }
             else {
 //                TODO: Error for no player matching id given
+                // Return -1 and deal with in controller by returning 400 BAD REQUEST?
             }
         }
         return closestBeaconMajor;
@@ -110,26 +111,19 @@ public class BeaconServiceImpl implements BeaconService {
 
     @Override
     public List<Beacon> getAllBeaconsExcept(int major) {
-//
-//        List<Player> players = new ArrayList<>();
-//        List<Player> allPlayers = getAllPlayers();
-//        for (Player p : allPlayers) {
-//            if (!(p.equals(player))) players.add(p);
-//        }
-//        return players;
         return beaconRepository.findAllByMajorNot(major);
     }
 
-    @PostConstruct
-    void addBeacons() {
-        Beacon b1 = new Beacon(2,1, "0KiC");
-        Beacon b2 = new Beacon(2,4, "u0dd");
-        Beacon b3 = new Beacon(1,2, "nHX3");
-        Beacon b4 = new Beacon(1,5, "jpMn");
-        saveBeacon(b1);
-        saveBeacon(b2);
-        saveBeacon(b3);
-        saveBeacon(b4);
-    }
+//    @PostConstruct
+//    void addBeacons() {
+//        Beacon b1 = new Beacon(2,1, "0KiC");
+//        Beacon b2 = new Beacon(2,4, "u0dd");
+//        Beacon b3 = new Beacon(1,2, "nHX3");
+//        Beacon b4 = new Beacon(1,5, "jpMn");
+//        saveBeacon(b1);
+//        saveBeacon(b2);
+//        saveBeacon(b3);
+//        saveBeacon(b4);
+//    }
 
 }

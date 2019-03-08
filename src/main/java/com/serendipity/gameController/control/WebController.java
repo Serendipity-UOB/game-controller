@@ -2,17 +2,20 @@ package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.model.Game;
-import com.serendipity.gameController.service.beaconService.BeaconService;
-import com.serendipity.gameController.service.exchangeService.ExchangeService;
-import com.serendipity.gameController.service.gameService.GameService;
+import com.serendipity.gameController.model.Zone;
+import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
+import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
+import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.transaction.Transactional;
 import java.time.LocalTime;
+import java.util.Iterator;
+import java.util.List;
 
 @Controller
 public class WebController {
@@ -21,17 +24,21 @@ public class WebController {
     PlayerServiceImpl playerService;
 
     @Autowired
-    BeaconService beaconService;
+    BeaconServiceImpl beaconService;
 
     @Autowired
-    GameService gameService;
+    GameServiceImpl gameService;
 
     @Autowired
-    ExchangeService exchangeService;
+    ExchangeServiceImpl exchangeService;
+
+    @Autowired
+    ZoneServiceImpl zoneService;
 
     @GetMapping(value="/")
     public String home(Model model) {
         model.addAttribute("beacons", beaconService.getAllBeacons());
+        model.addAttribute("zones", zoneService.getAllZones());
         model.addAttribute("games", gameService.getAllGames());
         return "admin";
     }
@@ -48,25 +55,43 @@ public class WebController {
     }
 
     @PostMapping(value="/initBeacon")
-    public String initBeacon(@ModelAttribute("beacon_name") String beacon_name,
-                           @ModelAttribute("beacon_minor") int beacon_minor,
-                             @ModelAttribute("beacon_major") int beacon_major) {
-//        receive beacon attributes and construct beacon to add to beacon table
-        Beacon beacon = new Beacon(beacon_major, beacon_minor, beacon_name);
+    public String initBeacon(@ModelAttribute("beacon_identifier") String identifier,
+                             @ModelAttribute("beacon_major") int major,
+                             @ModelAttribute("beacon_minor") int minor,
+                             @ModelAttribute("beacon_zone") Zone zone) {
+        Beacon beacon = new Beacon(major, minor, identifier, zone);
         beaconService.saveBeacon(beacon);
-        return "redirect:/";
-    }
-
-    @PostMapping(value="/delBeacons")
-    public String delBeacons() {
-        beaconService.deleteAllBeacons();
         return "redirect:/";
     }
 
     @Transactional
     @PostMapping(value="/delBeacon")
-    public String delBeacon(@ModelAttribute("beacon_id") long beacon_id) {
-        beaconService.deleteBeaconById(beacon_id);
+    public String delBeacon(@ModelAttribute("beacon_id") Long id) {
+        // TODO: Remove from zone's beacons, save zone
+        Beacon beacon = beaconService.getBeaconById(id).get();
+        zoneService.removeBeaconFromZone(beacon);
+        beaconService.deleteBeaconById(id);
+        return "redirect:/";
+    }
+
+    @PostMapping(value="/initZone")
+    public String initZone(@ModelAttribute("zone_name") String name) {
+        Zone zone = new Zone(name);
+        zoneService.saveZone(zone);
+        return "redirect:/";
+    }
+
+    @Transactional
+    @PostMapping(value="delZone")
+    public String delZone(@ModelAttribute("zone_id") Long id) {
+        Zone zone = zoneService.getZoneById(id);
+        List<Beacon> beacons = zone.getBeacons();
+        for (Iterator<Beacon> it = beacons.iterator(); it.hasNext();) {
+            Beacon beacon = it.next();
+            it.remove();
+            beaconService.deleteBeaconById(beacon.getId());
+        }
+        zoneService.deleteZone(zone);
         return "redirect:/";
     }
 
