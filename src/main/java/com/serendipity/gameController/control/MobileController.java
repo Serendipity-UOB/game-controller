@@ -2,9 +2,11 @@ package com.serendipity.gameController.control;
 
 import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
+import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameService;
+import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +35,10 @@ public class MobileController {
     BeaconServiceImpl beaconService;
 
     @Autowired
-    GameService gameService;
+    GameServiceImpl gameService;
+
+    @Autowired
+    EvidenceServiceImpl evidenceService;
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -210,8 +215,11 @@ public class MobileController {
         Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
         if (optionalExchange.isPresent()) {
             Exchange exchange = optionalExchange.get();
-            requesterId = exchange.getRequestPlayer().getId();
-            // TODO: Should exchange_pending be cleared after being set or persist until exchange complete?
+            if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                requesterId = exchange.getRequestPlayer().getId();
+                exchange.setRequestSent(true);
+                exchangeService.saveExchange(exchange);
+            }
         }
         output.put("exchange_pending", requesterId);
 
@@ -247,30 +255,22 @@ public class MobileController {
         if (optionalExchange.isPresent()) {
             Exchange exchange = optionalExchange.get();
             if (exchange.getResponsePlayer() == responder) {
-                if (exchangeService.getTimeRemaining(exchange) == 0l) {
-                    if (exchange.isTimeoutTold()) {
-                        exchangeService.createExchange(requester, responder, jsonContactIds);
-                        response = new ResponseEntity<>(HttpStatus.CREATED);
-                    } else {
-                        // TODO: Set timeoutTold to true
-                        exchange.setTimeoutTold(true);
-                        exchangeService.saveExchange(exchange);
-                        response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
-                    }
+                if (exchange.isRequesterToldComplete()) {
+                    exchangeService.createExchange(requester, responder, jsonContactIds);
+                    response = new ResponseEntity<>(HttpStatus.CREATED);
+                } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                    exchange.setRequesterToldComplete(true);
+                    exchangeService.saveExchange(exchange);
+                    response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
                 } else {
                     if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                        // TODO: Move this chunk into a service method?
-                        JSONArray jsonEvidences = new JSONArray();
-                        for (Evidence evidence : exchange.getResponseEvidence()) {
-                            JSONObject jsonEvidence = new JSONObject();
-                            jsonEvidence.put("player_id", evidence.getPlayer().getId());
-                            jsonEvidence.put("amount", evidence.getAmount());
-                            jsonEvidences.put(jsonEvidence);
-                        }
+                        List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
                         JSONObject output = new JSONObject();
-                        output.put("evidence", jsonEvidences);
+                        output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                         response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
                     } else if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
+                        exchange.setRequesterToldComplete(true);
+                        exchangeService.saveExchange(exchange);
                         response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
                     } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
                         response = new ResponseEntity<>(HttpStatus.PARTIAL_CONTENT);
@@ -309,11 +309,13 @@ public class MobileController {
 
             // Handle response
             if (exchangeResponse.equals(ExchangeResponse.WAITING)) {
-                long timeRemaining = exchangeService.getTimeRemaining(exchange);
-                if (timeRemaining == 0l) {
+                long timeRemainingBuffer = 1l;
+                long timeRemaining = exchangeService.getTimeRemaining(exchange) - timeRemainingBuffer;
+                if (timeRemaining <= 0l) {
                     response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
                 } else {
                     JSONObject output = new JSONObject();
+                    // 1s buffer for timeout, to avoid race conditions
                     output.put("time_remaining", timeRemaining);
                     response = new ResponseEntity<>(output.toString(), HttpStatus.PARTIAL_CONTENT);
                 }
@@ -323,22 +325,21 @@ public class MobileController {
                     Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
                     contactIds.add(id);
                 }
-                List<Evidence> evidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
-                exchange.setResponseEvidence(evidenceList);
-                exchange.setResponse(ExchangeResponse.ACCEPTED);
-                // TODO: Move this chunk into a service method?
-                JSONArray jsonEvidences = new JSONArray();
-                for (Evidence evidence : exchange.getRequestEvidence()) {
-                    JSONObject jsonEvidence = new JSONObject();
-                    jsonEvidence.put("player_id", evidence.getPlayer().getId());
-                    jsonEvidence.put("amount", evidence.getAmount());
-                    jsonEvidences.put(jsonEvidence);
-                }
+                // Return request evidence
+                List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
                 JSONObject output = new JSONObject();
-                output.put("evidence", jsonEvidences);
+                output.put("evidence", evidenceService.evidenceListToJsonArray(requestEvidenceList));
+                // Save response evidence
+                List<Evidence> responseEvidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
+                exchange.setEvidenceList(responseEvidenceList);
+                // Change response to accepted
+                exchange.setResponse(exchangeResponse);
+                exchangeService.saveExchange(exchange);
+                // Set status code
                 response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
-
             } else if (exchangeResponse.equals(ExchangeResponse.REJECTED)) {
+                exchange.setResponse(exchangeResponse);
+                exchangeService.saveExchange(exchange);
                 response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
             }
         }

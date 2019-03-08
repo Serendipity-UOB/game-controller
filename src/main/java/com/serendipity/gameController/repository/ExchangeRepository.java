@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ExchangeRepository extends CrudRepository<Exchange, Long> {
 
-    Optional<Exchange> findExchangeByRequestPlayerAndResponsePlayer(Player requestPlayer, Player targetPlayer);
+    List<Exchange> findAllByRequestPlayerAndResponsePlayerOrderByStartTimeDesc(Player requestPlayer, Player responsePlayer);
 
     List<Exchange> findAllByRequestPlayerOrderByStartTimeDesc(Player requestPlayer);
 

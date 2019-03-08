@@ -40,7 +40,7 @@ public class ExchangeServiceImpl implements ExchangeService {
             contactIds.add(id);
         }
         List<Evidence> evidenceList = calculateEvidence(exchange, requester, contactIds);
-        exchange.setRequestEvidence(evidenceList);
+        exchange.setEvidenceList(evidenceList);
         saveExchange(exchange);
     }
 
@@ -58,7 +58,9 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public Optional<Exchange> getExchangeByPlayers(Player requester, Player responder) {
-        return exchangeRepository.findExchangeByRequestPlayerAndResponsePlayer(requester, responder);
+        List<Exchange> exchangeList = exchangeRepository.findAllByRequestPlayerAndResponsePlayerOrderByStartTimeDesc(requester, responder);
+        if (exchangeList.size() > 0) return  Optional.of(exchangeList.get(0));
+        else return Optional.empty();
     }
 
     @Override
@@ -80,10 +82,10 @@ public class ExchangeServiceImpl implements ExchangeService {
         List<Evidence> evidenceList = new ArrayList<>();
 
         // Make evidence on the player giving evidence
-        Evidence evidence = new Evidence(exchange, player, 10);
+        Evidence evidence = new Evidence(exchange, player, player, 10);
         evidenceList.add(evidence);
 
-        // Remove the responder id from contacts list
+        // Remove the responder and requester ids from contacts list
         // TODO: Test if this works (is equals enough or does it only work on the same actual object?)
         if (contactIds.contains(exchange.getResponsePlayer().getId())) {
             contactIds.remove(exchange.getResponsePlayer().getId());
@@ -97,10 +99,28 @@ public class ExchangeServiceImpl implements ExchangeService {
             Random random = new Random();
             // TODO: Validation on optional
             Player contact = playerService.getPlayer(contactIds.get(random.nextInt(contactIds.size()))).get();
-            evidence = new Evidence(exchange, contact, 20);
+            evidence = new Evidence(exchange, contact, player, 20);
             evidenceList.add(evidence);
         }
 
+        return evidenceList;
+    }
+
+    @Override
+    public void addEvidence(Exchange exchange, List<Evidence> newEvidenceList) {
+        List<Evidence> existingEvidenceList = exchange.getEvidenceList();
+        existingEvidenceList.addAll(newEvidenceList);
+        exchange.setEvidenceList(existingEvidenceList);
+        saveExchange(exchange);
+    }
+
+    @Override
+    public List<Evidence> getMyEvidence(Exchange exchange, Player player) {
+        List<Evidence> evidenceList = new ArrayList<>();
+        List<Evidence> allEvidence = exchange.getEvidenceList();
+        for (Evidence evidence : allEvidence) {
+            if (!evidence.getAuthor().equals(player)) evidenceList.add(evidence);
+        }
         return evidenceList;
     }
 
@@ -110,42 +130,5 @@ public class ExchangeServiceImpl implements ExchangeService {
             exchangeRepository.deleteAll();
         }
     }
-
-    //    @Override
-//    public void createExchange(Player interacter, Player interactee, Long contactId) {
-////        Optional<Exchange> exchangeOptional = getExchangeByPlayers(interacter, interactee);
-////        if (contactId == interactee.getId()) contactId = 0l;
-////        if (exchangeOptional.isPresent()) {
-////            Exchange exchange = exchangeOptional.get();
-////            resetExchange(exchange, contactId);
-////        } else {
-////            Exchange exchange = new Exchange(interacter, interactee);
-////            // TODO: Set evidence
-////            saveExchange(exchange);
-////        }
-//    }
-
-//    @Override
-//    public boolean isExpired(Exchange exchange) {
-//        return LocalTime.now().isAfter(exchange.getStartTime().plusSeconds(10));
-//    }
-//
-//    @Override
-//    public boolean isActive(Exchange exchange) {
-//        // TODO
-////        return !(exchange.isCompleted());
-//        return true;
-//    }
-
-//    @Override
-//    public boolean existsActiveExchangeByPlayers(Player interacter, Player interactee) {
-//        boolean exists = false;
-//        Optional<Exchange> exchangeOptional = getExchangeByPlayers(interacter, interactee);
-//        if (exchangeOptional.isPresent()) {
-//            Exchange exchange = exchangeOptional.get();
-//            exists = isActive(exchange);
-//        }
-//        return exists;
-//    }
-
+    
 }

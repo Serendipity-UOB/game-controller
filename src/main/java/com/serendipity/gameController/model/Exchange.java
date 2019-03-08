@@ -21,21 +21,24 @@ public class Exchange {
     private Player responsePlayer;
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Evidence> requestEvidence; // The evidence from the requester
+    private List<Evidence> evidenceList; // The evidence from the requester
 
-    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Evidence> responseEvidence; // The evidence from the responder
+//    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private List<Evidence> responseEvidence; // The evidence from the responder
 
     private ExchangeResponse response;
 
-    private boolean timeoutTold;
+    private boolean requesterToldComplete;
+
+    private boolean requestSent;
 
     public Exchange() {
         this.startTime = LocalTime.now();
         this.response = ExchangeResponse.WAITING;
-        this.requestEvidence = new ArrayList<>();
-        this.responseEvidence = new ArrayList<>();
-        this.timeoutTold = false;
+        this.evidenceList = new ArrayList<>();
+//        this.responseEvidence = new ArrayList<>();
+        this.requesterToldComplete = false;
+        this.requestSent = false;
     }
 
     public Exchange(Player requestPlayer, Player responsePlayer) {
@@ -43,9 +46,10 @@ public class Exchange {
         this.requestPlayer = requestPlayer;
         this.responsePlayer = responsePlayer;
         this.response = ExchangeResponse.WAITING;
-        this.requestEvidence = new ArrayList<>();
-        this.responseEvidence = new ArrayList<>();
-        this.timeoutTold = false;
+        this.evidenceList = new ArrayList<>();
+//        this.responseEvidence = new ArrayList<>();
+        this.requesterToldComplete = false;
+        this.requestSent = false;
     }
 
     public Long getId() {
@@ -81,21 +85,21 @@ public class Exchange {
     }
 
 
-    public List<Evidence> getRequestEvidence() {
-        return requestEvidence;
+    public List<Evidence> getEvidenceList() {
+        return evidenceList;
     }
 
-    public void setRequestEvidence(List<Evidence> requestEvidence) {
-        this.requestEvidence = requestEvidence;
+    public void setEvidenceList(List<Evidence> requestEvidence) {
+        this.evidenceList = requestEvidence;
     }
 
-    public List<Evidence> getResponseEvidence() {
-        return responseEvidence;
-    }
-
-    public void setResponseEvidence(List<Evidence> responseEvidence) {
-        this.responseEvidence = responseEvidence;
-    }
+//    public List<Evidence> getResponseEvidence() {
+//        return responseEvidence;
+//    }
+//
+//    public void setResponseEvidence(List<Evidence> responseEvidence) {
+//        this.responseEvidence = responseEvidence;
+//    }
 
     public ExchangeResponse getResponse() {
         return response;
@@ -105,12 +109,19 @@ public class Exchange {
         this.response = response;
     }
 
-    public boolean isTimeoutTold() {
-        return timeoutTold;
+    public boolean isRequesterToldComplete() {
+        return requesterToldComplete;
     }
 
-    public void setTimeoutTold(boolean timeoutTold) {
-        this.timeoutTold = timeoutTold;
+    public void setRequesterToldComplete(boolean requesterToldComplete) {
+        this.requesterToldComplete = requesterToldComplete;
     }
 
+    public boolean isRequestSent() {
+        return requestSent;
+    }
+
+    public void setRequestSent(boolean requestSent) {
+        this.requestSent = requestSent;
+    }
 }

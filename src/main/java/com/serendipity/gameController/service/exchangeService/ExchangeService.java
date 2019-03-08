@@ -56,34 +56,20 @@ public interface ExchangeService {
     List<Evidence> calculateEvidence(Exchange exchange, Player player, List<Long> contactIds);
 
     /*
+     * @param exchange The exchange to add evidence to.
+     * @param evidenceList The list of evidence to add.
+     */
+    void addEvidence(Exchange exchange, List<Evidence> evidenceList);
+
+    /*
+     * @param player The player to give the evidence to.
+     * @return A list of evidence that this player didn't author.
+     */
+    List<Evidence> getMyEvidence(Exchange exchange, Player player);
+
+    /*
      * Deletes all exchanges in the database
      */
     void deleteAllExchanges();
-
-    /*
-     * @param interacter The player requesting the exchange.
-     * @param interactee The player with whom to request the exchange.
-     * @param contact The player about which they are giving secondary evidence.
-     */
-//    void createExchange(Player interacter, Player interactee, Long contactId);
-
-//    /*
-//     * @param exchange The exchange.
-//     * @return True if the exchange is expired.
-//     */
-//    boolean isExpired(Exchange exchange);
-//
-//    /*
-//     * @param exchange The exchange.
-//     * @return True if the exchange is active (incomplete and not expired)
-//     */
-//    boolean isActive(Exchange exchange);
-
-    /*
-     * @param interacter The player requesting the exchange.
-     * @param interactee The player with whom to request the exchange.
-     * @return True if there exists an active exchange from interacter to interactee
-     */
-//    boolean existsActiveExchangeByPlayers(Player interacter, Player interactee);
 
 }
