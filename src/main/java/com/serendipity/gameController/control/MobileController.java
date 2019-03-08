@@ -3,13 +3,10 @@ package com.serendipity.gameController.control;
 import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
-import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
-import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
-import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -282,8 +274,6 @@ public class MobileController {
             output.put("game_over", false);
         }
 
-        // Mission TODO
-        output.put("mission_description", "");
         // Mission
         Mission mission = missionService.getMission(player.getMissionAssigned()).get();
 //        Find current time and mission start time in seconds
