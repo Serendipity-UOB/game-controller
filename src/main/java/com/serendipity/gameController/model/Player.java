@@ -29,6 +29,8 @@ public class Player {
 
     private int nearestBeaconMajor;
 
+    private Long missionAssigned;
+
     public Player() {
         this.reputation = 0;
         this.homeBeacon = -1;
@@ -115,6 +117,10 @@ public class Player {
         this.nearestBeaconMajor = nearestBeaconMajor;
     }
 
+    public Long getMissionAssigned() { return missionAssigned; }
+
+    public void setMissionAssigned(Long missionAssigned) { this.missionAssigned = missionAssigned; }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -127,6 +133,7 @@ public class Player {
                 ", exposed=" + exposed +
                 ", returnHome=" + returnHome +
                 ", nearestBeaconMajor=" + nearestBeaconMajor +
+                ", missionAssigned=" + missionAssigned +
                 '}';
     }
 }

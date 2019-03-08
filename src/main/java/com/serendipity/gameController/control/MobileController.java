@@ -7,7 +7,9 @@ import com.serendipity.gameController.service.exchangeService.ExchangeService;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameService;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
+import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Controller
@@ -39,6 +47,9 @@ public class MobileController {
 
     @Autowired
     EvidenceServiceImpl evidenceService;
+
+    @Autowired
+    MissionServiceImpl missionService;
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -122,15 +133,83 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
-    @RequestMapping(value="/startInfo", method=RequestMethod.GET)
+    @RequestMapping(value="/startInfo", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String getStartInfo() {
+    public ResponseEntity<String> getStartInfo(@RequestBody String json) {
+//        Read in request body
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+//        Create JSON object for response body
         JSONObject output = new JSONObject();
-        output.put("all_players", playerService.getAllPlayersStartInfo());
-        return output.toString();
+//        set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+//        Ensure player exists
+        Optional<Player> opPlayer = playerService.getPlayer(playerId);
+        if(opPlayer.isPresent()) {
+//            Get two random players to gain intel on from mission
+            Player player = opPlayer.get();
+            List<Player> players = playerService.getAllPlayersExcept(player);
+            Random random = new Random();
+//            Ensure 1 other player exists
+            if(players.size() > 0) {
+                Player target1 = players.get(random.nextInt(players.size()));
+                players.remove(target1);
+//                Ensure 2 other players exist
+                if (players.size() > 0) {
+                    Player target2 = players.get(random.nextInt(players.size()));
+//                    Ensure game exists
+//                    TODO: Deal with multiple game instances
+                    Optional<Game> opGame = gameService.getNextGame();
+                    if(opGame.isPresent()) {
+                        Game game = opGame.get();
+
+//                        Find length of game in seconds
+                        String datePattern = "HH:mm:ss";
+                        DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
+                        LocalTime gameEnd = game.getEndTime();
+                        String endString = df.format(gameEnd);
+                        LocalTime gameStart = game.getStartTime();
+                        String startString = df.format(gameStart);
+                        String[] unitsEnd = endString.split(":");
+                        String[] unitsStart = startString.split(":");
+                        int end = 3600 * Integer.parseInt(unitsEnd[0]) + 60 * Integer.parseInt(unitsEnd[1]) +
+                                Integer.parseInt(unitsEnd[2]);
+                        int start = 3600 * Integer.parseInt(unitsStart[0]) + 60 *
+                                Integer.parseInt(unitsStart[1]) + Integer.parseInt(unitsStart[2]);
+
+//                        Find upper and lower boundaries for mission time assignment
+                        int quarter = (end - start) / 4;
+                        int upper = end - quarter;
+                        int lower = start + quarter;
+
+//                        Pick random time
+                        Random randomTime = new Random();
+                        int time = quarter + randomTime.nextInt(upper - lower);
+                        LocalTime missionStart = gameStart.plus(time, ChronoUnit.SECONDS);
+                        LocalTime missionEnd = missionStart.plus(30, ChronoUnit.SECONDS);
+//                        TODO: May need to make the player assignment more dynamic
+//                        TODO: May need to consider multiple missions
+//                        Save new mission
+                        Mission mission = new Mission(missionStart, missionEnd, target1.getId(), target2.getId());
+                        missionService.saveMission(mission);
+
+//                        Assign mission to player
+                        player.setMissionAssigned(mission.getId());
+                        playerService.savePlayer(player);
+
+//                        Return all players
+                        responseStatus = HttpStatus.OK;
+                        output.put("all_players", playerService.getAllPlayersStartInfo());
+                    }
+                }
+            }
+
+        } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
-    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST)
+    @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity atHomeBeacon(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
@@ -151,9 +230,9 @@ public class MobileController {
         return response;
     }
 
-    @RequestMapping(value="/playerUpdate", method=RequestMethod.POST)
+    @RequestMapping(value="/playerUpdate", method=RequestMethod.POST , consumes="application/json")
     @ResponseBody
-    public String playerUpdate(@RequestBody String json) {
+    public ResponseEntity<String> playerUpdate(@RequestBody String json) {
 
         // Setup json
         JSONObject input = new JSONObject(json);
@@ -205,6 +284,42 @@ public class MobileController {
 
         // Mission TODO
         output.put("mission_description", "");
+        // Mission
+        Mission mission = missionService.getMission(player.getMissionAssigned()).get();
+//        Find current time and mission start time in seconds
+        String datePattern = "HH:mm:ss";
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
+        String now = df.format(LocalTime.now());
+        String start = df.format(mission.getStartTime());
+        String[] unitsNow = now.split(":");
+        String[] unitsStart = start.split(":");
+        int nowSeconds = 3600 * Integer.parseInt(unitsNow[0]) + 60 * Integer.parseInt(unitsNow[1]) +
+                Integer.parseInt(unitsNow[2]);
+        int startSeconds = 3600 * Integer.parseInt(unitsStart[0]) + 60 * Integer.parseInt(unitsStart[1]) +
+                Integer.parseInt(unitsStart[2]);
+//        If mission should start
+        if((startSeconds < nowSeconds) && !mission.getSent()){
+            Player p1 = playerService.getPlayer(mission.getPlayer1()).get();
+            Player p2 = playerService.getPlayer(mission.getPlayer2()).get();
+            String missionDescription;
+            missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
+                            + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
+
+            List<Beacon> notHome = beaconService.getAllBeaconsExcept(player.getHomeBeacon());
+            Random random = new Random();
+            Beacon beacon = notHome.get(random.nextInt(notHome.size()));
+            missionDescription += " activities can be found at <b>" + beacon.getName() +
+                    "</b>.\n Get there in 30 Seconds to secure it.";
+
+            mission.setSent(true);
+            mission.setBeacon(beacon.getMajor());
+            missionService.saveMission(mission);
+
+            output.put("mission_description", missionDescription);
+        }
+        else{
+            output.put("mission_description", "");
+        }
 
         // Exchange pending
         Long requesterId = 0l;
@@ -219,7 +334,7 @@ public class MobileController {
         }
         output.put("exchange_pending", requesterId);
 
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/newTarget", method=RequestMethod.POST, consumes="application/json")
@@ -236,7 +351,6 @@ public class MobileController {
     @RequestMapping(value="/exchangeRequest", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity exchangeRequest(@RequestBody String json) {
-        // TODO: Fix for zero contacts
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         // Handle JSON
@@ -384,10 +498,66 @@ public class MobileController {
                     playerService.savePlayer(target);
 //                    set output elements
                     responseStatus = HttpStatus.OK;
-                    output.put("SUCCESS", "Valid expose");
                 } else { output.put("BAD_REQUEST", "Player has been exposed or player must return home"); }
             } else { output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target"); }
         } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+        return new ResponseEntity<>(output.toString(), responseStatus);
+    }
+
+    @RequestMapping(value="/missionUpdate", method=RequestMethod.POST, consumes="application/json")
+    @ResponseBody
+    public ResponseEntity<String> missionUpdate(@RequestBody String json) {
+//        receive JSON object
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+
+//        Create JSON object for response body
+        JSONObject output = new JSONObject();
+//        set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
+//        Check player exists
+        Optional<Player> opPlayer = playerService.getPlayer(playerId);
+        if(opPlayer.isPresent()){
+            Player player = opPlayer.get();
+            int location = player.getNearestBeaconMajor();
+            Mission mission = missionService.getMission(player.getMissionAssigned()).get();
+//            Find current time and mission end time in seconds
+            String datePattern = "HH:mm:ss";
+            DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
+            String now = df.format(LocalTime.now());
+            String end = df.format(mission.getEndTime());
+            String[] unitsNow = now.split(":");
+            String[] unitsEnd = end.split(":");
+            int nowSeconds = 3600 * Integer.parseInt(unitsNow[0]) + 60 * Integer.parseInt(unitsNow[1]) +
+                    Integer.parseInt(unitsNow[2]);
+            int endSeconds = 3600 * Integer.parseInt(unitsEnd[0]) + 60 * Integer.parseInt(unitsEnd[1]) +
+                    Integer.parseInt(unitsEnd[2]);
+//            Check if the mission hasn't timed out
+            if((nowSeconds + 1) < endSeconds){
+                if(location == mission.getBeacon()){
+                    JSONArray evidence = new JSONArray();
+                    JSONObject p1 = new JSONObject();
+                    p1.put("player_id", mission.getPlayer1());
+                    p1.put("amount", 10);
+                    evidence.put(p1);
+                    JSONObject p2 = new JSONObject();
+                    p2.put("player_id", mission.getPlayer2());
+                    p2.put("amount", 10);
+                    evidence.put(p2);
+                    output.put("evidence", evidence);
+                } else {
+                    LocalTime timeRemaining = mission.getEndTime().minus(nowSeconds, ChronoUnit.SECONDS);
+                    System.out.println(timeRemaining);
+                    output.put("time_remaining", timeRemaining);
+                    responseStatus = HttpStatus.PARTIAL_CONTENT;
+                }
+            } else {
+                output.put("NO_CONTENT", "Mission failed");
+                responseStatus = HttpStatus.NO_CONTENT;
+            }
+        } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -399,6 +569,7 @@ public class MobileController {
         for (Player player : players) {
             JSONObject playerInfo = new JSONObject();
             playerInfo.put("player_id", player.getId());
+            playerInfo.put("position", playerService.getLeaderboardPosition(player));
             playerInfo.put("score", player.getReputation());
             leaderboard.put(playerInfo);
         }

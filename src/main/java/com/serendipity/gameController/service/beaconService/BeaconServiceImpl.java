@@ -108,6 +108,18 @@ public class BeaconServiceImpl implements BeaconService {
         return beaconsAllocated;
     }
 
+    @Override
+    public List<Beacon> getAllBeaconsExcept(int major) {
+//
+//        List<Player> players = new ArrayList<>();
+//        List<Player> allPlayers = getAllPlayers();
+//        for (Player p : allPlayers) {
+//            if (!(p.equals(player))) players.add(p);
+//        }
+//        return players;
+        return beaconRepository.findAllByMajorNot(major);
+    }
+
     @PostConstruct
     void addBeacons() {
         Beacon b1 = new Beacon(2,1, "0KiC");
