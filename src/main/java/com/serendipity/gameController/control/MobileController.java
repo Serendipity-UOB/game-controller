@@ -250,10 +250,12 @@ public class MobileController {
         Player requester = playerService.getPlayer(requesterId).get();
         Player responder = playerService.getPlayer(responderId).get();
 
-        // Handle request
+        // Find exchange
         Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(requester);
         if (optionalExchange.isPresent()) {
             Exchange exchange = optionalExchange.get();
+
+            // Handle request
             if (exchange.getResponsePlayer() == responder) {
                 if (exchange.isRequesterToldComplete()) {
                     exchangeService.createExchange(requester, responder, jsonContactIds);
@@ -267,6 +269,8 @@ public class MobileController {
                         List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
                         JSONObject output = new JSONObject();
                         output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                        exchange.setRequesterToldComplete(true);
+                        exchangeService.saveExchange(exchange);
                         response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
                     } else if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
                         exchange.setRequesterToldComplete(true);
@@ -296,7 +300,6 @@ public class MobileController {
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
         int exchangeResponseIndex = input.getInt("response");
-        // TODO: Test that this line works
         ExchangeResponse exchangeResponse = ExchangeResponse.values()[exchangeResponseIndex];
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
         Player requester = playerService.getPlayer(requesterId).get();
@@ -325,14 +328,11 @@ public class MobileController {
                     Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
                     contactIds.add(id);
                 }
-                // Return request evidence
                 List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
                 JSONObject output = new JSONObject();
                 output.put("evidence", evidenceService.evidenceListToJsonArray(requestEvidenceList));
-                // Save response evidence
                 List<Evidence> responseEvidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
                 exchange.setEvidenceList(responseEvidenceList);
-                // Change response to accepted
                 exchange.setResponse(exchangeResponse);
                 exchangeService.saveExchange(exchange);
                 // Set status code
