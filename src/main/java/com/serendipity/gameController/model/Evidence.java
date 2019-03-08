@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
 @Entity
 public class Evidence {
@@ -13,20 +12,24 @@ public class Evidence {
     @GeneratedValue
     private Long id;
 
-    @NotNull
     @ManyToOne
     private Exchange exchange;
 
-    @NotNull
     @ManyToOne
-    private Player player;
+    private Player playerAbout;
 
-    @NotNull
+    @ManyToOne
+    private Player author;
+
     private int amount;
 
-    public Evidence(@NotNull Exchange exchange, @NotNull Player player, @NotNull int amount) {
+    public Evidence() {
+    }
+
+    public Evidence(Exchange exchange, Player playerAbout, Player author, int amount) {
         this.exchange = exchange;
-        this.player = player;
+        this.playerAbout = playerAbout;
+        this.author = author;
         this.amount = amount;
     }
 
@@ -46,12 +49,20 @@ public class Evidence {
         this.exchange = exchange;
     }
 
-    public Player getPlayer() {
-        return player;
+    public Player getPlayerAbout() {
+        return playerAbout;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayerAbout(Player playerAbout) {
+        this.playerAbout = playerAbout;
+    }
+
+    public Player getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Player author) {
+        this.author = author;
     }
 
     public int getAmount() {
