@@ -187,7 +187,6 @@ public class MobileController {
         }
 
         // Return home
-        // TODO: Make 'returnHome' clearer, what does this actually mean?
         if (player.isReturnHome()) {
             output.put("req_new_target", true);
             player.setReturnHome(false);
@@ -197,8 +196,6 @@ public class MobileController {
         }
 
         // Game over
-        // TODO: Review when add ability to attach players to games,
-        // TODO: and pass in the game that the current player is a part of, instead of games.get(0)
         List<Game> games = gameService.getAllGamesByStartTimeAsc();
         if (gameService.isGameOver(games.get(0))) {
             output.put("game_over", true);
@@ -206,8 +203,7 @@ public class MobileController {
             output.put("game_over", false);
         }
 
-        // Mission
-        // TODO: Implement
+        // Mission TODO
         output.put("mission_description", "");
 
         // Exchange pending
@@ -240,6 +236,7 @@ public class MobileController {
     @RequestMapping(value="/exchangeRequest", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity exchangeRequest(@RequestBody String json) {
+        // TODO: Fix for zero contacts
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         // Handle JSON
@@ -260,19 +257,20 @@ public class MobileController {
                 if (exchange.isRequesterToldComplete()) {
                     exchangeService.createExchange(requester, responder, jsonContactIds);
                     response = new ResponseEntity<>(HttpStatus.CREATED);
+                }
+                else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                    List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
+                    JSONObject output = new JSONObject();
+                    output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                    exchange.setRequesterToldComplete(true);
+                    exchangeService.saveExchange(exchange);
+                    response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
                 } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
                     exchange.setRequesterToldComplete(true);
                     exchangeService.saveExchange(exchange);
                     response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
                 } else {
-                    if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                        List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
-                        JSONObject output = new JSONObject();
-                        output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
-                        exchange.setRequesterToldComplete(true);
-                        exchangeService.saveExchange(exchange);
-                        response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
-                    } else if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
+                    if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
                         exchange.setRequesterToldComplete(true);
                         exchangeService.saveExchange(exchange);
                         response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -324,9 +322,11 @@ public class MobileController {
                 }
             } else if (exchangeResponse.equals(ExchangeResponse.ACCEPTED)) {
                 List<Long> contactIds = new ArrayList<>();
-                for (int i = 0; i < jsonContactIds.length(); i++) {
-                    Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
-                    contactIds.add(id);
+                if (jsonContactIds.length() > 0) {
+                    for (int i = 0; i < jsonContactIds.length(); i++) {
+                        Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
+                        contactIds.add(id);
+                    }
                 }
                 List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
                 JSONObject output = new JSONObject();

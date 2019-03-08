@@ -35,9 +35,11 @@ public class ExchangeServiceImpl implements ExchangeService {
     public void createExchange(Player requester, Player responder, JSONArray jsonContactIds) {
         Exchange exchange = new Exchange(requester, responder);
         List<Long> contactIds = new ArrayList<>();
-        for (int i = 0; i < jsonContactIds.length(); i++) {
-            Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
-            contactIds.add(id);
+        if (jsonContactIds.length() > 0) {
+            for (int i = 0; i < jsonContactIds.length(); i++) {
+                Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
+                contactIds.add(id);
+            }
         }
         List<Evidence> evidenceList = calculateEvidence(exchange, requester, contactIds);
         exchange.setEvidenceList(evidenceList);
@@ -97,7 +99,6 @@ public class ExchangeServiceImpl implements ExchangeService {
         // Pick randomly from contactIds
         if (contactIds.size() != 0) {
             Random random = new Random();
-            // TODO: Validation on optional
             Player contact = playerService.getPlayer(contactIds.get(random.nextInt(contactIds.size()))).get();
             evidence = new Evidence(exchange, contact, player, 20);
             evidenceList.add(evidence);
@@ -130,5 +131,5 @@ public class ExchangeServiceImpl implements ExchangeService {
             exchangeRepository.deleteAll();
         }
     }
-    
+
 }
