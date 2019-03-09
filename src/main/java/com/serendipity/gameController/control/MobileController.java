@@ -5,9 +5,11 @@ import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
+import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Controller
 public class MobileController {
@@ -46,6 +49,9 @@ public class MobileController {
 
     @Autowired
     ZoneServiceImpl zoneService;
+
+    @Autowired
+    InterceptServiceImpl interceptService;
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -173,11 +179,11 @@ public class MobileController {
                         // TODO: May need to make the player assignment more dynamic
                         // TODO: May need to consider multiple missions
                         // Save new mission
-                        Mission mission = new Mission(missionStart, missionEnd, target1.getId(), target2.getId());
+                        Mission mission = new Mission(missionStart, missionEnd, target1, target2);
                         missionService.saveMission(mission);
 
                         // Assign mission to player
-                        player.setMissionAssigned(mission.getId());
+                        player.setMissionAssigned(mission);
                         playerService.savePlayer(player);
 
                         // Return all players
@@ -187,7 +193,7 @@ public class MobileController {
                 }
             }
 
-        } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+        } else { output.put("BAD_REQUEST", "Couldn't find player given"); }
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -297,6 +303,43 @@ public class MobileController {
                 }
             }
             output.put("exchange_pending", requesterId);
+        // Mission
+        Mission mission = missionService.getMission(player.getMissionAssigned().getId()).get();
+//        If mission should start
+        if( mission.getStartTime().isBefore(LocalTime.now())&& !mission.getCompleted()){
+            Player p1 = mission.getPlayer1();
+            Player p2 = mission.getPlayer2();
+            String missionDescription;
+            missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
+                            + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
+//            TODO: beacon assignment will change if this gets called multiple times
+            List<Beacon> notHome = beaconService.getAllBeaconsExcept(player.getHomeBeacon());
+            Random random = new Random();
+            Beacon beacon = notHome.get(random.nextInt(notHome.size()));
+            missionDescription += " activities can be found at <b>" + beacon.getName() +
+                    "</b>.\n Get there in 30 Seconds to secure it.";
+
+            mission.setBeacon(beacon.getMajor());
+            missionService.saveMission(mission);
+
+            output.put("mission_description", missionDescription);
+        }
+        else{
+            output.put("mission_description", "");
+        }
+
+        // Exchange pending
+        Long requesterId = 0l;
+        Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+        if (optionalExchange.isPresent()) {
+            Exchange exchange = optionalExchange.get();
+            if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                requesterId = exchange.getRequestPlayer().getId();
+                exchange.setRequestSent(true);
+                exchangeService.saveExchange(exchange);
+            }
+        }
+        output.put("exchange_pending", requesterId);
 
             // Mission
             output.put("mission_description", "");
@@ -511,6 +554,68 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
+    @RequestMapping(value="/intercept", method=RequestMethod.POST, consumes="application/json")
+    @ResponseBody
+    public ResponseEntity<String> intercept(@RequestBody String json) {
+//        Read in request body
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Long targetId = input.getLong("target_id");
+//        Create JSON object for response body
+        JSONObject output = new JSONObject();
+//        set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+//        Ensure player exists
+        Optional<Player> opPlayer = playerService.getPlayer(playerId);
+        Optional<Player> opTarget = playerService.getPlayer(targetId);
+        if(opPlayer.isPresent() && opTarget.isPresent()) {
+            Player player = opPlayer.get();
+            Player target = opTarget.get();
+//          Find exchange
+            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
+            if (optionalExchange.isPresent()) {
+                Exchange exchange = optionalExchange.get();
+//                Find if player has an intercept
+                Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
+                if(opIntercept.isPresent()){
+                    Intercept intercept = opIntercept.get();
+//                    Find if the intercept is still active
+                    if(!intercept.isExpired()){
+//                        Find if the active intercept is for the exchange targeted
+                        if(intercept.getExchange().equals(exchange)) {
+//                            Find if exchange is still active
+                            if (exchange.isRequesterToldComplete()) {
+//                                Determine response
+                                if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                                    List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
+                                    output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                                    responseStatus = HttpStatus.OK;
+                                } else { responseStatus = HttpStatus.NO_CONTENT; }
+//                                Set intercept to be expired
+                                intercept.setExpired(true);
+                                interceptService.saveIntercept(intercept);
+                            } else { responseStatus = HttpStatus.PARTIAL_CONTENT; }
+                        } else { responseStatus = HttpStatus.NOT_FOUND; }
+                    } else {
+//                        Overwrite expired intercept
+                        intercept.setExpired(false);
+                        intercept.setExchange(exchange);
+                        interceptService.saveIntercept(intercept);
+                        responseStatus = HttpStatus.CREATED;
+                    }
+                } else {
+//                    Create intercept
+                    Intercept intercept = new Intercept(player, exchange);
+                    interceptService.saveIntercept(intercept);
+                    responseStatus = HttpStatus.CREATED;
+                }
+            } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
+        }
+        else{ output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+
+        return new ResponseEntity<>(output.toString(), responseStatus);
+    }
+
     @RequestMapping(value="/missionUpdate", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> missionUpdate(@RequestBody String json) {
@@ -528,40 +633,30 @@ public class MobileController {
         if(opPlayer.isPresent()){
             Player player = opPlayer.get();
             int location = player.getNearestBeaconMajor();
-            Mission mission = missionService.getMission(player.getMissionAssigned()).get();
-//            Find current time and mission end time in seconds
-            String datePattern = "HH:mm:ss";
-            DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
-            String now = df.format(LocalTime.now());
-            String end = df.format(mission.getEndTime());
-            String[] unitsNow = now.split(":");
-            String[] unitsEnd = end.split(":");
-            int nowSeconds = 3600 * Integer.parseInt(unitsNow[0]) + 60 * Integer.parseInt(unitsNow[1]) +
-                    Integer.parseInt(unitsNow[2]);
-            int endSeconds = 3600 * Integer.parseInt(unitsEnd[0]) + 60 * Integer.parseInt(unitsEnd[1]) +
-                    Integer.parseInt(unitsEnd[2]);
+            Mission mission = player.getMissionAssigned();
 //            Check if the mission hasn't timed out
-            if((nowSeconds + 1) < endSeconds){
+            if(LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))){
                 if(location == mission.getBeacon()){
                     JSONArray evidence = new JSONArray();
                     JSONObject p1 = new JSONObject();
-                    p1.put("player_id", mission.getPlayer1());
+                    p1.put("player_id", mission.getPlayer1().getId());
                     p1.put("amount", 10);
                     evidence.put(p1);
                     JSONObject p2 = new JSONObject();
-                    p2.put("player_id", mission.getPlayer2());
+                    p2.put("player_id", mission.getPlayer2().getId());
                     p2.put("amount", 10);
                     evidence.put(p2);
                     output.put("evidence", evidence);
+                    mission.setCompleted(true);
                 } else {
-                    LocalTime timeRemaining = mission.getEndTime().minus(nowSeconds, ChronoUnit.SECONDS);
-                    System.out.println(timeRemaining);
+                    Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
                     output.put("time_remaining", timeRemaining);
                     responseStatus = HttpStatus.PARTIAL_CONTENT;
                 }
             } else {
                 output.put("NO_CONTENT", "Mission failed");
                 responseStatus = HttpStatus.NO_CONTENT;
+                mission.setCompleted(true);
             }
         } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
 

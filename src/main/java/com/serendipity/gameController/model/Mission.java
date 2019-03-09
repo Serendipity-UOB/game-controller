@@ -17,30 +17,26 @@ public class Mission {
     @NotNull
     private LocalTime endTime;
 
-    @NotNull
-    private Long player1;
+    @ManyToOne
+    private Player player1;
 
-    @NotNull
-    private Long player2;
+    @ManyToOne
+    private Player player2;
 
-    private int Beacon;
+    private int beacon;
 
-    private Boolean sent;
+    private boolean completed;
 
     public Mission() {
-        this.startTime = null;
-        this.endTime = null;
-        this.player1 = null;
-        this.player2 = null;
-        this.sent = false;
     }
 
-    public Mission(@NotNull LocalTime startTime, @NotNull LocalTime endTime, @NotNull Long player1, @NotNull Long player2) {
+    public Mission(@NotNull LocalTime startTime, @NotNull LocalTime endTime, @NotNull Player player1, @NotNull Player player2) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.player1 = player1;
         this.player2 = player2;
-        this.sent = false;
+        this.beacon = -1;
+        this.completed = false;
     }
 
     public Long getId() {
@@ -67,21 +63,21 @@ public class Mission {
         this.endTime = endTime;
     }
 
-    public Long getPlayer1() { return player1; }
+    public Player getPlayer1() { return player1; }
 
-    public void setPlayer1(Long player1) { this.player1 = player1; }
+    public void setPlayer1(Player player1) { this.player1 = player1; }
 
-    public Long getPlayer2() { return player2; }
+    public Player getPlayer2() { return player2; }
 
-    public void setPlayer2(Long player2) { this.player2 = player2; }
+    public void setPlayer2(Player player2) { this.player2 = player2; }
 
-    public int getBeacon() { return Beacon; }
+    public int getBeacon() { return beacon; }
 
-    public void setBeacon(int beacon) { Beacon = beacon; }
+    public void setBeacon(int beacon) { beacon = beacon; }
 
-    public Boolean getSent() { return sent; }
+    public Boolean getCompleted() { return completed; }
 
-    public void setSent(Boolean sent) { this.sent = sent; }
+    public void setCompleted(Boolean completed) { this.completed = completed; }
 
     @Override
     public String toString() {
@@ -91,8 +87,8 @@ public class Mission {
                 ", endTime=" + endTime +
                 ", player1=" + player1 +
                 ", player2=" + player2 +
-                ", Beacon=" + Beacon +
-                ", sent=" + sent +
+                ", Beacon=" + beacon +
+                ", sent=" + completed +
                 '}';
     }
 }
