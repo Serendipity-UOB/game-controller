@@ -29,7 +29,8 @@ public class Player {
 
     private int nearestBeaconMajor;
 
-    private Long missionAssigned;
+    @OneToOne
+    private Mission missionAssigned;
 
     public Player() {
         this.reputation = 0;
@@ -117,9 +118,9 @@ public class Player {
         this.nearestBeaconMajor = nearestBeaconMajor;
     }
 
-    public Long getMissionAssigned() { return missionAssigned; }
+    public Mission getMissionAssigned() { return missionAssigned; }
 
-    public void setMissionAssigned(Long missionAssigned) { this.missionAssigned = missionAssigned; }
+    public void setMissionAssigned(Mission missionAssigned) { this.missionAssigned = missionAssigned; }
 
     @Override
     public String toString() {
