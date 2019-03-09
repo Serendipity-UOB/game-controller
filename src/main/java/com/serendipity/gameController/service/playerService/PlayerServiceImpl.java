@@ -1,6 +1,7 @@
 package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.repository.PlayerRepository;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONObject;
@@ -199,14 +200,11 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public List<Long> getNearbyPlayerIds(Player player) {
-        int beaconMajor = player.getNearestBeaconMajor();
         List<Long> playerIds = new ArrayList<>();
-        if (beaconMajor != 0) {
-            List<Player> players = playerRepository.findAllByNearestBeaconMajor(beaconMajor);
-            playerIds = new ArrayList<>();
-            for (Player p : players) {
-                if (!(p.equals(player))) playerIds.add(p.getId());
-            }
+        if (player.hasCurrentZone()) {
+            Zone zone = player.getCurrentZone();
+            List<Player> players = playerRepository.findAllByCurrentZone(zone);
+            for (Player p : players) playerIds.add(p.getId());
         }
         return playerIds;
     }

@@ -229,106 +229,119 @@ public class MobileController {
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST , consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> playerUpdate(@RequestBody String json) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        // Setup json
+        // Handle json
         JSONObject input = new JSONObject(json);
-        Long playerId = input.getLong("player_id");
-        JSONArray beacons = input.getJSONArray("beacons");
+        Long id = input.getLong("player_id");
+        JSONArray jsonBeacons = input.getJSONArray("beacons");
         JSONObject output = new JSONObject();
 
-        // Deal with beacon/zone
-        int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
-        Player player = playerService.getPlayer(playerId).get();
-        player.setNearestBeaconMajor(closestBeaconMajor);
-        playerService.savePlayer(player);
+        // Does player exist
+        Optional<Player> optionalPlayer = playerService.getPlayer(id);
+        if (optionalPlayer.isPresent()) {
+            Player player = optionalPlayer.get();
 
-        // Nearby players
-        List<Long> nearbyPlayerIds = playerService.getNearbyPlayerIds(player);
-        output.put("nearby_players", nearbyPlayerIds);
-
-        // Reputation
-        output.put("reputation", player.getReputation());
-
-        // Position
-        output.put("position", playerService.getLeaderboardPosition(player));
-
-        // Exposed
-        if (player.isExposed()) {
-            output.put("exposed", true);
-            player.setExposed(false);
-            playerService.savePlayer(player);
-        } else {
-            output.put("exposed", false);
-        }
-
-        // Return home
-        if (player.isReturnHome()) {
-            output.put("req_new_target", true);
-            player.setReturnHome(false);
-            playerService.savePlayer(player);
-        } else {
-            output.put("req_new_target", false);
-        }
-
-        // Game over
-        List<Game> games = gameService.getAllGamesByStartTimeAsc();
-        if (gameService.isGameOver(games.get(0))) {
-            output.put("game_over", true);
-        } else {
-            output.put("game_over", false);
-        }
-
-        // Mission
-        Mission mission = missionService.getMission(player.getMissionAssigned()).get();
-//        Find current time and mission start time in seconds
-        String datePattern = "HH:mm:ss";
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
-        String now = df.format(LocalTime.now());
-        String start = df.format(mission.getStartTime());
-        String[] unitsNow = now.split(":");
-        String[] unitsStart = start.split(":");
-        int nowSeconds = 3600 * Integer.parseInt(unitsNow[0]) + 60 * Integer.parseInt(unitsNow[1]) +
-                Integer.parseInt(unitsNow[2]);
-        int startSeconds = 3600 * Integer.parseInt(unitsStart[0]) + 60 * Integer.parseInt(unitsStart[1]) +
-                Integer.parseInt(unitsStart[2]);
-//        If mission should start
-        if((startSeconds < nowSeconds) && !mission.getSent()){
-            Player p1 = playerService.getPlayer(mission.getPlayer1()).get();
-            Player p2 = playerService.getPlayer(mission.getPlayer2()).get();
-            String missionDescription;
-            missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
-                            + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
-
-            List<Beacon> notHome = beaconService.getAllBeaconsExcept(player.getHomeBeacon());
-            Random random = new Random();
-            Beacon beacon = notHome.get(random.nextInt(notHome.size()));
-            missionDescription += " activities can be found at <b>" + beacon.getIdentifier() +
-                    "</b>.\n Get there in 30 Seconds to secure it.";
-
-            mission.setSent(true);
-            mission.setBeacon(beacon.getMajor());
-            missionService.saveMission(mission);
-
-            output.put("mission_description", missionDescription);
-        }
-        else{
-            output.put("mission_description", "");
-        }
-
-        // Exchange pending
-        Long requesterId = 0l;
-        Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
-        if (optionalExchange.isPresent()) {
-            Exchange exchange = optionalExchange.get();
-            if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
-                requesterId = exchange.getRequestPlayer().getId();
-                exchange.setRequestSent(true);
-                exchangeService.saveExchange(exchange);
+            // Nearby players
+            List<Long> nearbyPlayerIds = new ArrayList<>();
+            Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, jsonBeacons);
+            if (optionalZone.isPresent()) {
+                Zone zone = optionalZone.get();
+                player.setCurrentZone(zone);
+                playerService.savePlayer(player);
+                nearbyPlayerIds = playerService.getNearbyPlayerIds(player);
             }
-        }
-        output.put("exchange_pending", requesterId);
+            output.put("nearby_players", nearbyPlayerIds);
 
-        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
+            // Reputation
+            output.put("reputation", player.getReputation());
+
+            // Position
+            output.put("position", playerService.getLeaderboardPosition(player));
+
+            // Exposed
+            if (player.isExposed()) {
+                output.put("exposed", true);
+                player.setExposed(false);
+                playerService.savePlayer(player);
+            } else {
+                output.put("exposed", false);
+            }
+
+            // Return home
+            if (player.isReturnHome()) {
+                output.put("req_new_target", true);
+                player.setReturnHome(false);
+                playerService.savePlayer(player);
+            } else {
+                output.put("req_new_target", false);
+            }
+
+            // Game over
+            List<Game> games = gameService.getAllGamesByStartTimeAsc();
+            if (gameService.isGameOver(games.get(0))) {
+                output.put("game_over", true);
+            } else {
+                output.put("game_over", false);
+            }
+
+            // Exchange pending
+            Long requesterId = 0l;
+            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+            if (optionalExchange.isPresent()) {
+                Exchange exchange = optionalExchange.get();
+                if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                    requesterId = exchange.getRequestPlayer().getId();
+                    exchange.setRequestSent(true);
+                    exchangeService.saveExchange(exchange);
+                }
+            }
+            output.put("exchange_pending", requesterId);
+
+            // Mission
+            output.put("mission_description", "");
+
+            // Broken - Jack to fix
+//            Mission mission = missionService.getMission(player.getMissionAssigned()).get();
+//            // Find current time and mission start time in seconds
+//            String datePattern = "HH:mm:ss";
+//            DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
+//            String now = df.format(LocalTime.now());
+//            String start = df.format(mission.getStartTime());
+//            String[] unitsNow = now.split(":");
+//            String[] unitsStart = start.split(":");
+//            int nowSeconds = 3600 * Integer.parseInt(unitsNow[0]) + 60 * Integer.parseInt(unitsNow[1]) +
+//                    Integer.parseInt(unitsNow[2]);
+//            int startSeconds = 3600 * Integer.parseInt(unitsStart[0]) + 60 * Integer.parseInt(unitsStart[1]) +
+//                    Integer.parseInt(unitsStart[2]);
+//            // If mission should start
+//            if((startSeconds < nowSeconds) && !mission.getSent()){
+//                Player p1 = playerService.getPlayer(mission.getPlayer1()).get();
+//                Player p2 = playerService.getPlayer(mission.getPlayer2()).get();
+//                String missionDescription;
+//                missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
+//                        + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
+//
+//                List<Beacon> notHome = beaconService.getAllBeaconsExcept(player.getHomeBeacon());
+//                Random random = new Random();
+//                Beacon beacon = notHome.get(random.nextInt(notHome.size()));
+//                missionDescription += " activities can be found at <b>" + beacon.getIdentifier() +
+//                        "</b>.\n Get there in 30 Seconds to secure it.";
+//
+//                mission.setSent(true);
+//                mission.setBeacon(beacon.getMajor());
+//                missionService.saveMission(mission);
+//
+//                output.put("mission_description", missionDescription);
+//            }
+//            else{
+//                output.put("mission_description", "");
+//            }
+
+            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+
+        }
+        return response;
     }
 
     @RequestMapping(value="/newTarget", method=RequestMethod.POST, consumes="application/json")

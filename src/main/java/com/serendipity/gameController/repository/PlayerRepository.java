@@ -1,6 +1,7 @@
 package com.serendipity.gameController.repository;
 
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.model.Zone;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
     Optional<Player> findByCodeName(String codeName);
 
     List<Player> findAllByNearestBeaconMajor(int nearestBeaconMajor);
+
+    List<Player> findAllByCurrentZone(Zone zone);
 
     List<Player> findAllByCodeNameNot(String codename);
 
