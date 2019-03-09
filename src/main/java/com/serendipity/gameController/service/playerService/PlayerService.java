@@ -1,6 +1,7 @@
 package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.model.Zone;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 

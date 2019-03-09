@@ -7,6 +7,7 @@ import com.serendipity.gameController.service.exchangeService.ExchangeServiceImp
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class MobileController {
 
     @Autowired
     MissionServiceImpl missionService;
+
+    @Autowired
+    ZoneServiceImpl zoneService;
 
     @RequestMapping(value="/registerPlayer", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
@@ -85,77 +89,64 @@ public class MobileController {
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> joinGame(@RequestBody String json) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // Handle JSON
         JSONObject input = new JSONObject(json);
-        JSONObject output = new JSONObject();
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         Long id = input.getLong("player_id");
-        Optional<Player> opPlayer = playerService.getPlayer(id);
-        if(opPlayer.isPresent()) {
-            Player player = opPlayer.get();
 
-            Map<Integer, Integer> sumOfMajors = beaconService.sumBeacons();
-            List<Beacon> beacons = beaconService.getAllBeacons();
+        // Look for player
+        Optional<Player> optionalPlayer = playerService.getPlayer(id);
+        if(optionalPlayer.isPresent()) {
+            Player player = optionalPlayer.get();
 
-            if (beacons.isEmpty()) { output.put("BAD_REQUEST", "No beacons in beacon table");
-            } else {
-                Beacon beacon = new Beacon();
-                if (player.getHomeBeacon() == -1) {
-                    int minAllocation = Integer.MAX_VALUE;
-                    for(Beacon b : beacons) {
-                        if (sumOfMajors.get(b.getMajor()) < minAllocation) {
-                            minAllocation = sumOfMajors.get(b.getMajor());
-                            beacon = b;
-                        }
-                    }
-                } else {
-                    beacon = beaconService.getBeaconByMajor(player.getHomeBeacon()).get(0);
-                }
-                int major = beacon.getMajor();
-                String name = beacon.getIdentifier();
-                output.put("home_beacon_major", major);
-                output.put("home_beacon_name", name);
-                responseStatus = HttpStatus.OK;
-                if (player.getHomeBeacon() == -1) {
-                    playerService.assignHome(player, major);
-                }
+            // Assign zone, if one exists
+            Optional<Zone> optionalZone = zoneService.chooseHomeZone(player);
+            if (optionalZone.isPresent()) {
+                Zone zone = optionalZone.get();
+                player.setHomeZone(zone);
+                playerService.savePlayer(player);
+
+                // Handle response
+                JSONObject output = new JSONObject();
+                output.put("home_zone_name", zone.getName());
+                response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
             }
-        } else {
-            output.put("BAD_REQUEST", "Couldn't find player id given");
         }
-        return new ResponseEntity<>(output.toString(), responseStatus);
+        return response;
     }
 
     @RequestMapping(value="/startInfo", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> getStartInfo(@RequestBody String json) {
-//        Read in request body
+        // Read in request body
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
-//        Create JSON object for response body
+        // Create JSON object for response body
         JSONObject output = new JSONObject();
-//        set default response status
+        // set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-//        Ensure player exists
+        // Ensure player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         if(opPlayer.isPresent()) {
-//            Get two random players to gain intel on from mission
+            // Get two random players to gain intel on from mission
             Player player = opPlayer.get();
             List<Player> players = playerService.getAllPlayersExcept(player);
             Random random = new Random();
-//            Ensure 1 other player exists
+            // Ensure 1 other player exists
             if(players.size() > 0) {
                 Player target1 = players.get(random.nextInt(players.size()));
                 players.remove(target1);
-//                Ensure 2 other players exist
+                // Ensure 2 other players exist
                 if (players.size() > 0) {
                     Player target2 = players.get(random.nextInt(players.size()));
-//                    Ensure game exists
-//                    TODO: Deal with multiple game instances
+                    // Ensure game exists
+                    // TODO: Deal with multiple game instances
                     Optional<Game> opGame = gameService.getNextGame();
                     if(opGame.isPresent()) {
                         Game game = opGame.get();
 
-//                        Find length of game in seconds
+                        // Find length of game in seconds
                         String datePattern = "HH:mm:ss";
                         DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
                         LocalTime gameEnd = game.getEndTime();
@@ -169,27 +160,27 @@ public class MobileController {
                         int start = 3600 * Integer.parseInt(unitsStart[0]) + 60 *
                                 Integer.parseInt(unitsStart[1]) + Integer.parseInt(unitsStart[2]);
 
-//                        Find upper and lower boundaries for mission time assignment
+                        // Find upper and lower boundaries for mission time assignment
                         int quarter = (end - start) / 4;
                         int upper = end - quarter;
                         int lower = start + quarter;
 
-//                        Pick random time
+                        // Pick random time
                         Random randomTime = new Random();
                         int time = quarter + randomTime.nextInt(upper - lower);
                         LocalTime missionStart = gameStart.plus(time, ChronoUnit.SECONDS);
                         LocalTime missionEnd = missionStart.plus(30, ChronoUnit.SECONDS);
-//                        TODO: May need to make the player assignment more dynamic
-//                        TODO: May need to consider multiple missions
-//                        Save new mission
+                        // TODO: May need to make the player assignment more dynamic
+                        // TODO: May need to consider multiple missions
+                        // Save new mission
                         Mission mission = new Mission(missionStart, missionEnd, target1.getId(), target2.getId());
                         missionService.saveMission(mission);
 
-//                        Assign mission to player
+                        // Assign mission to player
                         player.setMissionAssigned(mission.getId());
                         playerService.savePlayer(player);
 
-//                        Return all players
+                        // Return all players
                         responseStatus = HttpStatus.OK;
                         output.put("all_players", playerService.getAllPlayersStartInfo());
                     }
@@ -204,21 +195,34 @@ public class MobileController {
     @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity atHomeBeacon(@RequestBody String json) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        // Handle json
         JSONObject input = new JSONObject(json);
-        Long playerId = input.getLong("player_id");
-        Player player = playerService.getPlayer(playerId).get();
+        Long id = input.getLong("player_id");
         JSONArray beacons = input.getJSONArray("beacons");
-        int closestBeaconMajor = beaconService.getClosestBeaconMajor(playerId, beacons);
-        player.setNearestBeaconMajor(closestBeaconMajor);
-        playerService.savePlayer(player);
-        int homeBeacon = player.getHomeBeacon();
-        JSONObject output = new JSONObject();
-        if (closestBeaconMajor == homeBeacon) {
-            output.put("home", true);
-        } else {
-            output.put("home", false);
+
+        // Look for player
+        Optional<Player> optionalPlayer = playerService.getPlayer(id);
+        if (optionalPlayer.isPresent()) {
+            Player player = optionalPlayer.get();
+            if (player.hasHomeZone()) {
+                Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, beacons);
+                if (optionalZone.isPresent()) {
+                    Zone currentZone = optionalZone.get();
+                    player.setCurrentZone(currentZone);
+                    playerService.savePlayer(player);
+                    Zone homeZone = player.getHomeZone();
+                    JSONObject output = new JSONObject();
+                    if (currentZone.equals(homeZone)) {
+                        output.put("home", true);
+                    } else {
+                        output.put("home", false);
+                    }
+                    response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+                }
+            }
         }
-        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         return response;
     }
 

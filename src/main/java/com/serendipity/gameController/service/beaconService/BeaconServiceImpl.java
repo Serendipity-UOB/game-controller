@@ -35,7 +35,12 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public List<Beacon> getBeaconByMajor(int major) { return beaconRepository.findAllByMajor(major); }
+    public Optional<Beacon> getBeaconByMajorAndMinor(int major, int minor) {
+        return beaconRepository.findBeaconByMajorAndMinor(major, minor);
+    }
+
+    @Override
+    public List<Beacon> getBeaconsByMajor(int major) { return beaconRepository.findAllByMajor(major); }
 
     @Override
     public List<Beacon> getAllBeacons() {
@@ -60,38 +65,38 @@ public class BeaconServiceImpl implements BeaconService {
     @Override
     public int getClosestBeaconMajor(Long playerId, JSONArray beacons) {
         int closestBeaconMajor = 0;
-        int closestBeaconRssi = -100000;
-        JSONArray zeroBeacons = new JSONArray();
-        if (beacons.length() != 0) {
-            for (int i = 0; i < beacons.length(); i++) {
-                JSONObject beacon = beacons.getJSONObject(i);
-                int rssi = beacon.getInt("rssi");
-                if(rssi == 0) { zeroBeacons.put(beacon); }
-                else if ((rssi > closestBeaconRssi)) {
-                    closestBeaconMajor = beacon.getInt("beacon_major");
-                    closestBeaconRssi = rssi;
-                }
-            }
-        }
-
-        if (closestBeaconMajor == 0 && zeroBeacons.length() != 0) {
-            Optional<Player> opPlayer = playerService.getPlayer(playerId);
-            if(opPlayer.isPresent()) {
-                Player player = opPlayer.get();
-                Random randNum = new Random();
-                int n = randNum.nextInt(zeroBeacons.length());
-                closestBeaconMajor = zeroBeacons.getJSONObject(n).getInt("beacon_major");
-                for(int i = 0; i < zeroBeacons.length(); i++) {
-                    if (zeroBeacons.getJSONObject(i).getInt("beacon_major") == player.getNearestBeaconMajor()) {
-                        closestBeaconMajor = zeroBeacons.getJSONObject(i).getInt("beacon_major");
-                    }
-                }
-            }
-            else {
-//                TODO: Error for no player matching id given
-                // Return -1 and deal with in controller by returning 400 BAD REQUEST?
-            }
-        }
+//        int closestBeaconRssi = -100000;
+//        JSONArray zeroBeacons = new JSONArray();
+//        if (beacons.length() != 0) {
+//            for (int i = 0; i < beacons.length(); i++) {
+//                JSONObject beacon = beacons.getJSONObject(i);
+//                int rssi = beacon.getInt("rssi");
+//                if(rssi == 0) { zeroBeacons.put(beacon); }
+//                else if ((rssi > closestBeaconRssi)) {
+//                    closestBeaconMajor = beacon.getInt("beacon_major");
+//                    closestBeaconRssi = rssi;
+//                }
+//            }
+//        }
+//
+//        if (closestBeaconMajor == 0 && zeroBeacons.length() != 0) {
+//            Optional<Player> opPlayer = playerService.getPlayer(playerId);
+//            if(opPlayer.isPresent()) {
+//                Player player = opPlayer.get();
+//                Random randNum = new Random();
+//                int n = randNum.nextInt(zeroBeacons.length());
+//                closestBeaconMajor = zeroBeacons.getJSONObject(n).getInt("beacon_major");
+//                for(int i = 0; i < zeroBeacons.length(); i++) {
+//                    if (zeroBeacons.getJSONObject(i).getInt("beacon_major") == player.getNearestBeaconMajor()) {
+//                        closestBeaconMajor = zeroBeacons.getJSONObject(i).getInt("beacon_major");
+//                    }
+//                }
+//            }
+//            else {
+////                TODO: Error for no player matching id given
+//                // Return -1 and deal with in controller by returning 400 BAD REQUEST?
+//            }
+//        }
         return closestBeaconMajor;
     }
 

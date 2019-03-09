@@ -23,10 +23,17 @@ public interface BeaconService {
     Optional<Beacon> getBeaconById(Long id);
 
     /*
+     * @param major The beacon major.
+     * @param minor The beacon minor.
+     * @return An optional of the beacon matching the given major and minor.
+     */
+    Optional<Beacon> getBeaconByMajorAndMinor(int major, int minor);
+
+    /*
      * @param major The major of the beacon you want.
      * @return A list- of the beacon matching the given major.
      */
-    List<Beacon> getBeaconByMajor(int major);
+    List<Beacon> getBeaconsByMajor(int major);
 
     /*
      * @return A list containing all the beacons in the database.

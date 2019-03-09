@@ -1,7 +1,9 @@
 package com.serendipity.gameController.model;
 
 import javax.persistence.*;
+import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Entity
 public class Player {
@@ -19,6 +21,9 @@ public class Player {
     private int homeBeacon;
 
     @ManyToOne
+    private Zone homeZone;
+
+    @ManyToOne
     private Player target;
 
     private int reputation;
@@ -28,6 +33,9 @@ public class Player {
     private boolean returnHome;
 
     private int nearestBeaconMajor;
+
+    @ManyToOne
+    private Zone currentZone;
 
     private Long missionAssigned;
 
@@ -77,13 +85,26 @@ public class Player {
         return codeName;
     }
 
-    public void getCodeName(String codeName) {
+    public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
 
     public int getHomeBeacon() { return homeBeacon; }
 
     public void setHomeBeacon(int homeBeacon) { this.homeBeacon = homeBeacon; }
+
+    public Zone getHomeZone() {
+        return homeZone;
+    }
+
+    public boolean hasHomeZone() {
+        if (this.homeZone == null) return false;
+        else return true;
+    }
+
+    public void setHomeZone(Zone homeZone) {
+        this.homeZone = homeZone;
+    }
 
     public Player getTarget() {
         return target;
@@ -115,6 +136,19 @@ public class Player {
 
     public void setNearestBeaconMajor(int nearestBeaconMajor) {
         this.nearestBeaconMajor = nearestBeaconMajor;
+    }
+
+    public Zone getCurrentZone() {
+        return currentZone;
+    }
+
+    public void setCurrentZone(Zone currentZone) {
+        this.currentZone = currentZone;
+    }
+
+    public boolean hasCurrentZone() {
+        if (this.currentZone == null) return false;
+        else return true;
     }
 
     public Long getMissionAssigned() { return missionAssigned; }
