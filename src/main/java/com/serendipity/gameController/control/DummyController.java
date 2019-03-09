@@ -49,8 +49,7 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONObject output = new JSONObject();
-        output.put("home_beacon_major", 0);
-        output.put("home_beacon_name", "home");
+        output.put("home_zone_name", "Server Team Is Best");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
