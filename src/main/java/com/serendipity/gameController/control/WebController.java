@@ -54,6 +54,15 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping(value="/initGameFixed")
+    public String initGameFixed() {
+        resetTables();
+        LocalTime start = LocalTime.now().plusMinutes(1);
+        Game game = new Game(start);
+        gameService.saveGame(game);
+        return "redirect:/";
+    }
+
     @PostMapping(value="/initBeacon")
     public String initBeacon(@ModelAttribute("beacon_identifier") String identifier,
                              @ModelAttribute("beacon_major") int major,

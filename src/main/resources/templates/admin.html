@@ -7,37 +7,38 @@
 
     <link rel="stylesheet" type="text/css" href="/css/style.css">
 
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700,800" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
 
     <title>Hacker Hunt Admin</title>
 </head>
 <body>
 
+<div>
+    <h1>Hacker Hunt Admin Page</h1>
+</div>
+
 <div class="container">
 
     <div class="item">
-        <h1>Zones</h1>
-
-        <div class="zone">
-            <!--<h2>New Zone</h2>-->
-
-            <form method="post" th:action="@{/initZone}">
-                <span>New Zone</span>
-                <input type="text" name="zone_name" placeholder="Name"/>
-                <button type="submit">Add</button>
-            </form>
-        </div>
-
+        <h2>Zones</h2>
 
         <div th:each="zone : ${zones}" class="zone">
 
-            <h2 th:text="${zone.name}"></h2>
+            <h3 th:text="${zone.name}"></h3>
+
+            <form method="post" th:action="@{/delZone}">
+                <input type="hidden" th:value="${zone.id}" name="zone_id"/>
+                <button type="submit" class="red"><i class="material-icons">delete</i></button>
+            </form>
 
             <table>
                 <tr>
-                    <td>Identifier</td>
-                    <td>Major</td>
-                    <td>Minor</td>
+                    <td><h4>Beacon</h4></td>
+                    <td><h4>Major</h4></td>
+                    <td><h4>Minor</h4></td>
                     <td></td>
                 </tr>
                 <tr th:each="beacon : ${zone.beacons}">
@@ -46,64 +47,63 @@
                         <td><span th:text="${beacon.identifier}"/></td>
                         <td><span th:text="${beacon.major}"/></td>
                         <td><span th:text="${beacon.minor}"/></td>
-                        <td><button type="submit">-</button></td>
+                        <td>
+                            <button type="submit" class="red"><i class="material-icons">delete</i></button>
+                        </td>
                     </form>
                 </tr>
                 <tr>
                     <form method="post" th:action="@{/initBeacon}">
                         <input type="hidden" th:value="${zone.id}" name="beacon_zone"/>
-                        <td><input type="text" name="beacon_identifier"/></td>
-                        <td><input type="text" name="beacon_major"/></td>
-                        <td><input type="text" name="beacon_minor"/></td>
-                        <td><button type="submit">+</button></td>
+                        <td><input type="text" name="beacon_identifier" placeholder="Code"/></td>
+                        <td><input type="text" name="beacon_major" placeholder="Major"/></td>
+                        <td><input type="text" name="beacon_minor" placeholder="Minor"/></td>
+                        <td><button type="submit" class="green"><i class="material-icons">add</i></button></td>
                     </form>
                 </tr>
             </table>
 
-            <form method="post" th:action="@{/delZone}">
-                <input type="hidden" th:value="${zone.id}" name="zone_id"/>
-                <button type="submit">Delete Zone</button>
-            </form>
-
         </div>
 
-        <!--<table>-->
-            <!--<tr>-->
-                <!--<td></td>-->
-                <!--<td>Name</td>-->
-                <!--<td>Beacons</td>-->
-            <!--</tr>-->
-            <!--<tr th:each="zone : ${zones}">-->
-                <!--<td>-->
+        <div class="zone">
+            <h3>New Zone</h3>
 
-                <!--</td>-->
-                <!--<td></td>-->
-                <!--<td>-->
+            <form method="post" th:action="@{/initZone}">
+                <input type="text" name="zone_name" placeholder="Name"/>
+                <button type="submit" class="green"><i class="material-icons">add</i></button>
+            </form>
+        </div>
 
-                <!--</td>-->
-            <!--</tr>-->
-            <!--<tr>-->
-
-            <!--</tr>-->
-        <!--</table>-->
     </div>
 
     <div class="item">
-        <h1>Games</h1>
+
+        <h2>Games</h2>
+
         <table>
+            <tr>
+                <td><h4>Start Time</h4></td>
+                <td></td>
+                <td></td>
+            </tr>
             <tr th:each="game : ${games}">
-                <td>Game Start Time</td>
                 <td><span th:text="${game.startTime}"/></td>
+                <td></td>
                 <td></td>
             </tr>
             <tr>
                 <form method="post" th:action="@{/initGame}">
-                    <td>New Game</td>
                     <td><input type="text" name="start_time" placeholder="HH:MM:SS.MSS"/></td>
-                    <td><button type="submit">+</button></td>
+                    <td><button type="submit" class="green"><i class="material-icons">add</i></button></td>
+                </form>
+                <form method="post" th:action="@{/initGameFixed}">
+                    <td>
+                        <button type="submit" class="grey">Start game in 1 minute</button>
+                    </td>
                 </form>
             </tr>
         </table>
+
     </div>
 
 </div>

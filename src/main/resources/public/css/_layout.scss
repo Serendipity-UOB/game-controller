@@ -1,20 +1,22 @@
+div {
+  margin: 20px;
+  padding: 0;
+}
+
 div.container {
   display: flex;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 div.item {
-  border-radius: 20px;
-  background-color: #E0E0E0;
   flex: 1 100%;
-  margin: 20px;
-  padding: 20px;
+
 }
 
 div.zone {
-  border: 1px solid black;
-  margin: 20px 0;
-
-  * {
-    margin: 10px 0;
-  }
+  margin: 0;
+  border-top: 1px solid #EFEFEF;
+  padding: 20px 0;
 }

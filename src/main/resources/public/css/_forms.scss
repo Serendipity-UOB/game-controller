@@ -1,0 +1,42 @@
+form {
+  display: inline;
+}
+
+button {
+  border: none;
+  outline: none;
+  color: white;
+  font-weight: 500;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 2px;
+
+  i.material-icons {
+    font-size: 1rem;
+  }
+
+  &.green {
+    background-color: #2BA84A;
+
+    &:hover {
+      background-color: #299E46;
+    }
+  }
+
+  &.red {
+    background-color: #CE3F35;
+    &:hover {
+      background-color: #BF352B;
+    }
+  }
+
+  &.grey {
+    color: #55595B;
+    background-color: #A6ADB2;
+    &:hover {
+      color: #343638;
+      background-color: #9CA3A8;
+    }
+  }
+
+}
