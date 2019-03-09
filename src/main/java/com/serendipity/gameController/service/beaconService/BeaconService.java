@@ -62,12 +62,6 @@ public interface BeaconService {
     int getClosestBeaconMajor(Long playerId, JSONArray beacons);
 
     /*
-     * @return A map of beacon keys mapping to a value of how many
-     * times they've been assigned as a home beacon.
-     */
-    Map<Integer, Integer> sumBeacons();
-
-    /*
      * @param major The major that relates to the Beacon(s) you don't want to return.
      * @return A list of all the beacons in the database except the given major.
      */

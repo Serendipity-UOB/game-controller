@@ -49,6 +49,9 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
+    public List<Zone> getAllZonesExcept(Long id) { return zoneRepository.findAllByIdNot(id); }
+
+    @Override
     public void removeBeaconFromZone(Beacon beacon) {
         Zone zone = beacon.getZone();
         zone.getBeacons().remove(beacon);

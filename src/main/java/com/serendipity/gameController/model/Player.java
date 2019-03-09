@@ -18,8 +18,6 @@ public class Player {
     @NotNull
     private String codeName;
 
-    private int homeBeacon;
-
     @ManyToOne
     private Zone homeZone;
 
@@ -32,8 +30,6 @@ public class Player {
 
     private boolean returnHome;
 
-    private int nearestBeaconMajor;
-
     @ManyToOne
     private Zone currentZone;
 
@@ -42,7 +38,6 @@ public class Player {
 
     public Player() {
         this.reputation = 0;
-        this.homeBeacon = -1;
         this.exposed = false;
         this.returnHome = false;
     }
@@ -50,7 +45,6 @@ public class Player {
     public Player(@NotNull String realName, @NotNull String codeName) {
         this.realName = realName;
         this.codeName = codeName;
-        this.homeBeacon = -1;
         this.reputation = 0;
         this.exposed = false;
         this.returnHome = false;
@@ -59,7 +53,6 @@ public class Player {
     public Player(@NotNull String realName, @NotNull String codeName, Player target) {
         this.realName = realName;
         this.codeName = codeName;
-        this.homeBeacon = -1;
         this.target = target;
         this.reputation = 0;
         this.exposed = false;
@@ -89,10 +82,6 @@ public class Player {
     public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
-
-    public int getHomeBeacon() { return homeBeacon; }
-
-    public void setHomeBeacon(int homeBeacon) { this.homeBeacon = homeBeacon; }
 
     public Zone getHomeZone() {
         return homeZone;
@@ -131,14 +120,6 @@ public class Player {
 
     public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
 
-    public int getNearestBeaconMajor() {
-        return nearestBeaconMajor;
-    }
-
-    public void setNearestBeaconMajor(int nearestBeaconMajor) {
-        this.nearestBeaconMajor = nearestBeaconMajor;
-    }
-
     public Zone getCurrentZone() {
         return currentZone;
     }
@@ -162,12 +143,12 @@ public class Player {
                 "id=" + id +
                 ", realName='" + realName + '\'' +
                 ", codeName='" + codeName + '\'' +
-                ", homeBeacon=" + homeBeacon +
+                ", homeZone=" + homeZone +
                 ", target=" + target +
                 ", reputation=" + reputation +
                 ", exposed=" + exposed +
                 ", returnHome=" + returnHome +
-                ", nearestBeaconMajor=" + nearestBeaconMajor +
+                ", currentZone=" + currentZone +
                 ", missionAssigned=" + missionAssigned +
                 '}';
     }

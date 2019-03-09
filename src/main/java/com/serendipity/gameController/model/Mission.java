@@ -23,7 +23,8 @@ public class Mission {
     @ManyToOne
     private Player player2;
 
-    private int beacon;
+    @ManyToOne
+    private Zone zone;
 
     private boolean completed;
 
@@ -35,7 +36,6 @@ public class Mission {
         this.endTime = endTime;
         this.player1 = player1;
         this.player2 = player2;
-        this.beacon = -1;
         this.completed = false;
     }
 
@@ -71,13 +71,13 @@ public class Mission {
 
     public void setPlayer2(Player player2) { this.player2 = player2; }
 
-    public int getBeacon() { return beacon; }
+    public Zone getZone() { return zone; }
 
-    public void setBeacon(int beacon) { beacon = beacon; }
+    public void setZone(Zone zone) { this.zone = zone; }
 
-    public Boolean getCompleted() { return completed; }
+    public boolean isCompleted() { return completed; }
 
-    public void setCompleted(Boolean completed) { this.completed = completed; }
+    public void setCompleted(boolean completed) { this.completed = completed; }
 
     @Override
     public String toString() {
@@ -87,7 +87,7 @@ public class Mission {
                 ", endTime=" + endTime +
                 ", player1=" + player1 +
                 ", player2=" + player2 +
-                ", Beacon=" + beacon +
+                ", Beacon=" + zone +
                 ", sent=" + completed +
                 '}';
     }
