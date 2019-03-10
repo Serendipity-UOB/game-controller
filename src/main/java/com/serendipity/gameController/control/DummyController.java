@@ -36,11 +36,11 @@ public class DummyController {
 
     @RequestMapping(value="/gameInfoTest", method=RequestMethod.GET)
     @ResponseBody
-    public String getGameInfo() {
+    public ResponseEntity<String> getGameInfo() {
         JSONObject output = new JSONObject();
         output.put("start_time", LocalTime.now().plus(10, ChronoUnit.SECONDS));
         output.put("number_players", 3);
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/joinGameTest", method=RequestMethod.POST, consumes="application/json")
@@ -55,24 +55,24 @@ public class DummyController {
 
     @RequestMapping(value="/startInfoTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String getStartInfo(@RequestBody String json) {
-        return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
-                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
-                "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
+    public ResponseEntity<String> getStartInfo(@RequestBody String json) {
+        String allPlayers =  "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
+                             "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
+                             "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
+        return new ResponseEntity<>(allPlayers, HttpStatus.OK);
     }
 
     @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity atHomeBeacon(@RequestBody String json) {
+    public ResponseEntity<String> atHomeBeacon(@RequestBody String json) {
         JSONObject output = new JSONObject();
         output.put("home", true);
-        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
-        return response;
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String playerUpdate(@RequestBody String json) {
+    public ResponseEntity<String> playerUpdate(@RequestBody String json) {
         List<Long> nearbyPlayerIds = new ArrayList<>();
         nearbyPlayerIds.add(2l);
         nearbyPlayerIds.add(3l);
@@ -85,23 +85,23 @@ public class DummyController {
         output.put("req_new_target", false);
         output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30</b> seconds");
         output.put("game_over", false);
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/newTargetTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String getNewTarget(@RequestBody String json) {
+    public ResponseEntity<String> getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = 2l;
         JSONObject output = new JSONObject();
         output.put("target_player_id", targetId);
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/exchangeRequestTest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity exchangeReq(@RequestBody String json) {
+    public ResponseEntity<String> exchangeReq(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long responderId = input.getLong("responder_id");
         Long secondaryId = 4l;
@@ -116,22 +116,25 @@ public class DummyController {
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
-
-        ResponseEntity<String> response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
-        return response;
+        return new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
     }
 
     @RequestMapping(value="/exchangeResponseTest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity exchangeRes(@RequestBody String json) {
+    public ResponseEntity<String> exchangeRes(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long responderId = input.getLong("responder_id");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         int res = input.getInt("response");
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (res == 0) {
-            JSONObject output = new JSONObject();
             output.put("time_remaining", LocalTime.now());
-            response = new ResponseEntity<>(output.toString(), HttpStatus.PARTIAL_CONTENT);
+            responseStatus = HttpStatus.PARTIAL_CONTENT;
         } else if(res == 1) {
             Long secondaryId = 4l;
             JSONArray evidence = new JSONArray();
@@ -143,13 +146,12 @@ public class DummyController {
             p2.put("player_id",secondaryId);
             p2.put("amount",20);
             evidence.put(p2);
-            JSONObject output = new JSONObject();
             output.put("evidence", evidence);
-            response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
+            responseStatus = HttpStatus.ACCEPTED;
         } else if (res == 2){
-            response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+            responseStatus = HttpStatus.RESET_CONTENT;
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/exposeTest", method=RequestMethod.POST, consumes="application/json")
@@ -180,9 +182,9 @@ public class DummyController {
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(value="/missionUpdateTest", method=RequestMethod.GET)
+    @RequestMapping(value="/missionUpdateTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity<String> missionUpdate() {
+    public ResponseEntity<String> missionUpdate(@RequestBody String json) {
         JSONArray evidence = new JSONArray();
         JSONObject p1 = new JSONObject();
         p1.put("player_id",3);

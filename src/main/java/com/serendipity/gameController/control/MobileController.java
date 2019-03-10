@@ -59,46 +59,56 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         String realName = input.getString("real_name");
         String codeName = input.getString("code_name");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         Optional<Game> optionalNextGame = gameService.getNextGame();
         if (!optionalNextGame.isPresent()) {
-            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            responseStatus = HttpStatus.NO_CONTENT;
         } else if (!playerService.isValidRealNameAndCodeName(realName, codeName)) {
-            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            output.put("error", "Code name is taken");
         } else {
             Player player = new Player(realName, codeName);
             playerService.savePlayer(player);
-            JSONObject output = new JSONObject();
             output.put("player_id", player.getId());
-            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+            responseStatus = HttpStatus.OK;
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/gameInfo", method=RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> getGameInfo(){
-        ResponseEntity<String> response;
+        // Create JSON object for response body
         JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.OK;
+
         Optional<Game> optionalNextGame = gameService.getNextGame();
         if (!optionalNextGame.isPresent()) {
-            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            responseStatus =  HttpStatus.NO_CONTENT;
         } else {
             Game nextGame = optionalNextGame.get();
             output.put("start_time", nextGame.getStartTime());
             output.put("number_players", playerService.countAllPlayers());
-            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/joinGame", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> joinGame(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
         // Handle JSON
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
 
         // Look for player
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
@@ -113,12 +123,11 @@ public class MobileController {
                 playerService.savePlayer(player);
 
                 // Handle response
-                JSONObject output = new JSONObject();
                 output.put("home_zone_name", zone.getName());
-                response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+                responseStatus = HttpStatus.OK;
             }
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/startInfo", method=RequestMethod.POST, consumes="application/json")
@@ -199,13 +208,16 @@ public class MobileController {
 
     @RequestMapping(value="/atHomeBeacon", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public ResponseEntity atHomeBeacon(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+    public ResponseEntity<String> atHomeBeacon(@RequestBody String json) {
         // Handle json
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONArray beacons = input.getJSONArray("beacons");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
 
         // Look for player
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
@@ -218,29 +230,31 @@ public class MobileController {
                     player.setCurrentZone(currentZone);
                     playerService.savePlayer(player);
                     Zone homeZone = player.getHomeZone();
-                    JSONObject output = new JSONObject();
                     if (currentZone.equals(homeZone)) {
                         output.put("home", true);
                     } else {
                         output.put("home", false);
                     }
-                    response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+                    responseStatus = HttpStatus.OK;
                 }
             }
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/playerUpdate", method=RequestMethod.POST , consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> playerUpdate(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         // Handle json
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONArray jsonBeacons = input.getJSONArray("beacons");
+
+        // Create JSON object for response body
         JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
 
         // Does player exist
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
@@ -328,32 +342,42 @@ public class MobileController {
                 } else { output.put("mission_description", ""); }
             } else { output.put("mission_description", ""); }
 
-            response = new ResponseEntity<>(output.toString(), HttpStatus.OK);
+            responseStatus = HttpStatus.OK;
 
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/newTarget", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
-    public String getNewTarget(@RequestBody String json) {
+    public ResponseEntity<String> getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
-        Long newTargetId = playerService.newTarget(playerId);
+
+        // Create JSON object for response body
         JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
+        Long newTargetId = playerService.newTarget(playerId);
         output.put("target_player_id", newTargetId);
-        return output.toString();
+        responseStatus = HttpStatus.OK;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/exchangeRequest", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity exchangeRequest(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+    public ResponseEntity<String> exchangeRequest(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
         Player requester = playerService.getPlayer(requesterId).get();
         Player responder = playerService.getPlayer(responderId).get();
@@ -367,47 +391,50 @@ public class MobileController {
             if (exchange.getResponsePlayer() == responder) {
                 if (exchange.isRequesterToldComplete()) {
                     exchangeService.createExchange(requester, responder, jsonContactIds);
-                    response = new ResponseEntity<>(HttpStatus.CREATED);
+                    responseStatus = HttpStatus.CREATED;
                 }
                 else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
                     List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
-                    JSONObject output = new JSONObject();
                     output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                     exchange.setRequesterToldComplete(true);
                     exchangeService.saveExchange(exchange);
-                    response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
+                    responseStatus = HttpStatus.ACCEPTED;
                 } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
                     exchange.setRequesterToldComplete(true);
                     exchangeService.saveExchange(exchange);
-                    response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
+                    responseStatus = HttpStatus.REQUEST_TIMEOUT;
                 } else {
                     if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
                         exchange.setRequesterToldComplete(true);
                         exchangeService.saveExchange(exchange);
-                        response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                        responseStatus = HttpStatus.NO_CONTENT;
                     } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
-                        response = new ResponseEntity<>(HttpStatus.PARTIAL_CONTENT);
+                        responseStatus = HttpStatus.PARTIAL_CONTENT;
                     }
                 }
             } else {
-                response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                responseStatus = HttpStatus.NOT_FOUND;
             }
         } else {
             exchangeService.createExchange(requester, responder, jsonContactIds);
-            response = new ResponseEntity<>(HttpStatus.CREATED);
+            responseStatus = HttpStatus.CREATED;
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/exchangeResponse", method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity exchangeResponse(@RequestBody String json) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+    public ResponseEntity<String> exchangeResponse(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
+
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         int exchangeResponseIndex = input.getInt("response");
         ExchangeResponse exchangeResponse = ExchangeResponse.values()[exchangeResponseIndex];
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
@@ -424,12 +451,11 @@ public class MobileController {
                 long timeRemainingBuffer = 1l;
                 long timeRemaining = exchangeService.getTimeRemaining(exchange) - timeRemainingBuffer;
                 if (timeRemaining <= 0l) {
-                    response = new ResponseEntity<>(HttpStatus.REQUEST_TIMEOUT);
+                    responseStatus = HttpStatus.REQUEST_TIMEOUT;
                 } else {
-                    JSONObject output = new JSONObject();
                     // 1s buffer for timeout, to avoid race conditions
                     output.put("time_remaining", timeRemaining);
-                    response = new ResponseEntity<>(output.toString(), HttpStatus.PARTIAL_CONTENT);
+                    responseStatus = HttpStatus.PARTIAL_CONTENT;
                 }
             } else if (exchangeResponse.equals(ExchangeResponse.ACCEPTED)) {
                 List<Long> contactIds = new ArrayList<>();
@@ -440,21 +466,20 @@ public class MobileController {
                     }
                 }
                 List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
-                JSONObject output = new JSONObject();
                 output.put("evidence", evidenceService.evidenceListToJsonArray(requestEvidenceList));
                 List<Evidence> responseEvidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
                 exchange.setEvidenceList(responseEvidenceList);
                 exchange.setResponse(exchangeResponse);
                 exchangeService.saveExchange(exchange);
                 // Set status code
-                response = new ResponseEntity<>(output.toString(), HttpStatus.ACCEPTED);
+                responseStatus = HttpStatus.ACCEPTED;
             } else if (exchangeResponse.equals(ExchangeResponse.REJECTED)) {
                 exchange.setResponse(exchangeResponse);
                 exchangeService.saveExchange(exchange);
-                response = new ResponseEntity<>(HttpStatus.RESET_CONTENT);
+                responseStatus = HttpStatus.RESET_CONTENT;
             }
         }
-        return response;
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
     @RequestMapping(value="/expose", method=RequestMethod.POST)
@@ -464,10 +489,12 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
+
         // create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         // fetch player making request and target given
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         Optional<Player> opTarget = playerService.getPlayer(targetId);
@@ -508,10 +535,12 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
+
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+
         // Ensure player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         Optional<Player> opTarget = playerService.getPlayer(targetId);
@@ -615,7 +644,12 @@ public class MobileController {
 
     @RequestMapping(value="/endInfo", method=RequestMethod.GET)
     @ResponseBody
-    public String endInfo() {
+    public ResponseEntity<String> endInfo() {
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.OK;
+
         JSONArray leaderboard = new JSONArray();
         List<Player> players = playerService.getAllPlayersByScore();
         for (Player player : players) {
@@ -625,9 +659,7 @@ public class MobileController {
             playerInfo.put("score", player.getReputation());
             leaderboard.put(playerInfo);
         }
-        JSONObject output = new JSONObject();
         output.put("leaderboard", leaderboard);
-        return output.toString();
+        return new ResponseEntity<>(output.toString(), responseStatus);
     }
-
 }
