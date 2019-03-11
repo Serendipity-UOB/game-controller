@@ -62,7 +62,7 @@ public class DummyController {
         JSONObject output = new JSONObject();
         output.put("all_players", allPlayers);
         output.put("end_time", LocalTime.now().plusMinutes(1));
-        return new ResponseEntity<>(allPlayers, HttpStatus.OK);
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/atHomeBeaconTest", method=RequestMethod.POST, consumes="application/json")
