@@ -16,6 +16,11 @@ public interface EvidenceService {
     void saveEvidence(Evidence evidence);
 
     /*
+     *
+     */
+    void deleteAllEvidence();
+
+    /*
      * @param evidenceList The list of evidence to convert.
      * @return The same list of evidence as a JSONArray with attributes "player_id" and "amount".
      */
