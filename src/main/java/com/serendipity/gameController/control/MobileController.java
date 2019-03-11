@@ -303,9 +303,14 @@ public class MobileController {
                     missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
                             + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
                     // TODO: beacon assignment will change if this gets called multiple times
-                    List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
-                    Random random = new Random();
-                    Zone zone = notCurrent.get(random.nextInt(notCurrent.size()));
+                    Zone zone = mission.getZone();
+                    System.out.println(zone);
+                    if( zone == null ) {
+                        List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
+                        Random random = new Random();
+                        zone = notCurrent.get(random.nextInt(notCurrent.size()));
+                    }
+
                     missionDescription += " activities can be found at <b>" + zone.getName() +
                             "</b>.\n Get there in 30 Seconds to secure it.";
 
@@ -596,16 +601,25 @@ public class MobileController {
             //  Check if the mission hasn't timed out
             if(LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))){
                 if(location.equals(mission.getZone())){
+                    // Get mission details
+                    Player p1 = mission.getPlayer1();
+                    Player p2 = mission.getPlayer2();
+                    Zone zone = mission.getZone();
+                    // Evidence to return
                     JSONArray evidence = new JSONArray();
-                    JSONObject p1 = new JSONObject();
-                    p1.put("player_id", mission.getPlayer1().getId());
-                    p1.put("amount", 10);
-                    evidence.put(p1);
-                    JSONObject p2 = new JSONObject();
-                    p2.put("player_id", mission.getPlayer2().getId());
-                    p2.put("amount", 10);
-                    evidence.put(p2);
+                    JSONObject e1 = new JSONObject();
+                    e1.put("player_id", p1.getId());
+                    e1.put("amount", 10);
+                    evidence.put(e1);
+                    JSONObject e2 = new JSONObject();
+                    e2.put("player_id", p2.getId());
+                    e2.put("amount", 10);
+                    evidence.put(e2);
                     output.put("evidence", evidence);
+                    // Success String
+                    String missionDescription = "You recovered evidence on <b>" + p1.getRealName() +"</b> and <b>" +
+                            p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
+                    output.put("success_description", missionDescription);
                     responseStatus = HttpStatus.OK;
                     mission.setCompleted(true);
                     missionService.saveMission(mission);

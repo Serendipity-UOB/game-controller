@@ -201,6 +201,7 @@ public class DummyController {
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
+        output.put("success_description", "You recovered evidence on <b>Tom</b> and <b>Nuha’s</b> activities at <b>Beacon C</b>.");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
