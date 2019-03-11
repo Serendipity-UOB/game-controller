@@ -145,6 +145,7 @@ public class MobileController {
                     Optional<Game> opGame = gameService.getNextGame();
                     if(opGame.isPresent()) {
                         Game game = opGame.get();
+                        output.put("end_time", game.getEndTime());
 
                         // Find length of game in seconds
                         String datePattern = "HH:mm:ss";

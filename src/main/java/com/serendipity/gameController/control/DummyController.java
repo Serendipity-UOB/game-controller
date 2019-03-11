@@ -57,6 +57,7 @@ public class DummyController {
     @RequestMapping(value="/startInfoTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public String getStartInfo(@RequestBody String json) {
+
         return "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
                 "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
                 "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
