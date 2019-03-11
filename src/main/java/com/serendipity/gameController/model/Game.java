@@ -1,5 +1,7 @@
 package com.serendipity.gameController.model;
 
+import org.apache.tomcat.jni.Local;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,11 +20,14 @@ public class Game {
     private LocalTime endTime;
 
     public Game() {
-        this.startTime = LocalTime.now();
+        LocalTime startTime = LocalTime.now();
+        if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
+        this.startTime = startTime;
         this.endTime = this.startTime.plus(8, ChronoUnit.MINUTES);
     }
 
     public Game(LocalTime startTime) {
+        if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
         this.startTime = startTime;
         this.endTime = startTime.plus(8, ChronoUnit.MINUTES);
     }
