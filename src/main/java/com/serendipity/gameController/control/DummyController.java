@@ -84,7 +84,7 @@ public class DummyController {
         output.put("reputation", 0);
         output.put("position", 1);
         output.put("exchange_pending", 0);
-        output.put("exposed", false);
+        output.put("exposed_by", 0);
         output.put("req_new_target", false);
         output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30</b> seconds");
         output.put("game_over", false);

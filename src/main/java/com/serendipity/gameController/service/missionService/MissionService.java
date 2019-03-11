@@ -1,6 +1,8 @@
 package com.serendipity.gameController.service.missionService;
 
+import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Mission;
+import com.serendipity.gameController.model.Player;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,4 +20,6 @@ public interface MissionService {
      * @return An optional of the mission with that id.
      */
     Optional<Mission> getMission(Long id);
+
+    Mission createMission(Game game, Player target1, Player target2);
 }

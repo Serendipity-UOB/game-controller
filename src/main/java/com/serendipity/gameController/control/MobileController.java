@@ -161,35 +161,8 @@ public class MobileController {
                         Game game = opGame.get();
                         output.put("end_time", game.getEndTime());
 
-                        // Find length of game in seconds
-                        String datePattern = "HH:mm:ss";
-                        DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
-                        LocalTime gameEnd = game.getEndTime();
-                        String endString = df.format(gameEnd);
-                        LocalTime gameStart = game.getStartTime();
-                        String startString = df.format(gameStart);
-                        String[] unitsEnd = endString.split(":");
-                        String[] unitsStart = startString.split(":");
-                        int end = 3600 * Integer.parseInt(unitsEnd[0]) + 60 * Integer.parseInt(unitsEnd[1]) +
-                                Integer.parseInt(unitsEnd[2]);
-                        int start = 3600 * Integer.parseInt(unitsStart[0]) + 60 *
-                                Integer.parseInt(unitsStart[1]) + Integer.parseInt(unitsStart[2]);
-
-                        // Find upper and lower boundaries for mission time assignment
-                        int quarter = (end - start) / 4;
-                        int upper = end - quarter;
-                        int lower = start + quarter;
-
-                        // Pick random time
-                        Random randomTime = new Random();
-                        int time = quarter + randomTime.nextInt(upper - lower);
-                        LocalTime missionStart = gameStart.plus(time, ChronoUnit.SECONDS);
-                        LocalTime missionEnd = missionStart.plus(30, ChronoUnit.SECONDS);
-                        // TODO: May need to make the player assignment more dynamic
-                        // TODO: May need to consider multiple missions
-                        // Save new mission
-                        Mission mission = new Mission(missionStart, missionEnd, target1, target2);
-                        missionService.saveMission(mission);
+                        // Create a mission
+                        Mission mission = missionService.createMission(game, target1, target2);
 
                         // Assign mission to player
                         player.setMissionAssigned(mission);
@@ -280,12 +253,12 @@ public class MobileController {
             output.put("position", playerService.getLeaderboardPosition(player));
 
             // Exposed
-            if (player.isExposed()) {
-                output.put("exposed", true);
-                player.setExposed(false);
+            if (player.getExposedBy() != 0l) {
+                output.put("exposed_by", player.getExposedBy());
+                player.setExposedBy(0l);
                 playerService.savePlayer(player);
             } else {
-                output.put("exposed", false);
+                output.put("exposed_by", 0l);
             }
 
             // Return home
@@ -506,7 +479,7 @@ public class MobileController {
             Player target = opTarget.get();
             // ensure given target matches player's assign target and they haven't been exposed
             if(player.getTarget().getId().equals(target.getId())) {
-                if(!player.isExposed() && !player.isReturnHome()) {
+                if((player.getExposedBy() == 0l) && (!player.isReturnHome())) {
                     // increment reputation for player
                     playerService.incrementReputation(player, 1);
                     // set other players with the same targets returnHome attribute
@@ -519,7 +492,7 @@ public class MobileController {
                         }
                     }
                     // set targets exposed attribute
-                    target.setExposed(true);
+                    target.setExposedBy(playerId);
                     playerService.savePlayer(target);
                     // set output elements
                     responseStatus = HttpStatus.OK;

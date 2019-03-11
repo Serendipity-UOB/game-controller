@@ -26,7 +26,7 @@ public class Player {
 
     private int reputation;
 
-    private boolean exposed;
+    private Long exposedBy;
 
     private boolean returnHome;
 
@@ -38,7 +38,7 @@ public class Player {
 
     public Player() {
         this.reputation = 0;
-        this.exposed = false;
+        this.exposedBy = 0l;
         this.returnHome = false;
     }
 
@@ -46,7 +46,7 @@ public class Player {
         this.realName = realName;
         this.codeName = codeName;
         this.reputation = 0;
-        this.exposed = false;
+        this.exposedBy = 0l;
         this.returnHome = false;
     }
 
@@ -55,7 +55,7 @@ public class Player {
         this.codeName = codeName;
         this.target = target;
         this.reputation = 0;
-        this.exposed = false;
+        this.exposedBy = 0l;
         this.returnHome = false;
     }
 
@@ -112,9 +112,9 @@ public class Player {
         this.reputation = reputation;
     }
 
-    public boolean isExposed() { return exposed; }
+    public Long getExposedBy() { return exposedBy; }
 
-    public void setExposed(boolean exposed) { this.exposed = exposed; }
+    public void setExposedBy(Long exposedBy) { this.exposedBy = exposedBy; }
 
     public boolean isReturnHome() { return returnHome; }
 
@@ -146,7 +146,7 @@ public class Player {
                 ", homeZone=" + homeZone +
                 ", target=" + target +
                 ", reputation=" + reputation +
-                ", exposed=" + exposed +
+                ", exposed=" + exposedBy +
                 ", returnHome=" + returnHome +
                 ", currentZone=" + currentZone +
                 ", missionAssigned=" + missionAssigned +
