@@ -18,13 +18,13 @@ public class Game {
     private LocalTime endTime;
 
     public Game() {
-        this.startTime = LocalTime.now().plus(10, ChronoUnit.SECONDS);
-        this.endTime = this.startTime.plus(10, ChronoUnit.MINUTES);
+        this.startTime = LocalTime.now();
+        this.endTime = this.startTime.plus(8, ChronoUnit.MINUTES);
     }
 
     public Game(LocalTime startTime) {
         this.startTime = startTime;
-        this.endTime = startTime.plus(10, ChronoUnit.MINUTES);
+        this.endTime = startTime.plus(8, ChronoUnit.MINUTES);
     }
 
     public Long getId() {

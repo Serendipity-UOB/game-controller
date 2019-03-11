@@ -59,6 +59,9 @@ public class DummyController {
         String allPlayers = "{ \"all_players\": [{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
                 "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
                 "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"} ]}";
+        JSONObject output = new JSONObject();
+        output.put("all_players", allPlayers);
+        output.put("end_time", LocalTime.now().plusMinutes(1));
         return new ResponseEntity<>(allPlayers, HttpStatus.OK);
     }
 
