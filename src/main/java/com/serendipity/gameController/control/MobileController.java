@@ -302,7 +302,6 @@ public class MobileController {
                     String missionDescription;
                     missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
                             + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
-                    // TODO: beacon assignment will change if this gets called multiple times
                     Zone zone = mission.getZone();
                     System.out.println(zone);
                     if( zone == null ) {
