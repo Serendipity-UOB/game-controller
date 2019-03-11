@@ -55,15 +55,4 @@ public interface BeaconService {
      */
     void deleteBeaconById(Long beaconId);
 
-    /*
-     * @param beacons A JSONArray of {beacon_major, beacon_minor, rssi}.
-     * @return The major of the closest beacon.
-     */
-    int getClosestBeaconMajor(Long playerId, JSONArray beacons);
-
-    /*
-     * @param major The major that relates to the Beacon(s) you don't want to return.
-     * @return A list of all the beacons in the database except the given major.
-     */
-    List<Beacon> getAllBeaconsExcept(int major);
 }

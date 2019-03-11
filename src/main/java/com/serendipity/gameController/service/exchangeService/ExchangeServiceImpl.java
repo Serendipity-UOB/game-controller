@@ -88,7 +88,6 @@ public class ExchangeServiceImpl implements ExchangeService {
         evidenceList.add(evidence);
 
         // Remove the responder and requester ids from contacts list
-        // TODO: Test if this works (is equals enough or does it only work on the same actual object?)
         if (contactIds.contains(exchange.getResponsePlayer().getId())) {
             contactIds.remove(exchange.getResponsePlayer().getId());
         }

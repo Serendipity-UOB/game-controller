@@ -114,7 +114,6 @@ public class WebController {
     @Transactional
     @PostMapping(value="/delBeacon")
     public String delBeacon(@ModelAttribute("beacon_id") Long id) {
-        // TODO: Remove from zone's beacons, save zone
         Beacon beacon = beaconService.getBeaconById(id).get();
         zoneService.removeBeaconFromZone(beacon);
         beaconService.deleteBeaconById(id);
