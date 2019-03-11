@@ -121,4 +121,9 @@ public interface PlayerService {
      */
     boolean isValidCodeName(String codeName);
 
+    /*
+     *
+     */
+    int calculateReputationGainFromExpose();
+
 }

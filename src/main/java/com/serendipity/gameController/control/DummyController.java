@@ -163,7 +163,9 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-        return new ResponseEntity<>(HttpStatus.OK);
+        JSONObject output = new JSONObject();
+        output.put("reputation", 10);
+        return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
     @RequestMapping(value="/interceptTest", method=RequestMethod.POST, consumes="application/json")

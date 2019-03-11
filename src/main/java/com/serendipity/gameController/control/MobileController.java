@@ -488,7 +488,9 @@ public class MobileController {
             if(player.getTarget().getId().equals(target.getId())) {
                 if((player.getExposedBy() == 0l) && (!player.isReturnHome())) {
                     // increment reputation for player
-                    playerService.incrementReputation(player, 1);
+                    int reputationGain = playerService.calculateReputationGainFromExpose();
+                    playerService.incrementReputation(player, reputationGain);
+                    output.put("reputation", reputationGain);
                     // set other players with the same targets returnHome attribute
                     // assume player is locked to getNewTarget by app
                     List<Player> players = playerService.getAllPlayersByTarget(target);

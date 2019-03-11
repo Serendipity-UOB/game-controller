@@ -218,4 +218,10 @@ public class PlayerServiceImpl implements PlayerService {
         Optional<Player> playerOptional = getPlayerByCodeName(codeName);
         return !playerOptional.isPresent();
     }
+
+    @Override
+    public int calculateReputationGainFromExpose() {
+        return 10;
+    }
+
 }
