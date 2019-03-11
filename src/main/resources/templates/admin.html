@@ -18,6 +18,12 @@
 
 <div>
     <h1>Hacker Hunt Admin Page</h1>
+    <form method="post" th:action="@{/setupTestGame}">
+        <button type="submit" class="grey">Initialise test game</button>
+    </form>
+    <form method="post" th:action="@{/resetAll}">
+        <button type="submit" class="red">Reset all</button>
+    </form>
 </div>
 
 <div class="container">
@@ -98,7 +104,7 @@
                 </form>
                 <form method="post" th:action="@{/initGameFixed}">
                     <td>
-                        <button type="submit" class="grey">Start game in 1 minute</button>
+                        <button type="submit" class="grey">Start new game in 1 minute</button>
                     </td>
                 </form>
             </tr>

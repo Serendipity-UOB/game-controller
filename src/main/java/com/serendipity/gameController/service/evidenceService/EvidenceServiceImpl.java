@@ -24,6 +24,11 @@ public class EvidenceServiceImpl implements EvidenceService {
     }
 
     @Override
+    public void deleteAllEvidence() {
+        evidenceRepository.deleteAll();
+    }
+
+    @Override
     public JSONArray evidenceListToJsonArray(List<Evidence> evidenceList) {
         JSONArray jsonEvidenceList = new JSONArray();
         for (Evidence evidence : evidenceList) {

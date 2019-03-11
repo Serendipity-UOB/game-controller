@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.Beacon;
 import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
+import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -35,6 +36,9 @@ public class WebController {
     @Autowired
     ZoneServiceImpl zoneService;
 
+    @Autowired
+    EvidenceServiceImpl evidenceService;
+
     @GetMapping(value="/")
     public String home(Model model) {
         model.addAttribute("beacons", beaconService.getAllBeacons());
@@ -43,10 +47,43 @@ public class WebController {
         return "admin";
     }
 
+    @PostMapping(value="/setupTestGame")
+    public String setupTestGame() {
+        resetTables();
+        Zone zoneA = new Zone("Zone A");
+        Zone zoneB = new Zone("Zone B");
+        Zone zoneC = new Zone("Zone C");
+        zoneService.saveZone(zoneA);
+        zoneService.saveZone(zoneB);
+        zoneService.saveZone(zoneC);
+        Beacon beaconA1 = new Beacon(1, 1, "Beacon A1", zoneA);
+        Beacon beaconA2 = new Beacon(1, 2, "Beacon A2", zoneA);
+        Beacon beaconB1 = new Beacon(2, 1, "Beacon B1", zoneB);
+        Beacon beaconB2 = new Beacon(2, 2, "Beacon B2", zoneB);
+        Beacon beaconC1 = new Beacon(3, 1, "Beacon C1", zoneC);
+        Beacon beaconC2 = new Beacon(3, 2, "Beacon C2", zoneC);
+        beaconService.saveBeacon(beaconA1);
+        beaconService.saveBeacon(beaconA2);
+        beaconService.saveBeacon(beaconB1);
+        beaconService.saveBeacon(beaconB2);
+        beaconService.saveBeacon(beaconC1);
+        beaconService.saveBeacon(beaconC2);
+        Game game = new Game(LocalTime.now().plusMinutes(1));
+        gameService.saveGame(game);
+        return "redirect:/";
+    }
+
+    @PostMapping(value="/resetAll")
+    public String resetAll() {
+        resetTables();
+        return "redirect:/";
+    }
+
     @PostMapping(value="/initGame")
     public String initGame(@ModelAttribute("start_time") String startTime) {
 //        reset player and exchange tables
-        resetTables();
+//        resetTables();
+        gameService.deleteAllGames();
         LocalTime start = LocalTime.parse(startTime);
 //        get start time and save new game
         Game game = new Game(start);
@@ -56,7 +93,8 @@ public class WebController {
 
     @PostMapping(value="/initGameFixed")
     public String initGameFixed() {
-        resetTables();
+//        resetTables();
+        gameService.deleteAllGames();
         LocalTime start = LocalTime.now().plusMinutes(1);
         Game game = new Game(start);
         gameService.saveGame(game);
@@ -105,9 +143,11 @@ public class WebController {
     }
 
     private void resetTables() {
+        evidenceService.deleteAllEvidence();
         exchangeService.deleteAllExchanges();
         playerService.deletePlayers();
-//        TODO: Are we having multiple games, if so do we index which game to delete
+        beaconService.deleteAllBeacons();
+        zoneService.deleteAllZones();
         gameService.deleteAllGames();
     }
 

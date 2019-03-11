@@ -49,6 +49,11 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
+    public void deleteAllZones() {
+        zoneRepository.deleteAll();
+    }
+
+    @Override
     public List<Zone> getAllZonesExcept(Long id) { return zoneRepository.findAllByIdNot(id); }
 
     @Override

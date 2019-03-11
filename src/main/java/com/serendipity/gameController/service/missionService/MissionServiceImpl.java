@@ -19,6 +19,11 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    public void deleteAllMissions() {
+        missionRepository.deleteAll();
+    }
+
+    @Override
     public Optional<Mission> getMission(Long id){
         return missionRepository.findById(id);
     }

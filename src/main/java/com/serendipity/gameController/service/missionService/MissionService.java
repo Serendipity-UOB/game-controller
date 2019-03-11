@@ -14,6 +14,11 @@ public interface MissionService {
     void saveMission(Mission mission);
 
     /*
+     *
+     */
+    void deleteAllMissions();
+
+    /*
      * @param id The id of the mission you are looking for.
      * @return An optional of the mission with that id.
      */
