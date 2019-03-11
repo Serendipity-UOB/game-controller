@@ -67,12 +67,6 @@ public interface PlayerService {
     List<Player> getAllPlayersExceptTwo(Player p1, Player p2);
 
     /*
-     * @param player The player to assign a home to.
-     * @param home The home to assign to the player.
-     */
-    void assignHome(Player player, int home);
-
-    /*
      * @param player The player to get the weight for.
      * @return The weight of the given player.
      */

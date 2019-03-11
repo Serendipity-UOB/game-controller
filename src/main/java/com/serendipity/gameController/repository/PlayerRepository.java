@@ -15,8 +15,6 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     Optional<Player> findByCodeName(String codeName);
 
-    List<Player> findAllByNearestBeaconMajor(int nearestBeaconMajor);
-
     List<Player> findAllByCurrentZone(Zone zone);
 
     List<Player> findAllByCodeNameNot(String codename);

@@ -101,20 +101,6 @@ public class BeaconServiceImpl implements BeaconService {
     }
 
     @Override
-    public Map<Integer, Integer> sumBeacons() {
-        Map<Integer, Integer> beaconsAllocated = new HashMap<Integer, Integer>();
-        for(Beacon b : getAllBeacons()){
-            beaconsAllocated.putIfAbsent(b.getMajor(), 0);
-        }
-        for(Player p : playerService.getAllPlayers()) {
-            if(p.getHomeBeacon() != -1) {
-                beaconsAllocated.replace(p.getHomeBeacon(), (beaconsAllocated.get(p.getHomeBeacon()) + 1));
-            }
-        }
-        return beaconsAllocated;
-    }
-
-    @Override
     public List<Beacon> getAllBeaconsExcept(int major) {
         return beaconRepository.findAllByMajorNot(major);
     }

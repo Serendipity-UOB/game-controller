@@ -11,4 +11,6 @@ public interface ZoneRepository extends CrudRepository<Zone, Long> {
 
     List<Zone> findAll();
 
+    List<Zone> findAllByIdNot(Long id);
+
 }

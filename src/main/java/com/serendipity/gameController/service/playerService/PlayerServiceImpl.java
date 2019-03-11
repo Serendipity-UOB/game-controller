@@ -125,12 +125,6 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void assignHome(Player player, int home) {
-        player.setHomeBeacon(home);
-        playerRepository.save(player);
-    }
-
-    @Override
     public int getPlayerWeight(Player player) {
         return player.getReputation();
     }

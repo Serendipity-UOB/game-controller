@@ -33,6 +33,12 @@ public interface ZoneService {
     void deleteZone(Zone zone);
 
     /*
+     * @param id The id of the zone not wanted.
+     * @return A list of all the zones in the database except the one specified.
+     */
+    List<Zone> getAllZonesExcept(Long id);
+
+    /*
      * @param beacon The beacon to remove from its zone.
      */
     void removeBeaconFromZone(Beacon beacon);
