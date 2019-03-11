@@ -353,45 +353,52 @@ public class MobileController {
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
 
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
-        Player requester = playerService.getPlayer(requesterId).get();
-        Player responder = playerService.getPlayer(responderId).get();
 
-        // Find exchange
-        Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(requester);
-        if (optionalExchange.isPresent()) {
-            Exchange exchange = optionalExchange.get();
+        Optional<Player> optionalRequester = playerService.getPlayer(requesterId);
+        Optional<Player> optionalResponder = playerService.getPlayer(responderId);
 
-            // Handle request
-            if (exchange.getResponsePlayer() == responder) {
-                if (exchange.isRequesterToldComplete()) {
-                    exchangeService.createExchange(requester, responder, jsonContactIds);
-                    responseStatus = HttpStatus.CREATED;
-                }
-                else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                    List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
-                    output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
-                    exchange.setRequesterToldComplete(true);
-                    exchangeService.saveExchange(exchange);
-                    responseStatus = HttpStatus.ACCEPTED;
-                } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
-                    exchange.setRequesterToldComplete(true);
-                    exchangeService.saveExchange(exchange);
-                    responseStatus = HttpStatus.REQUEST_TIMEOUT;
-                } else {
-                    if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
+        // Find players
+        if (optionalRequester.isPresent() && optionalResponder.isPresent()) {
+            Player requester = optionalRequester.get();
+            Player responder = optionalResponder.get();
+
+            // Find exchange
+            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(requester);
+            if (optionalExchange.isPresent()) {
+                Exchange exchange = optionalExchange.get();
+
+                // Handle request
+                if (exchange.getResponsePlayer() == responder) {
+                    if (exchange.isRequesterToldComplete()) {
+                        exchangeService.createExchange(requester, responder, jsonContactIds);
+                        responseStatus = HttpStatus.CREATED;
+                    }
+                    else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                        List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
+                        output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                         exchange.setRequesterToldComplete(true);
                         exchangeService.saveExchange(exchange);
-                        responseStatus = HttpStatus.NO_CONTENT;
-                    } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
-                        responseStatus = HttpStatus.PARTIAL_CONTENT;
+                        responseStatus = HttpStatus.ACCEPTED;
+                    } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                        exchange.setRequesterToldComplete(true);
+                        exchangeService.saveExchange(exchange);
+                        responseStatus = HttpStatus.REQUEST_TIMEOUT;
+                    } else {
+                        if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
+                            exchange.setRequesterToldComplete(true);
+                            exchangeService.saveExchange(exchange);
+                            responseStatus = HttpStatus.NO_CONTENT;
+                        } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
+                            responseStatus = HttpStatus.PARTIAL_CONTENT;
+                        }
                     }
+                } else {
+                    responseStatus = HttpStatus.NOT_FOUND;
                 }
             } else {
-                responseStatus = HttpStatus.NOT_FOUND;
+                exchangeService.createExchange(requester, responder, jsonContactIds);
+                responseStatus = HttpStatus.CREATED;
             }
-        } else {
-            exchangeService.createExchange(requester, responder, jsonContactIds);
-            responseStatus = HttpStatus.CREATED;
         }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
