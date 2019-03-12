@@ -303,7 +303,6 @@ public class MobileController {
                     missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
                             + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
                     Zone zone = mission.getZone();
-                    System.out.println(zone);
                     if( zone == null ) {
                         List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
                         Random random = new Random();
@@ -597,13 +596,13 @@ public class MobileController {
             Player player = opPlayer.get();
             Zone location = player.getCurrentZone();
             Mission mission = player.getMissionAssigned();
+            // Get mission details
+            Player p1 = mission.getPlayer1();
+            Player p2 = mission.getPlayer2();
+            Zone zone = mission.getZone();
             //  Check if the mission hasn't timed out
             if(LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))){
-                if(location.equals(mission.getZone())){
-                    // Get mission details
-                    Player p1 = mission.getPlayer1();
-                    Player p2 = mission.getPlayer2();
-                    Zone zone = mission.getZone();
+                if(location.equals(zone)){
                     // Evidence to return
                     JSONArray evidence = new JSONArray();
                     JSONObject e1 = new JSONObject();
@@ -616,9 +615,9 @@ public class MobileController {
                     evidence.put(e2);
                     output.put("evidence", evidence);
                     // Success String
-                    String missionDescription = "You recovered evidence on <b>" + p1.getRealName() +"</b> and <b>" +
+                    String success = "You recovered evidence on <b>" + p1.getRealName() +"</b> and <b>" +
                             p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
-                    output.put("success_description", missionDescription);
+                    output.put("success_description", success);
                     responseStatus = HttpStatus.OK;
                     mission.setCompleted(true);
                     missionService.saveMission(mission);
@@ -628,8 +627,11 @@ public class MobileController {
                     responseStatus = HttpStatus.PARTIAL_CONTENT;
                 }
             } else {
-                output.put("NO_CONTENT", "Mission failed");
-                responseStatus = HttpStatus.NO_CONTENT;
+                responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
+                String failure = "You didn’t managed to recover evidence on <b>" + p1.getRealName() +"</b> and <b>" +
+                        p2.getRealName() +"’s</b> at <b>" + zone.getName() + "</b>.";
+                output.put("failure_description", failure);
+
                 mission.setCompleted(true);
                 missionService.saveMission(mission);
             }
