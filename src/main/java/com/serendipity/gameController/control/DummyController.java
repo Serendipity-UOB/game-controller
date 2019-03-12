@@ -38,7 +38,7 @@ public class DummyController {
     @ResponseBody
     public ResponseEntity<String> getGameInfo() {
         JSONObject output = new JSONObject();
-        output.put("start_time", LocalTime.now().plus(10, ChronoUnit.SECONDS));
+        output.put("start_time", LocalTime.now().plus(4, ChronoUnit.SECONDS));
         output.put("number_players", 3);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
