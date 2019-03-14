@@ -210,6 +210,8 @@ public class MobileController {
                         output.put("home", false);
                     }
                     responseStatus = HttpStatus.OK;
+                } else {
+                    output.put("home", false);
                 }
             }
         }
