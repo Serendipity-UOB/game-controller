@@ -315,6 +315,7 @@ public class MobileController {
                             "</b>.\n Get there in 30 Seconds to secure it.";
 
                     mission.setZone(zone);
+                    mission.setCompleted(true);
                     missionService.saveMission(mission);
 
                     output.put("mission_description", missionDescription);
@@ -621,8 +622,6 @@ public class MobileController {
                             p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
                     output.put("success_description", success);
                     responseStatus = HttpStatus.OK;
-                    mission.setCompleted(true);
-                    missionService.saveMission(mission);
                 } else {
                     Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
                     output.put("time_remaining", timeRemaining);
@@ -633,9 +632,6 @@ public class MobileController {
                 String failure = "You didn’t managed to recover evidence on <b>" + p1.getRealName() +"</b> and <b>" +
                         p2.getRealName() +"’s</b> at <b>" + zone.getName() + "</b>.";
                 output.put("failure_description", failure);
-
-                mission.setCompleted(true);
-                missionService.saveMission(mission);
             }
         } else { output.put("BAD_REQUEST", "Couldn't find player given"); }
 
