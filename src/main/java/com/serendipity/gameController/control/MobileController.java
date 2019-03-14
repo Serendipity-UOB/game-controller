@@ -136,6 +136,7 @@ public class MobileController {
         // Read in request body
         JSONObject input = new JSONObject(json);
         Long playerId = input.getLong("player_id");
+        System.out.println("Player id received:" + playerId);
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
