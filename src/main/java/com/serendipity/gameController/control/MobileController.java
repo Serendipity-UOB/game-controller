@@ -149,33 +149,32 @@ public class MobileController {
             List<Player> players = playerService.getAllPlayersExcept(player);
             Random random = new Random();
             // Ensure 1 other player exists
+            System.out.println("Players in game:" + players.size());
             if(players.size() > 0) {
                 Player target1 = players.get(random.nextInt(players.size()));
+                System.out.println("Target 1:" + target1.getId());
                 players.remove(target1);
                 // Ensure 2 other players exist
                 if (players.size() > 0) {
                     Player target2 = players.get(random.nextInt(players.size()));
+                    System.out.println("Target 2:" + target2.getId());
                     // Ensure game exists
                     // TODO: Deal with multiple game instances
-                    Optional<Game> opGame = gameService.getNextGame();
-                    if(opGame.isPresent()) {
-                        Game game = opGame.get();
-                        output.put("end_time", game.getEndTime());
+                    Game game = gameService.getAllGames().get(0);
+                    output.put("end_time", game.getEndTime());
 
-                        // Create a mission
-                        Mission mission = missionService.createMission(game, target1, target2);
+                    // Create a mission
+                    Mission mission = missionService.createMission(game, target1, target2);
 
-                        // Assign mission to player
-                        player.setMissionAssigned(mission);
-                        playerService.savePlayer(player);
+                    // Assign mission to player
+                    player.setMissionAssigned(mission);
+                    playerService.savePlayer(player);
 
-                        // Return all players
-                        responseStatus = HttpStatus.OK;
-                        output.put("all_players", playerService.getAllPlayersStartInfo());
-                    }
-                }
-            }
-
+                    // Return all players
+                    responseStatus = HttpStatus.OK;
+                    output.put("all_players", playerService.getAllPlayersStartInfo());
+                } else { output.put("BAD_REQUEST", "Not enough players"); }
+            } else { output.put("BAD_REQUEST", "Not enough players"); }
         } else { output.put("BAD_REQUEST", "Couldn't find player given"); }
 
         return new ResponseEntity<>(output.toString(), responseStatus);
