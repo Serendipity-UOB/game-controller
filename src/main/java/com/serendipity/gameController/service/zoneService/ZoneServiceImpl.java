@@ -117,9 +117,9 @@ public class ZoneServiceImpl implements ZoneService {
                 if (player.hasCurrentZone()) {
                     if (player.getCurrentZone().equals(beacon.getZone())) isInCurrentZone = true;
                 }
-                if ((closestRssi == Integer.MIN_VALUE)               // If we haven't seen any beacons yet
-                        || ((closestRssi == 0) && (isInCurrentZone)) // Or, if we haven't seen any non-zero rssi yet and this was your current zone
-                        || (rssi > closestRssi && rssi != 0)) {      // Or, if the rssi we're looking at is non-zero and closer than closestRssi
+                if ((closestRssi == Integer.MIN_VALUE)       // If we haven't seen any beacons yet
+                || ((closestRssi == 0) && (isInCurrentZone)) // Or, if we haven't seen any non-zero rssi yet and this was your current zone
+                || (rssi > closestRssi && rssi != 0)) {      // Or, if the rssi we're looking at is non-zero and closer than closestRssi
                     optionalClosestBeacon = Optional.of(beacon);
                     closestRssi = rssi;
                 }
