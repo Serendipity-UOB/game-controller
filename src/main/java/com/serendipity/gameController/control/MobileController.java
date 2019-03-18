@@ -57,7 +57,7 @@ public class MobileController {
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
         ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
-        System.out.println("/registerPlayer " + input);
+        System.out.println("/registerPlayer received: " + input);
         String realName = input.getString("real_name");
         String codeName = input.getString("code_name");
 
@@ -77,6 +77,7 @@ public class MobileController {
             output.put("player_id", player.getId());
             responseStatus = HttpStatus.OK;
         }
+        System.out.println("/registerPlayer returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -96,6 +97,7 @@ public class MobileController {
             output.put("start_time", nextGame.getStartTime());
             output.put("number_players", playerService.countAllPlayers());
         }
+        System.out.println("/gameInfo returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -104,7 +106,7 @@ public class MobileController {
     public ResponseEntity<String> joinGame(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
-        System.out.println("/joinGame " + input);
+        System.out.println("/joinGame received: " + input);
         Long id = input.getLong("player_id");
 
         // Create JSON object for response body
@@ -129,6 +131,7 @@ public class MobileController {
                 responseStatus = HttpStatus.OK;
             } else System.out.println("No zones in the database");
         } else System.out.println("No player exists by this id");
+        System.out.println("/joinGame returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -137,7 +140,7 @@ public class MobileController {
     public ResponseEntity<String> getStartInfo(@RequestBody String json) {
         // Read in request body
         JSONObject input = new JSONObject(json);
-        System.out.println("/startInfo " + input);
+        System.out.println("/startInfo received: " + input);
         Long playerId = input.getLong("player_id");
         // Create JSON object for response body
         JSONObject output = new JSONObject();
@@ -187,7 +190,7 @@ public class MobileController {
             System.out.println("No player exists by this id");
             output.put("BAD_REQUEST", "Couldn't find player given");
         }
-
+        System.out.println("/startInfo returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -196,7 +199,7 @@ public class MobileController {
     public ResponseEntity<String> atHomeBeacon(@RequestBody String json) {
         // Handle json
         JSONObject input = new JSONObject(json);
-        System.out.println("/atHomeBeacon " + input);
+        System.out.println("/atHomeBeacon received: " + input);
         Long id = input.getLong("player_id");
         JSONArray beacons = input.getJSONArray("beacons");
 
@@ -228,6 +231,7 @@ public class MobileController {
                 }
             } else System.out.println("This player hasn't been assigned a home zone");
         } else System.out.println("No player exists by this id");
+        System.out.println("/atHomeBeacon returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -237,7 +241,7 @@ public class MobileController {
 
         // Handle json
         JSONObject input = new JSONObject(json);
-        System.out.println("/playerUpdate " + input);
+        System.out.println("/playerUpdate received: " + input);
         Long id = input.getLong("player_id");
         JSONArray jsonBeacons = input.getJSONArray("beacons");
 
@@ -342,6 +346,7 @@ public class MobileController {
             responseStatus = HttpStatus.OK;
 
         } else System.out.println("No player exists by this id");
+        System.out.println("/playerUpdate returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -349,7 +354,7 @@ public class MobileController {
     @ResponseBody
     public ResponseEntity<String> getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
-        System.out.println("/newTarget " + input);
+        System.out.println("/newTarget received: " + input);
         Long playerId = input.getLong("player_id");
 
         // Create JSON object for response body
@@ -360,6 +365,7 @@ public class MobileController {
         Long newTargetId = playerService.newTarget(playerId);
         output.put("target_player_id", newTargetId);
         responseStatus = HttpStatus.OK;
+        System.out.println("/newTarget returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -368,7 +374,7 @@ public class MobileController {
     public ResponseEntity<String> exchangeRequest(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
-        System.out.println("/exchangeRequest " + input);
+        System.out.println("/exchangeRequest received: " + input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
 
@@ -428,6 +434,7 @@ public class MobileController {
                 responseStatus = HttpStatus.CREATED;
             }
         } else System.out.println("Couldn't find either the requester or the responder by these ids");
+        System.out.println("/exchangeRequest returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -436,7 +443,7 @@ public class MobileController {
     public ResponseEntity<String> exchangeResponse(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
-        System.out.println("/exchangeResponse " + input);
+        System.out.println("/exchangeResponse received: " + input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
 
@@ -489,6 +496,7 @@ public class MobileController {
                 responseStatus = HttpStatus.RESET_CONTENT;
             } else System.out.println("Exchange has no response status, something wrong on the server");
         } else System.out.println("Couldn't find an exchange between these players");
+        System.out.println("/exchangeResponse returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -497,7 +505,7 @@ public class MobileController {
     public ResponseEntity<String> expose(@RequestBody String json) {
         // receive JSON object
         JSONObject input = new JSONObject(json);
-        System.out.println("/expose " + input);
+        System.out.println("/expose received: " + input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
 
@@ -547,6 +555,7 @@ public class MobileController {
             System.out.println("Couldn't find one of the exposer or the target");
             output.put("BAD_REQUEST", "Couldn't find player or target id given");
         }
+        System.out.println("/expose returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -555,7 +564,7 @@ public class MobileController {
     public ResponseEntity<String> intercept(@RequestBody String json) {
         // Read in request body
         JSONObject input = new JSONObject(json);
-        System.out.println("/intercept " + input);
+        System.out.println("/intercept received: " + input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
 
@@ -624,7 +633,7 @@ public class MobileController {
             System.out.println("No player exists by this id");
             output.put("BAD_REQUEST", "Couldn't find player or target id given");
         }
-
+        System.out.println("/intercept returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -633,7 +642,7 @@ public class MobileController {
     public ResponseEntity<String> missionUpdate(@RequestBody String json) {
         // receive JSON object
         JSONObject input = new JSONObject(json);
-        System.out.println("/missionUpdate " + input);
+        System.out.println("/missionUpdate received: " + input);
         Long playerId = input.getLong("player_id");
 
         // Create JSON object for response body
@@ -687,7 +696,7 @@ public class MobileController {
             System.out.println("No player exists by this id");
             output.put("BAD_REQUEST", "Couldn't find player given");
         }
-
+        System.out.println("/missionUpdate returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -709,6 +718,7 @@ public class MobileController {
             leaderboard.put(playerInfo);
         }
         output.put("leaderboard", leaderboard);
+        System.out.println("/endInfo returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 }
