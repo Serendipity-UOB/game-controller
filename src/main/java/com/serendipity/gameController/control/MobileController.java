@@ -583,51 +583,53 @@ public class MobileController {
             Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-                // Find if player has an intercept
-                Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
-                if (opIntercept.isPresent()) {
-                    Intercept intercept = opIntercept.get();
-                    // Find if the intercept is still active
-                    if (!intercept.isExpired()) {
-                        // Find if the active intercept is for the exchange targeted
-                        if (intercept.getExchange().equals(exchange)) {
-                            // Find if exchange is still active
-                            if (exchange.isRequesterToldComplete()) {
-                                // Determine response
-                                if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                                    List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
-                                    output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
-                                    responseStatus = HttpStatus.OK;
+                if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                    // Find if player has an intercept
+                    Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
+                    if (opIntercept.isPresent()) {
+                        Intercept intercept = opIntercept.get();
+                        // Find if the intercept is still active
+                        if (!intercept.isExpired()) {
+                            // Find if the active intercept is for the exchange targeted
+                            if (intercept.getExchange().equals(exchange)) {
+                                // Find if exchange is still active
+                                if (exchange.isRequesterToldComplete()) {
+                                    // Determine response
+                                    if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                                        List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
+                                        output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                                        responseStatus = HttpStatus.OK;
+                                    } else {
+                                        System.out.println("Exchange wasn't accepted");
+                                        responseStatus = HttpStatus.NO_CONTENT;
+                                    }
+                                    // Set intercept to be expired
+                                    intercept.setExpired(true);
+                                    interceptService.saveIntercept(intercept);
                                 } else {
-                                    System.out.println("Exchange wasn't accepted");
-                                    responseStatus = HttpStatus.NO_CONTENT;
+                                    System.out.println("Still waiting");
+                                    responseStatus = HttpStatus.PARTIAL_CONTENT;
                                 }
-                                // Set intercept to be expired
-                                intercept.setExpired(true);
-                                interceptService.saveIntercept(intercept);
                             } else {
-                                System.out.println("Still waiting");
-                                responseStatus = HttpStatus.PARTIAL_CONTENT;
+                                System.out.println("Trying to intercept wrong exchange");
+                                responseStatus = HttpStatus.NOT_FOUND;
                             }
                         } else {
-                            System.out.println("Trying to intercept wrong exchange");
-                            responseStatus = HttpStatus.NOT_FOUND;
+                            System.out.println("Intercept has expired, creating a new one");
+                            // Overwrite expired intercept
+                            intercept.setExpired(false);
+                            intercept.setExchange(exchange);
+                            interceptService.saveIntercept(intercept);
+                            responseStatus = HttpStatus.CREATED;
                         }
                     } else {
-                        System.out.println("Intercept has expired, creating a new one");
-                        // Overwrite expired intercept
-                        intercept.setExpired(false);
-                        intercept.setExchange(exchange);
+                        System.out.println("No intercept exists, creating one");
+                        // Create intercept
+                        Intercept intercept = new Intercept(player, exchange);
                         interceptService.saveIntercept(intercept);
                         responseStatus = HttpStatus.CREATED;
                     }
-                } else {
-                    System.out.println("No intercept exists, creating one");
-                    // Create intercept
-                    Intercept intercept = new Intercept(player, exchange);
-                    interceptService.saveIntercept(intercept);
-                    responseStatus = HttpStatus.CREATED;
-                }
+                } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
         } else {
             System.out.println("No player exists by this id");
