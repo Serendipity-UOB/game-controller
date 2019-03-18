@@ -110,7 +110,7 @@ public class DummyController {
         output.put("exchange_pending", 0);
         output.put("exposed_by", 0);
         output.put("req_new_target", false);
-//        output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30</b> seconds");
+//        output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30 Seconds<\b>");
         output.put("mission_description", "");
         output.put("game_over", false);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);

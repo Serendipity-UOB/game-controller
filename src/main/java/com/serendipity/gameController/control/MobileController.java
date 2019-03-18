@@ -331,7 +331,7 @@ public class MobileController {
                     }
 
                     missionDescription += " activities can be found at <b>" + zone.getName() +
-                            "</b>.\n Get there in 30 Seconds to secure it.";
+                            "</b>.\n Get there in <b>30 Seconds</b> to secure it.";
 
                     mission.setZone(zone);
                     mission.setCompleted(true);
