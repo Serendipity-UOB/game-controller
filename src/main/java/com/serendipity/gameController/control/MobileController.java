@@ -301,10 +301,14 @@ public class MobileController {
 
             // Exchange pending
             Long requesterId = 0l;
-            Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
+            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-                requesterId = exchange.getRequestPlayer().getId();
+                if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                    requesterId = exchange.getRequestPlayer().getId();
+                    exchange.setRequestSent(true);
+                    exchangeService.saveExchange(exchange);
+                }
             }
             output.put("exchange_pending", requesterId);
 
@@ -396,7 +400,7 @@ public class MobileController {
                 Exchange exchange = optionalExchange.get();
 
                 // Handle request
-                if (exchange.getResponsePlayer() == responder && (exchangeService.getTimeRemaining(exchange) <= 0l)) {
+                if (exchange.getResponsePlayer() == responder) {
                     if (exchange.isRequesterToldComplete()) {
                         exchangeService.createExchange(requester, responder, jsonContactIds);
                         responseStatus = HttpStatus.CREATED;
@@ -421,6 +425,10 @@ public class MobileController {
                             System.out.println("Something has gone very wrong to get to here");
                         }
                     }
+                } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                    System.out.println("Creating exchange");
+                    exchangeService.createExchange(requester, responder, jsonContactIds);
+                    responseStatus = HttpStatus.CREATED;
                 } else {
                     System.out.println("Player already requesting exchange with someone else");
                     responseStatus = HttpStatus.NOT_FOUND;
