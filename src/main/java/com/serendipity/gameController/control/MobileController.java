@@ -228,6 +228,7 @@ public class MobileController {
                 } else {
                     System.out.println("Couldn't calculate this player's current zone");
                     output.put("home", false);
+                    responseStatus = HttpStatus.OK;
                 }
             } else System.out.println("This player hasn't been assigned a home zone");
         } else System.out.println("No player exists by this id");
