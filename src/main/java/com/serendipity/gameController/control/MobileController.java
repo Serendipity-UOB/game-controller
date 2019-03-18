@@ -57,6 +57,7 @@ public class MobileController {
     public ResponseEntity<String> registerPlayer(@RequestBody String json) {
         ResponseEntity<String> response;
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         String realName = input.getString("real_name");
         String codeName = input.getString("code_name");
 
@@ -103,6 +104,7 @@ public class MobileController {
     public ResponseEntity<String> joinGame(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long id = input.getLong("player_id");
 
         // Create JSON object for response body
@@ -135,6 +137,7 @@ public class MobileController {
     public ResponseEntity<String> getStartInfo(@RequestBody String json) {
         // Read in request body
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long playerId = input.getLong("player_id");
         System.out.println("Player id received:" + playerId);
         // Create JSON object for response body
@@ -185,6 +188,7 @@ public class MobileController {
     public ResponseEntity<String> atHomeBeacon(@RequestBody String json) {
         // Handle json
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long id = input.getLong("player_id");
         JSONArray beacons = input.getJSONArray("beacons");
 
@@ -224,6 +228,7 @@ public class MobileController {
 
         // Handle json
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long id = input.getLong("player_id");
         JSONArray jsonBeacons = input.getJSONArray("beacons");
 
@@ -332,6 +337,7 @@ public class MobileController {
     @ResponseBody
     public ResponseEntity<String> getNewTarget(@RequestBody String json) {
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long playerId = input.getLong("player_id");
 
         // Create JSON object for response body
@@ -350,6 +356,7 @@ public class MobileController {
     public ResponseEntity<String> exchangeRequest(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
 
@@ -414,6 +421,7 @@ public class MobileController {
     public ResponseEntity<String> exchangeResponse(@RequestBody String json) {
         // Handle JSON
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
 
@@ -474,6 +482,7 @@ public class MobileController {
     public ResponseEntity<String> expose(@RequestBody String json) {
         // receive JSON object
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
 
@@ -522,6 +531,7 @@ public class MobileController {
     public ResponseEntity<String> intercept(@RequestBody String json) {
         // Read in request body
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
 
@@ -586,6 +596,7 @@ public class MobileController {
     public ResponseEntity<String> missionUpdate(@RequestBody String json) {
         // receive JSON object
         JSONObject input = new JSONObject(json);
+        System.out.println(input);
         Long playerId = input.getLong("player_id");
 
         // Create JSON object for response body
