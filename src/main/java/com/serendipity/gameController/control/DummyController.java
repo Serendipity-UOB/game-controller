@@ -1,5 +1,6 @@
 package com.serendipity.gameController.control;
 
+import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,11 +57,34 @@ public class DummyController {
     @RequestMapping(value="/startInfoTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> getStartInfo(@RequestBody String json) {
-        String allPlayers = "[{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
-                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
-                "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"}]";
+//        String allPlayers = "[{ \"id\": 2, \"real_name\": \"jack jones\", \"code_name\": \"CutieKitten\"}, " +
+//                "{ \"id\": 3, \"real_name\": \"tilly woodfield\", \"code_name\": \"PuppyLover\"}, " +
+//                "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"}]";
+        List<JSONObject> jsonObjects = new ArrayList<>();
+
+        Player jack = new Player("jack jones", "CutieKitten");
+        JSONObject jsonJack = new JSONObject();
+        jsonJack.put("id", 1);
+        jsonJack.put("real_name", jack.getRealName());
+        jsonJack.put("code_name", jack.getCodeName());
+        jsonObjects.add(jsonJack);
+
+        Player tilly = new Player("tilly woodfield", "PuppyLover");
+        JSONObject jsonTilly = new JSONObject();
+        jsonTilly.put("id", 2);
+        jsonTilly.put("real_name", tilly.getRealName());
+        jsonTilly.put("code_name", tilly.getCodeName());
+        jsonObjects.add(jsonTilly);
+
+        Player tom = new Player("tom walker", "CookingKing");
+        JSONObject jsonTom = new JSONObject();
+        jsonTom.put("id", 3);
+        jsonTom.put("real_name", tom.getRealName());
+        jsonTom.put("code_name", tom.getCodeName());
+        jsonObjects.add(jsonTom);
+
         JSONObject output = new JSONObject();
-        output.put("all_players", allPlayers);
+        output.put("all_players", jsonObjects);
         output.put("end_time", LocalTime.now().plusMinutes(1));
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
