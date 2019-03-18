@@ -48,6 +48,11 @@ public interface ExchangeService {
     Optional<Exchange> getMostRecentExchangeToPlayer(Player responder);
 
     /*
+     *
+     */
+    Optional<Exchange> getNextExchangeToPlayer(Player responder);
+
+    /*
      * @param exchange The exchange you are calculating evidence for.
      * @param player The player giving evidence about themselves.
      * @param contactIds The list of their contacts.

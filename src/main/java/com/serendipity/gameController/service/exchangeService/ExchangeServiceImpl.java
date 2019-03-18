@@ -80,6 +80,25 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public Optional<Exchange> getNextExchangeToPlayer(Player responder) {
+        List<Exchange> exchangeList = exchangeRepository.findAllByResponsePlayerOrderByStartTimeDesc(responder);
+        if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
+        else return Optional.empty();
+
+        // TODO: Get the most recent exchange that the player has been told about.
+        // TODO: Is it completed?
+            // TODO: If yes, get the next (earliest) incomplete exchange
+            // TODO: Else, return empty
+
+
+//        if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+//            requesterId = exchange.getRequestPlayer().getId();
+//            exchange.setRequestSent(true);
+//            exchangeService.saveExchange(exchange);
+//        }
+    }
+
+    @Override
     public List<Evidence> calculateEvidence(Exchange exchange, Player player, List<Long> contactIds) {
         List<Evidence> evidenceList = new ArrayList<>();
 

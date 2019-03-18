@@ -301,14 +301,10 @@ public class MobileController {
 
             // Exchange pending
             Long requesterId = 0l;
-            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+            Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-                if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
-                    requesterId = exchange.getRequestPlayer().getId();
-                    exchange.setRequestSent(true);
-                    exchangeService.saveExchange(exchange);
-                }
+                requesterId = exchange.getRequestPlayer().getId();
             }
             output.put("exchange_pending", requesterId);
 
@@ -400,7 +396,7 @@ public class MobileController {
                 Exchange exchange = optionalExchange.get();
 
                 // Handle request
-                if (exchange.getResponsePlayer() == responder) {
+                if (exchange.getResponsePlayer() == responder && (exchangeService.getTimeRemaining(exchange) <= 0l)) {
                     if (exchange.isRequesterToldComplete()) {
                         exchangeService.createExchange(requester, responder, jsonContactIds);
                         responseStatus = HttpStatus.CREATED;
