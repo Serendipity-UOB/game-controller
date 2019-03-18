@@ -64,21 +64,21 @@ public class DummyController {
 
         Player jack = new Player("jack jones", "CutieKitten");
         JSONObject jsonJack = new JSONObject();
-        jsonJack.put("id", 1);
+        jsonJack.put("id", 2);
         jsonJack.put("real_name", jack.getRealName());
         jsonJack.put("code_name", jack.getCodeName());
         jsonObjects.add(jsonJack);
 
         Player tilly = new Player("tilly woodfield", "PuppyLover");
         JSONObject jsonTilly = new JSONObject();
-        jsonTilly.put("id", 2);
+        jsonTilly.put("id", 3);
         jsonTilly.put("real_name", tilly.getRealName());
         jsonTilly.put("code_name", tilly.getCodeName());
         jsonObjects.add(jsonTilly);
 
         Player tom = new Player("tom walker", "CookingKing");
         JSONObject jsonTom = new JSONObject();
-        jsonTom.put("id", 3);
+        jsonTom.put("id", 4);
         jsonTom.put("real_name", tom.getRealName());
         jsonTom.put("code_name", tom.getCodeName());
         jsonObjects.add(jsonTom);
