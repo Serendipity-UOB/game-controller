@@ -20,6 +20,11 @@ public class InterceptServiceImpl implements InterceptService {
     }
 
     @Override
+    public void deleteAllIntercepts() {
+        interceptRepository.deleteAll();
+    }
+
+    @Override
     public Optional<Intercept> getIntercept(Long id){
         return interceptRepository.findById(id);
     }

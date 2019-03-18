@@ -99,7 +99,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void deletePlayers() {
+    public void deleteAllPlayers() {
         if (playerRepository.count() != 0) {
             playerRepository.deleteAll();
         }

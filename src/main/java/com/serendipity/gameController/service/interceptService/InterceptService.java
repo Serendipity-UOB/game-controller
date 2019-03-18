@@ -15,6 +15,11 @@ public interface InterceptService {
     void saveIntercept(Intercept intercept);
 
     /*
+     *
+     */
+    void deleteAllIntercepts();
+
+    /*
      * @param id The id of the intercept you are looking for.
      * @return An optional of the intercept with that id.
      */

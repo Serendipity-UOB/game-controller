@@ -50,7 +50,7 @@ public interface PlayerService {
 
     List<Player> getAllPlayersByTarget(Player target);
 
-    void deletePlayers();
+    void deleteAllPlayers();
 
     void createPlayers();
 

@@ -7,6 +7,8 @@ import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
+import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
+import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,12 @@ public class WebController {
 
     @Autowired
     ExchangeServiceImpl exchangeService;
+
+    @Autowired
+    MissionServiceImpl missionService;
+
+    @Autowired
+    InterceptServiceImpl interceptService;
 
     @Autowired
     ZoneServiceImpl zoneService;
@@ -83,6 +91,12 @@ public class WebController {
     public String initGame(@ModelAttribute("start_time") String startTime) {
 //        reset player and exchange tables
 //        resetTables();
+        missionService.unassignAllMissions();
+        missionService.deleteAllMissions();
+        evidenceService.deleteAllEvidence();
+        interceptService.deleteAllIntercepts();
+        exchangeService.deleteAllExchanges();
+        playerService.deleteAllPlayers();
         gameService.deleteAllGames();
         LocalTime start = LocalTime.parse(startTime);
 //        get start time and save new game
@@ -94,6 +108,12 @@ public class WebController {
     @PostMapping(value="/initGameFixed")
     public String initGameFixed() {
 //        resetTables();
+        missionService.unassignAllMissions();
+        missionService.deleteAllMissions();
+        evidenceService.deleteAllEvidence();
+        interceptService.deleteAllIntercepts();
+        exchangeService.deleteAllExchanges();
+        playerService.deleteAllPlayers();
         gameService.deleteAllGames();
         LocalTime start = LocalTime.now().plusMinutes(1);
         Game game = new Game(start);
@@ -142,9 +162,13 @@ public class WebController {
     }
 
     private void resetTables() {
+        missionService.unassignAllMissions();
+        missionService.deleteAllMissions();
         evidenceService.deleteAllEvidence();
+        interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
-        playerService.deletePlayers();
+        playerService.deleteAllPlayers();
+        gameService.deleteAllGames();
         beaconService.deleteAllBeacons();
         zoneService.deleteAllZones();
         gameService.deleteAllGames();

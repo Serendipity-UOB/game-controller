@@ -5,6 +5,7 @@ import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,7 +19,17 @@ public interface MissionService {
     /*
      *
      */
+    List<Mission> getAllMissions();
+
+    /*
+     *
+     */
     void deleteAllMissions();
+
+    /*
+     *
+     */
+    void unassignAllMissions();
 
     /*
      * @param id The id of the mission you are looking for.

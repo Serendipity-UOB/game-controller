@@ -4,12 +4,15 @@ import com.serendipity.gameController.model.Game;
 import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.MissionRepository;
+import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -19,6 +22,9 @@ public class MissionServiceImpl implements MissionService {
     @Autowired
     MissionRepository missionRepository;
 
+    @Autowired
+    PlayerServiceImpl playerService;
+
     @Override
     public void saveMission(Mission mission){
         missionRepository.save(mission);
@@ -27,6 +33,20 @@ public class MissionServiceImpl implements MissionService {
     @Override
     public void deleteAllMissions() {
         missionRepository.deleteAll();
+    }
+
+    @Override
+    public List<Mission> getAllMissions() {
+        return missionRepository.findAll();
+    }
+
+    @Override
+    public void unassignAllMissions() {
+        List<Player> allPlayers = playerService.getAllPlayers();
+        for (Player player : allPlayers) {
+            player.setMissionAssigned(null);
+            playerService.savePlayer(player);
+        }
     }
 
     @Override
