@@ -114,7 +114,7 @@ public class MobileController {
 
         // Look for player
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
-        if(optionalPlayer.isPresent()) {
+        if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
 
             // Assign zone, if one exists
@@ -127,8 +127,8 @@ public class MobileController {
                 // Handle response
                 output.put("home_zone_name", zone.getName());
                 responseStatus = HttpStatus.OK;
-            }
-        }
+            } else System.out.println("No zones in the database");
+        } else System.out.println("No player exists by this id");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -145,7 +145,7 @@ public class MobileController {
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         // Ensure player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
-        if(opPlayer.isPresent()) {
+        if (opPlayer.isPresent()) {
             // Get two random players to gain intel on from mission
             Player player = opPlayer.get();
             List<Player> players = playerService.getAllPlayersExcept(player);
@@ -175,9 +175,18 @@ public class MobileController {
                     // Return all players
                     responseStatus = HttpStatus.OK;
                     output.put("all_players", playerService.getAllPlayersStartInfo());
-                } else { output.put("BAD_REQUEST", "Not enough players"); }
-            } else { output.put("BAD_REQUEST", "Not enough players"); }
-        } else { output.put("BAD_REQUEST", "Couldn't find player given"); }
+                } else {
+                    System.out.println("There aren't enough players in the game");
+                    output.put("BAD_REQUEST", "Not enough players");
+                }
+            } else {
+                System.out.println("There are no players in the game");
+                output.put("BAD_REQUEST", "Not enough players");
+            }
+        } else {
+            System.out.println("No player exists by this id");
+            output.put("BAD_REQUEST", "Couldn't find player given");
+        }
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -214,10 +223,11 @@ public class MobileController {
                     }
                     responseStatus = HttpStatus.OK;
                 } else {
+                    System.out.println("Couldn't calculate this player's current zone");
                     output.put("home", false);
                 }
-            }
-        }
+            } else System.out.println("This player hasn't been assigned a home zone");
+        } else System.out.println("No player exists by this id");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -249,7 +259,7 @@ public class MobileController {
                 player.setCurrentZone(zone);
                 playerService.savePlayer(player);
                 nearbyPlayerIds = playerService.getNearbyPlayerIds(player);
-            }
+            } else System.out.println("Couldn't calculate the player's current zone");
             output.put("nearby_players", nearbyPlayerIds);
 
             // Reputation
@@ -324,11 +334,14 @@ public class MobileController {
 
                     output.put("mission_description", missionDescription);
                 } else { output.put("mission_description", ""); }
-            } else { output.put("mission_description", ""); }
+            } else {
+                System.out.println("This player hasn't had a mission assigned to them");
+                output.put("mission_description", "");
+            }
 
             responseStatus = HttpStatus.OK;
 
-        }
+        } else System.out.println("No player exists by this id");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -384,8 +397,7 @@ public class MobileController {
                     if (exchange.isRequesterToldComplete()) {
                         exchangeService.createExchange(requester, responder, jsonContactIds);
                         responseStatus = HttpStatus.CREATED;
-                    }
-                    else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                    } else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
                         List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
                         output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                         exchange.setRequesterToldComplete(true);
@@ -402,16 +414,20 @@ public class MobileController {
                             responseStatus = HttpStatus.NO_CONTENT;
                         } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
                             responseStatus = HttpStatus.PARTIAL_CONTENT;
+                        } else {
+                            System.out.println("Something has gone very wrong to get to here");
                         }
                     }
                 } else {
+                    System.out.println("Player already requesting exchange with someone else");
                     responseStatus = HttpStatus.NOT_FOUND;
                 }
             } else {
+                System.out.println("No exchange exists from this player, creating an exchange");
                 exchangeService.createExchange(requester, responder, jsonContactIds);
                 responseStatus = HttpStatus.CREATED;
             }
-        }
+        } else System.out.println("Couldn't find either the requester or the responder by these ids");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -471,8 +487,8 @@ public class MobileController {
                 exchange.setResponse(exchangeResponse);
                 exchangeService.saveExchange(exchange);
                 responseStatus = HttpStatus.RESET_CONTENT;
-            }
-        }
+            } else System.out.println("Exchange has no response status, something wrong on the server");
+        } else System.out.println("Couldn't find an exchange between these players");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -494,7 +510,7 @@ public class MobileController {
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         Optional<Player> opTarget = playerService.getPlayer(targetId);
         // ensure optionals have a value
-        if(opPlayer.isPresent() && opTarget.isPresent()) {
+        if (opPlayer.isPresent() && opTarget.isPresent()) {
             // unpack optional objects
             Player player = opPlayer.get();
             Player target = opTarget.get();
@@ -519,9 +535,18 @@ public class MobileController {
                     playerService.savePlayer(target);
                     // set output elements
                     responseStatus = HttpStatus.OK;
-                } else { output.put("BAD_REQUEST", "Player has been exposed or player must return home"); }
-            } else { output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target"); }
-        } else { output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
+                } else {
+                    System.out.println("You have been exposed or must return home");
+                    output.put("BAD_REQUEST", "Player has been exposed or player must return home");
+                }
+            } else {
+                System.out.println("This player isn't your target");
+                output.put("BAD_REQUEST", "Target Id given doesn't match player's assigned Target");
+            }
+        } else {
+            System.out.println("Couldn't find one of the exposer or the target");
+            output.put("BAD_REQUEST", "Couldn't find player or target id given");
+        }
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -542,7 +567,7 @@ public class MobileController {
         // Ensure player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         Optional<Player> opTarget = playerService.getPlayer(targetId);
-        if(opPlayer.isPresent() && opTarget.isPresent()) {
+        if (opPlayer.isPresent() && opTarget.isPresent()) {
             Player player = opPlayer.get();
             Player target = opTarget.get();
             // Find exchange
@@ -551,12 +576,12 @@ public class MobileController {
                 Exchange exchange = optionalExchange.get();
                 // Find if player has an intercept
                 Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
-                if(opIntercept.isPresent()){
+                if (opIntercept.isPresent()) {
                     Intercept intercept = opIntercept.get();
                     // Find if the intercept is still active
-                    if(!intercept.isExpired()){
+                    if (!intercept.isExpired()) {
                         // Find if the active intercept is for the exchange targeted
-                        if(intercept.getExchange().equals(exchange)) {
+                        if (intercept.getExchange().equals(exchange)) {
                             // Find if exchange is still active
                             if (exchange.isRequesterToldComplete()) {
                                 // Determine response
@@ -564,13 +589,23 @@ public class MobileController {
                                     List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
                                     output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                                     responseStatus = HttpStatus.OK;
-                                } else { responseStatus = HttpStatus.NO_CONTENT; }
+                                } else {
+                                    System.out.println("Exchange wasn't accepted");
+                                    responseStatus = HttpStatus.NO_CONTENT;
+                                }
                                 // Set intercept to be expired
                                 intercept.setExpired(true);
                                 interceptService.saveIntercept(intercept);
-                            } else { responseStatus = HttpStatus.PARTIAL_CONTENT; }
-                        } else { responseStatus = HttpStatus.NOT_FOUND; }
+                            } else {
+                                System.out.println("Still waiting");
+                                responseStatus = HttpStatus.PARTIAL_CONTENT;
+                            }
+                        } else {
+                            System.out.println("Trying to intercept wrong exchange");
+                            responseStatus = HttpStatus.NOT_FOUND;
+                        }
                     } else {
+                        System.out.println("Intercept has expired, creating a new one");
                         // Overwrite expired intercept
                         intercept.setExpired(false);
                         intercept.setExchange(exchange);
@@ -578,14 +613,17 @@ public class MobileController {
                         responseStatus = HttpStatus.CREATED;
                     }
                 } else {
+                    System.out.println("No intercept exists, creating one");
                     // Create intercept
                     Intercept intercept = new Intercept(player, exchange);
                     interceptService.saveIntercept(intercept);
                     responseStatus = HttpStatus.CREATED;
                 }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
+        } else {
+            System.out.println("No player exists by this id");
+            output.put("BAD_REQUEST", "Couldn't find player or target id given");
         }
-        else{ output.put("BAD_REQUEST", "Couldn't find player or target id given"); }
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -605,7 +643,7 @@ public class MobileController {
 
         // Check player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
-        if(opPlayer.isPresent()){
+        if (opPlayer.isPresent()) {
             Player player = opPlayer.get();
             Zone location = player.getCurrentZone();
             Mission mission = player.getMissionAssigned();
@@ -613,9 +651,9 @@ public class MobileController {
             Player p1 = mission.getPlayer1();
             Player p2 = mission.getPlayer2();
             Zone zone = mission.getZone();
-            //  Check if the mission hasn't timed out
-            if(LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))){
-                if(location.equals(zone)){
+            // Check if the mission hasn't timed out
+            if (LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))) {
+                if (location.equals(zone)) {
                     // Evidence to return
                     JSONArray evidence = new JSONArray();
                     JSONObject e1 = new JSONObject();
@@ -633,17 +671,22 @@ public class MobileController {
                     output.put("success_description", success);
                     responseStatus = HttpStatus.OK;
                 } else {
+                    System.out.println("Not at mission location yet");
                     Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
                     output.put("time_remaining", timeRemaining);
                     responseStatus = HttpStatus.PARTIAL_CONTENT;
                 }
             } else {
+                System.out.println("Mission has timed out");
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
                 String failure = "You didn’t managed to recover evidence on <b>" + p1.getRealName() +"</b> and <b>" +
                         p2.getRealName() +"’s</b> at <b>" + zone.getName() + "</b>.";
                 output.put("failure_description", failure);
             }
-        } else { output.put("BAD_REQUEST", "Couldn't find player given"); }
+        } else {
+            System.out.println("No player exists by this id");
+            output.put("BAD_REQUEST", "Couldn't find player given");
+        }
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
