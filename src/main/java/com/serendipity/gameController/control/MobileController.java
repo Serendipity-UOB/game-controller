@@ -301,7 +301,7 @@ public class MobileController {
 
             // Exchange pending
             Long requesterId = 0l;
-            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+            Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
                 if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {

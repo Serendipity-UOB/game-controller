@@ -2,6 +2,7 @@ package com.serendipity.gameController.service.exchangeService;
 
 import com.serendipity.gameController.model.Evidence;
 import com.serendipity.gameController.model.Exchange;
+import com.serendipity.gameController.model.ExchangeResponse;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.repository.ExchangeRepository;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -81,21 +82,28 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public Optional<Exchange> getNextExchangeToPlayer(Player responder) {
-        List<Exchange> exchangeList = exchangeRepository.findAllByResponsePlayerOrderByStartTimeDesc(responder);
-        if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
-        else return Optional.empty();
-
-        // TODO: Get the most recent exchange that the player has been told about.
-        // TODO: Is it completed?
-            // TODO: If yes, get the next (earliest) incomplete exchange
-            // TODO: Else, return empty
-
-
-//        if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
-//            requesterId = exchange.getRequestPlayer().getId();
-//            exchange.setRequestSent(true);
-//            exchangeService.saveExchange(exchange);
-//        }
+        Optional<Exchange> optionalExchange = Optional.empty();
+        // Set response to empty to begin
+        // Get the most recent exchange that the player has been told about
+        // Get all exchanges by: responsePlayer, and requestSent==true, orderByStartTimeDesc
+        List<Exchange> oldExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeDesc(responder, true);
+        // Get first from list if exists
+        if (oldExchanges.size() > 0) {
+            Exchange oldExchange = oldExchanges.get(0);
+            // Is response ACCEPTED or REJECTED?
+            if (!oldExchange.getResponse().equals(ExchangeResponse.WAITING)) {
+                // If yes, get the next exchange
+                // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
+                List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(responder, false);
+                // Get first from list if exists
+                if (newExchanges.size() > 0) {
+                    Exchange newExchange = newExchanges.get(0);
+                    // Wrap it in an optional
+                    optionalExchange = Optional.of(newExchange);
+                }
+            }
+        }
+        return optionalExchange;
     }
 
     @Override
