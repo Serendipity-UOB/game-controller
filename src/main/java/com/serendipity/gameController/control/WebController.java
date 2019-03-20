@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Controller
+@CrossOrigin
 public class WebController {
 
     @Autowired
