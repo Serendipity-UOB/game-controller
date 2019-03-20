@@ -89,18 +89,30 @@ public class ExchangeServiceImpl implements ExchangeService {
         List<Exchange> oldExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeDesc(responder, true);
         // Get first from list if exists
         if (oldExchanges.size() > 0) {
+            System.out.println("Found most recent exchange told about");
             Exchange oldExchange = oldExchanges.get(0);
             // Is response ACCEPTED or REJECTED?
-            if (!oldExchange.getResponse().equals(ExchangeResponse.WAITING)) {
+            if ((!oldExchange.getResponse().equals(ExchangeResponse.WAITING)) || (getTimeRemaining(oldExchange) <= 0l)) {
+                System.out.println("Most recent exchange is responded to or completed");
                 // If yes, get the next exchange
                 // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
                 List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(responder, false);
                 // Get first from list if exists
                 if (newExchanges.size() > 0) {
+                    System.out.println("Found exchange waiting");
                     Exchange newExchange = newExchanges.get(0);
                     // Wrap it in an optional
                     optionalExchange = Optional.of(newExchange);
                 }
+            }
+        } else {
+            // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
+            List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(responder, false);
+            // Get first from list if exists
+            if (newExchanges.size() > 0) {
+                Exchange newExchange = newExchanges.get(0);
+                // Wrap it in an optional
+                optionalExchange = Optional.of(newExchange);
             }
         }
         return optionalExchange;
