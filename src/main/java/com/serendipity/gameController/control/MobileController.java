@@ -674,7 +674,7 @@ public class MobileController {
             Player p2 = mission.getPlayer2();
             Zone zone = mission.getZone();
             // Check if the mission hasn't timed out
-            if (LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))) {
+            if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS))) {
                 if (location.equals(zone)) {
                     // Evidence to return
                     JSONArray evidence = new JSONArray();
