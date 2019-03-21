@@ -124,6 +124,12 @@ public class LogServiceImpl implements LogService {
         // Get all zones
         List<Zone> zones = zoneService.getAllZones();
 
+        for(Zone z : zones){
+            // Get logs from that zone
+            List<Log> logs = logRepository.findAllByZone(z);
+            //Find
+        }
+
         return output;
     }
 
