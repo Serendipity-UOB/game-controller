@@ -321,8 +321,8 @@ public class MobileController {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
                     String missionDescription;
-                    missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
-                            + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
+                    missionDescription = "We have discovered that evidence about " + p1.getRealName()
+                            + "'s and " + p2.getRealName() + "'s";
                     Zone zone = mission.getZone();
                     if( zone == null ) {
                         List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
@@ -330,8 +330,8 @@ public class MobileController {
                         zone = notCurrent.get(random.nextInt(notCurrent.size()));
                     }
 
-                    missionDescription += " activities can be found at <b>" + zone.getName() +
-                            "</b>.\n Get there in <b>30 Seconds</b> to secure it.";
+                    missionDescription += " activities can be found at " + zone.getName() +
+                            ".\n Get there in 30 Seconds to secure it.";
 
                     mission.setZone(zone);
                     mission.setCompleted(true);
@@ -585,9 +585,10 @@ public class MobileController {
             Player player = opPlayer.get();
             Player target = opTarget.get();
             // Find exchange
-            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
-            if (optionalExchange.isPresent()) {
-                Exchange exchange = optionalExchange.get();
+            Optional<Exchange> opExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
+            System.out.println(opExchange);
+            if (opExchange.isPresent()) {
+                Exchange exchange = opExchange.get();
                 // Ensure the player isn't part of the intercepted exchange
                 if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
                     if (exchangeService.getTimeRemaining(exchange) <= 0l) {
@@ -685,8 +686,8 @@ public class MobileController {
                     evidence.put(e2);
                     output.put("evidence", evidence);
                     // Success String
-                    String success = "You recovered evidence on <b>" + p1.getRealName() +"</b> and <b>" +
-                            p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
+                    String success = "You recovered evidence on " + p1.getRealName() +" and " +
+                            p2.getRealName() +"’s activities at " + zone.getName() + ".";
                     output.put("success_description", success);
                     responseStatus = HttpStatus.OK;
                 } else {
@@ -698,8 +699,8 @@ public class MobileController {
             } else {
                 System.out.println("Mission has timed out");
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
-                String failure = "You didn’t managed to recover evidence on <b>" + p1.getRealName() +"</b> and <b>" +
-                        p2.getRealName() +"’s</b> at <b>" + zone.getName() + "</b>.";
+                String failure = "You didn’t managed to recover evidence on " + p1.getRealName() +" and " +
+                        p2.getRealName() +"’s at " + zone.getName() + ".";
                 output.put("failure_description", failure);
             }
         } else {
