@@ -69,7 +69,6 @@ public class ExchangeServiceImpl implements ExchangeService {
     @Override
     public Optional<Exchange> getMostRecentExchangeFromPlayer(Player requester) {
         List<Exchange> exchangeList = exchangeRepository.findAllByRequestPlayerOrderByStartTimeDesc(requester);
-        System.out.println(exchangeList.get(0));
         if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
         else return Optional.empty();
     }
