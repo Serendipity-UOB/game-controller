@@ -2,11 +2,12 @@ package com.serendipity.gameController.service.logService;
 
 import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.repository.LogRepository;
-import com.serendipity.gameController.service.exchangeService.ExchangeService;
-import com.serendipity.gameController.service.exposeService.ExposeService;
-import com.serendipity.gameController.service.interceptService.InterceptService;
-import com.serendipity.gameController.service.missionService.MissionService;
-import com.serendipity.gameController.service.playerService.PlayerService;
+import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
+import com.serendipity.gameController.service.exposeService.ExposeServiceImpl;
+import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
+import com.serendipity.gameController.service.missionService.MissionServiceImpl;
+import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +24,26 @@ public class LogServiceImpl implements LogService {
     LogRepository logRepository;
 
     @Autowired
-    MissionService missionService;
+    MissionServiceImpl missionService;
 
     @Autowired
-    ExposeService exposeService;
+    ExposeServiceImpl exposeService;
 
     @Autowired
-    ExchangeService exchangeService;
+    ExchangeServiceImpl exchangeService;
 
     @Autowired
-    InterceptService interceptService;
+    InterceptServiceImpl interceptService;
 
     @Autowired
-    PlayerService playerService;
+    PlayerServiceImpl playerService;
+
+    @Autowired
+    ZoneServiceImpl zoneService;
 
     @Override
-    public void saveLog(LogType type, Long id, LocalTime time){
-        Log log = new Log(type, id, time);
+    public void saveLog(LogType type, Long id, LocalTime time, Zone zone){
+        Log log = new Log(type, id, time, zone);
         logRepository.save(log);
     }
 
@@ -90,7 +94,7 @@ public class LogServiceImpl implements LogService {
                     Exchange exchange = intercept.getExchange();
                     Player target1 = exchange.getRequestPlayer();
                     Player target2 = exchange.getResponsePlayer();
-                    text = player.getRealName() + "<span class = \"intecept\">intercepted<\\span> an <span class = \"exchange\">exchange<\\span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
+                    text = player.getRealName() + "<span class = \"intecept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
                 }
 
             } else if (l.getType() == LogType.EXPOSE){
@@ -102,14 +106,23 @@ public class LogServiceImpl implements LogService {
                     Expose expose = opExpose.get();
                     Player player = expose.getPlayer();
                     Player target = expose.getTarget();
-                    text = player.getRealName() + " <span class = \"expose\">exposed<\\span> " + target.getRealName() + "!";
+                    text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
                 }
             }
             obj.put(l.getTime().toString(), text);
             output.put(obj);
+            l.setSent(true);
+            logRepository.save(l);
         }
+        return output;
+    }
 
-        System.out.println(output);
+    @Override
+    public JSONArray zoneDisplay() {
+        JSONArray output = new JSONArray();
+
+        // Get all zones
+        List<Zone> zones = zoneService.getAllZones();
 
         return output;
     }

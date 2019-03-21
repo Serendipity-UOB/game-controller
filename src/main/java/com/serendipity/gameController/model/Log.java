@@ -23,16 +23,20 @@ public class Log {
     @NotNull
     private LocalTime time;
 
+    @ManyToOne
+    private Zone zone;
+
     @NotNull
     private boolean sent;
 
     public Log() {
     }
 
-    public Log(@NotNull LogType type, @NotNull Long interactionId, @NotNull LocalTime time) {
+    public Log(@NotNull LogType type, @NotNull Long interactionId, @NotNull LocalTime time, @NotNull Zone zone) {
         this.type = type;
         this.interactionId = interactionId;
         this.time = time;
+        this.zone = zone;
         this.sent = false;
     }
 
@@ -64,6 +68,14 @@ public class Log {
 
     public void setTime(LocalTime time) { this.time = time; }
 
+    public Zone getZone() {
+        return zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
     public boolean isSent() {
         return sent;
     }
@@ -78,8 +90,9 @@ public class Log {
                 "id=" + id +
                 ", type=" + type +
                 ", interactionId=" + interactionId +
-                ", sent=" + sent +
                 ", time=" + time +
+                ", zone=" + zone +
+                ", sent=" + sent +
                 '}';
     }
 

@@ -417,7 +417,7 @@ public class MobileController {
                         exchange.setRequesterToldComplete(true);
                         exchangeService.saveExchange(exchange);
                         // Add exchange to logs
-                        logService.saveLog(LogType.EXCHANGE, exchange.getId(), LocalTime.now());
+                        logService.saveLog(LogType.EXCHANGE, exchange.getId(), LocalTime.now(), requester.getCurrentZone());
                         responseStatus = HttpStatus.ACCEPTED;
                     } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
                         exchange.setRequesterToldComplete(true);
@@ -559,7 +559,7 @@ public class MobileController {
                     Expose expose = new Expose(player, target);
                     exposeService.saveExpose(expose);
                     // Add expose to logs
-                    logService.saveLog(LogType.EXPOSE, expose.getId(), LocalTime.now());
+                    logService.saveLog(LogType.EXPOSE, expose.getId(), LocalTime.now(), player.getCurrentZone());
                     // set output elements
                     responseStatus = HttpStatus.OK;
                 } else {
@@ -619,7 +619,7 @@ public class MobileController {
                                             List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
                                             output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
                                             // Add expose to logs
-                                            logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now());
+                                            logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
                                             responseStatus = HttpStatus.OK;
                                         } else {
                                             System.out.println("Exchange wasn't accepted");
@@ -708,7 +708,7 @@ public class MobileController {
                             p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
                     output.put("success_description", success);
                     // Add mission to logs
-                    logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now());
+                    logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
                     responseStatus = HttpStatus.OK;
                 } else {
                     System.out.println("Not at mission location yet");
