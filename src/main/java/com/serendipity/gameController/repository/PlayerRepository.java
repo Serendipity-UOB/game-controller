@@ -1,5 +1,6 @@
 package com.serendipity.gameController.repository;
 
+import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Zone;
 import org.springframework.data.repository.CrudRepository;
@@ -14,6 +15,8 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
     List<Player> findAllByOrderByReputationDesc();
 
     Optional<Player> findByCodeName(String codeName);
+
+    Optional<Player> findByMissionAssigned(Mission mission);
 
     List<Player> findAllByCurrentZone(Zone zone);
 

@@ -18,9 +18,6 @@ public class SpectatorController {
         // set default response status
         HttpStatus responseStatus = HttpStatus.OK;
 
-        output.put("message", "hello");
-
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
-
 }

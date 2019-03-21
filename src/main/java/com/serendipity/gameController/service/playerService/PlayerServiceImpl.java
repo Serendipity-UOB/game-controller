@@ -1,5 +1,6 @@
 package com.serendipity.gameController.service.playerService;
 
+import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.repository.PlayerRepository;
@@ -29,6 +30,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Optional<Player> getPlayerByCodeName(String codeName) { return playerRepository.findByCodeName(codeName); }
+
+    @Override
+    public Optional<Player> getPlayerByMission(Mission mission) { return playerRepository.findByMissionAssigned(mission); }
 
     @Override
     public long countAllPlayers() { return playerRepository.count(); }

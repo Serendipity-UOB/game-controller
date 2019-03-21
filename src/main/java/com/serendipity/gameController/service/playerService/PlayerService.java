@@ -1,5 +1,6 @@
 package com.serendipity.gameController.service.playerService;
 
+import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Zone;
 import org.json.JSONObject;
@@ -27,6 +28,12 @@ public interface PlayerService {
      * @return The player with that codename.
      */
     Optional<Player> getPlayerByCodeName(String codeName);
+
+    /*
+     * @param mission The mission of the player you are looking for.
+     * @return The player with that mission.
+     */
+    Optional<Player> getPlayerByMission(Mission mission);
 
     /*
      * @return The number of players in the database.
