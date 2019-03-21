@@ -637,7 +637,7 @@ public class MobileController {
                             responseStatus = HttpStatus.CREATED;
                         }
                     } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
-                } else { output.put("BAD_REQUEST", "Player can't be part of the exchange being intercepted"); }
+                } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
         } else {
             System.out.println("No player exists by this id");
