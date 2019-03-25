@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,18 +119,70 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public JSONArray zoneDisplay() {
-        JSONArray output = new JSONArray();
+    public JSONObject zoneDisplay() {
+        JSONObject zones = new JSONObject();
 
-        // Get all zones
-        List<Zone> zones = zoneService.getAllZones();
-
-        for(Zone z : zones){
-            // Get logs from that zone
-            List<Log> logs = logRepository.findAllByZone(z);
-            //Find
+        for(Zone z : zoneService.getAllZones()){
+            int count = 0;
+            int red = 0;
+            int green = 0;
+            // Select colour
+            for(Log l : logRepository.findAllByZone(z)){
+                // Add to correct colour
+                switch(l.getType()) {
+                    case EXCHANGE:
+                        green += 255;
+                        count++;
+                        break;
+                    case INTERCEPT:
+                        red += 255;
+                        green += 165;
+                        count++;
+                        break;
+                    case EXPOSE:
+                        red += 255;
+                        count++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(red > 0) red /= count;
+            if(green > 0) green /= count;
+            // Construct rgb JSON
+            JSONObject rgb = new JSONObject();
+            rgb.put("red", red);
+            rgb.put("green", green);
+            rgb.put("blue", 0);
+            // Get zone size
+            List<Player> playersAtZone = playerService.getAllPlayersByCurrentZone(z);
+            // Add to output
+            JSONObject zoneInfo = new JSONObject();
+            zoneInfo.put("colour", rgb);
+            zoneInfo.put("size", playersAtZone.size());
+            zones.put(z.getName(), zoneInfo);
         }
 
+        return zones;
+    }
+
+    @Override
+    public JSONArray topPlayers(){
+        JSONArray output = new JSONArray();
+        List<Player> players = playerService.getAllPlayersByScore();
+        int max = 3;
+        if(max > players.size()) max = players.size();
+        int count = 0;
+        // Get number of players wanted
+        while(count < max) {
+            JSONObject player = new JSONObject();
+            player.put("position", (count + 1));
+            player.put("real_name", players.get(count).getRealName());
+            player.put("rep", players.get(count).getReputation());
+            output.put(player);
+            count++;
+        }
+        // TODO: what do we do if there's an overflow due to multiple people with the same position
         return output;
     }
 

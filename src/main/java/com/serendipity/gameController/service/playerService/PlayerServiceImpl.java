@@ -35,6 +35,9 @@ public class PlayerServiceImpl implements PlayerService {
     public Optional<Player> getPlayerByMission(Mission mission) { return playerRepository.findByMissionAssigned(mission); }
 
     @Override
+    public List<Player> getAllPlayersByCurrentZone(Zone zone) { return playerRepository.findAllByCurrentZone(zone); }
+
+    @Override
     public long countAllPlayers() { return playerRepository.count(); }
 
     @Override

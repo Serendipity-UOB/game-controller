@@ -36,6 +36,12 @@ public interface PlayerService {
     Optional<Player> getPlayerByMission(Mission mission);
 
     /*
+     * @param zone The current zone of the players you are looking for.
+     * @return A list of players with that current zone.
+     */
+    List<Player> getAllPlayersByCurrentZone(Zone zone);
+
+    /*
      * @return The number of players in the database.
      */
     long countAllPlayers();

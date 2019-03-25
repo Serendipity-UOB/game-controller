@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.Log;
 import com.serendipity.gameController.model.LogType;
 import com.serendipity.gameController.model.Zone;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.time.LocalTime;
 import java.util.Optional;
@@ -30,12 +31,17 @@ public interface LogService {
     void deleteAllLogs();
 
     /*
-     * @return A JSONArray with all new logs
+     * @return A JSONObject with all new logs
      */
     JSONArray logOutput();
 
     /*
-     * @return A JSONArray with all new zone colours and sizes
+     * @return A JSONObject with all new zone colours and sizes
      */
-    JSONArray zoneDisplay();
+    JSONObject zoneDisplay();
+
+    /*
+     * @return A JSONArray with the top players
+     */
+    JSONArray topPlayers();
 }
