@@ -36,9 +36,9 @@ public interface LogService {
     JSONArray logOutput();
 
     /*
-     * @return A JSONObject with all new zone colours and sizes
+     * @return A JSONArray with all new zone colours and sizes
      */
-    JSONObject zoneDisplay();
+    JSONArray zoneDisplay();
 
     /*
      * @return A JSONArray with the top players

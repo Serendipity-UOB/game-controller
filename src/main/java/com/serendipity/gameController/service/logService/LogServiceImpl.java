@@ -119,8 +119,8 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public JSONObject zoneDisplay() {
-        JSONObject zones = new JSONObject();
+    public JSONArray zoneDisplay() {
+        JSONArray zones = new JSONArray();
 
         for(Zone z : zoneService.getAllZones()){
             int count = 0;
@@ -158,9 +158,10 @@ public class LogServiceImpl implements LogService {
             List<Player> playersAtZone = playerService.getAllPlayersByCurrentZone(z);
             // Add to output
             JSONObject zoneInfo = new JSONObject();
+            zoneInfo.put("zone_id", z.getId());
             zoneInfo.put("colour", rgb);
             zoneInfo.put("size", playersAtZone.size());
-            zones.put(z.getId().toString(), zoneInfo);
+            zones.put(zoneInfo);
         }
 
         return zones;
