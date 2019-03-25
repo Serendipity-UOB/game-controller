@@ -586,13 +586,11 @@ public class MobileController {
             Player target = opTarget.get();
             // Find exchange
             Optional<Exchange> opExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
-            System.out.println(opExchange);
             if (opExchange.isPresent()) {
                 Exchange exchange = opExchange.get();
-                System.out.println(exchange);
                 // Ensure the player isn't part of the intercepted exchange
                 if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
-                    System.out.println(exchangeService.getTimeRemaining(exchange));
+                    // Find if exchange is still active
                     if (!(exchangeService.getTimeRemaining(exchange) <= 0l)) {
                         // Find if player has an intercept
                         Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
@@ -602,7 +600,7 @@ public class MobileController {
                             if (!intercept.isExpired()) {
                                 // Find if the active intercept is for the exchange targeted
                                 if (intercept.getExchange().equals(exchange)) {
-                                    // Find if exchange is still active
+                                    // Find if exchange has had a response
                                     if (exchange.isRequesterToldComplete()) {
                                         // Determine response
                                         if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
@@ -649,7 +647,18 @@ public class MobileController {
                             interceptService.saveIntercept(intercept);
                             responseStatus = HttpStatus.CREATED;
                         }
-                    } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
+                    } else {
+                        System.out.println("Exchange has timed out, resetting intercept if present");
+                        // Find if player has an intercept
+                        Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
+                        if (opIntercept.isPresent()) {
+                            Intercept intercept = opIntercept.get();
+                            // Set intercept to be expired
+                            intercept.setExpired(true);
+                            interceptService.saveIntercept(intercept);
+                            responseStatus = HttpStatus.REQUEST_TIMEOUT;
+                        }
+                    }
                 } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
         } else {
