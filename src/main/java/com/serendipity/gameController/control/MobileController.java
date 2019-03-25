@@ -608,11 +608,11 @@ public class MobileController {
                                         if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
                                             JSONArray evidence = new JSONArray();
                                             JSONObject p1 = new JSONObject();
-                                            p1.put("player_id", exchange.getRequestPlayer());
+                                            p1.put("player_id", exchange.getRequestPlayer().getId());
                                             p1.put("amount", 30);
 
                                             JSONObject p2 = new JSONObject();
-                                            p2.put("player_id", exchange.getResponsePlayer());
+                                            p2.put("player_id", exchange.getResponsePlayer().getId());
                                             p2.put("amount", 10);
 
                                             evidence.put(p1);
