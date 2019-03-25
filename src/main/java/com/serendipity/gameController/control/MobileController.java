@@ -591,9 +591,8 @@ public class MobileController {
                 // Ensure the player isn't part of the intercepted exchange
                 if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
                     // Find if exchange is still active
-                    long timeRemainingBuffer = 1l;
-                    long timeRemaining = exchangeService.getTimeRemaining(exchange) + timeRemainingBuffer;
-                    if (timeRemaining <= 0l) {
+                    System.out.println(exchangeService.getTimeRemaining(exchange));
+                    if (exchangeService.getTimeRemaining(exchange) <= 0l) {
                         // Find if player has an intercept
                         Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
                         if (opIntercept.isPresent()) {
