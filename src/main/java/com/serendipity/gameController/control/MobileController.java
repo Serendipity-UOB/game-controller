@@ -656,7 +656,7 @@ public class MobileController {
                             // Set intercept to be expired
                             intercept.setExpired(true);
                             interceptService.saveIntercept(intercept);
-                            responseStatus = HttpStatus.REQUEST_TIMEOUT;
+                            responseStatus = HttpStatus.NO_CONTENT;
                         }
                     }
                 } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
