@@ -25,12 +25,12 @@ public class SpectatorController {
         HttpStatus responseStatus = HttpStatus.OK;
 
         JSONArray logs = logService.logOutput();
-        JSONObject zones = logService.zoneDisplay();
+        JSONArray zones = logService.zoneDisplay();
         JSONArray leaders = logService.topPlayers();
 
         output.put("logs", logs);
-        output.put("zones", zones);
         output.put("leaderboard", leaders);
+        output.put("zones", zones);
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
