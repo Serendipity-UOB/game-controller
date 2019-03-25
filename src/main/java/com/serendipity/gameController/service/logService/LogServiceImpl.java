@@ -66,54 +66,56 @@ public class LogServiceImpl implements LogService {
         List<Log> logs = logRepository.findAllBySent(false);
 
         for (Log l : logs) {
-            JSONObject obj = new JSONObject();
-            String text = "";
-            if(l.getType() == LogType.MISSION){
-                // Compose string for mission log
-                // Get mission
-                Optional<Mission> opMission = missionService.getMission(l.getInteractionId());
-                // See if mission exists
-                if(opMission.isPresent()){
-                    Mission mission = opMission.get();
-                    Optional<Player> opPlayer = playerService.getPlayerByMission(mission);
-                    // See if player exists for the given mission assignment
-                    if(opPlayer.isPresent()){
-                        Player player = opPlayer.get();
-                        text = player.getRealName() + " completed a mission!";
+            if(!(l.getType() == LogType.EXCHANGE)){
+                JSONObject obj = new JSONObject();
+                String text = "";
+                if (l.getType() == LogType.MISSION) {
+                    // Compose string for mission log
+                    // Get mission
+                    Optional<Mission> opMission = missionService.getMission(l.getInteractionId());
+                    // See if mission exists
+                    if (opMission.isPresent()) {
+                        Mission mission = opMission.get();
+                        Optional<Player> opPlayer = playerService.getPlayerByMission(mission);
+                        // See if player exists for the given mission assignment
+                        if (opPlayer.isPresent()) {
+                            Player player = opPlayer.get();
+                            text = player.getRealName() + " completed a mission!";
+                        }
+                    }
+                } else if (l.getType() == LogType.INTERCEPT) {
+                    // Compose string for intercept log
+                    // Get intercept
+                    Optional<Intercept> opIntercept = interceptService.getIntercept(l.getInteractionId());
+                    // See if intercept exists
+                    if (opIntercept.isPresent()) {
+                        Intercept intercept = opIntercept.get();
+                        // Get player
+                        Player player = intercept.getIntercepter();
+                        // Get target
+                        Exchange exchange = intercept.getExchange();
+                        Player target1 = exchange.getRequestPlayer();
+                        Player target2 = exchange.getResponsePlayer();
+                        text = player.getRealName() + "<span class = \"intecept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
+                    }
+
+                } else if (l.getType() == LogType.EXPOSE) {
+                    // Compose string for expose log
+                    // Get expose
+                    Optional<Expose> opExpose = exposeService.getExpose(l.getInteractionId());
+                    // See if expose exists
+                    if (opExpose.isPresent()) {
+                        Expose expose = opExpose.get();
+                        Player player = expose.getPlayer();
+                        Player target = expose.getTarget();
+                        text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
                     }
                 }
-            } else if (l.getType() == LogType.INTERCEPT){
-                // Compose string for intercept log
-                // Get intercept
-                Optional<Intercept> opIntercept = interceptService.getIntercept(l.getInteractionId());
-                // See if intercept exists
-                if(opIntercept.isPresent()) {
-                    Intercept intercept = opIntercept.get();
-                    // Get player
-                    Player player = intercept.getIntercepter();
-                    // Get target
-                    Exchange exchange = intercept.getExchange();
-                    Player target1 = exchange.getRequestPlayer();
-                    Player target2 = exchange.getResponsePlayer();
-                    text = player.getRealName() + "<span class = \"intecept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
-                }
-
-            } else if (l.getType() == LogType.EXPOSE){
-                // Compose string for expose log
-                // Get expose
-                Optional<Expose> opExpose = exposeService.getExpose(l.getInteractionId());
-                // See if expose exists
-                if(opExpose.isPresent()){
-                    Expose expose = opExpose.get();
-                    Player player = expose.getPlayer();
-                    Player target = expose.getTarget();
-                    text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
-                }
+                obj.put(l.getTime().toString(), text);
+                output.put(obj);
+                l.setSent(true);
+                logRepository.save(l);
             }
-            obj.put(l.getTime().toString(), text);
-            output.put(obj);
-            l.setSent(true);
-            logRepository.save(l);
         }
         return output;
     }
