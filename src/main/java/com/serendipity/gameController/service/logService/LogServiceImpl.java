@@ -181,7 +181,7 @@ public class LogServiceImpl implements LogService {
             JSONObject player = new JSONObject();
             player.put("position", (count + 1));
             player.put("real_name", players.get(count).getRealName());
-            player.put("rep", players.get(count).getReputation());
+            player.put("reputation", players.get(count).getReputation());
             output.put(player);
             count++;
         }
