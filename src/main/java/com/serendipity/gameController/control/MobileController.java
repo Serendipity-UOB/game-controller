@@ -606,8 +606,18 @@ public class MobileController {
                                     if (exchange.isRequesterToldComplete()) {
                                         // Determine response
                                         if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                                            List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
-                                            output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                                            JSONArray evidence = new JSONArray();
+                                            JSONObject p1 = new JSONObject();
+                                            p1.put("player_id", exchange.getRequestPlayer());
+                                            p1.put("amount", 30);
+
+                                            JSONObject p2 = new JSONObject();
+                                            p2.put("player_id", exchange.getResponsePlayer());
+                                            p2.put("amount", 10);
+
+                                            evidence.put(p1);
+                                            evidence.put(p2);
+                                            output.put("evidence", evidence);
                                             responseStatus = HttpStatus.OK;
                                         } else {
                                             System.out.println("Exchange wasn't accepted");
