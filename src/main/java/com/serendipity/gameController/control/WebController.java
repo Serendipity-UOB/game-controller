@@ -6,8 +6,10 @@ import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.service.beaconService.BeaconServiceImpl;
 import com.serendipity.gameController.service.evidenceService.EvidenceServiceImpl;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
+import com.serendipity.gameController.service.exposeService.ExposeServiceImpl;
 import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
+import com.serendipity.gameController.service.logService.LogServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
@@ -47,6 +49,12 @@ public class WebController {
 
     @Autowired
     EvidenceServiceImpl evidenceService;
+
+    @Autowired
+    ExposeServiceImpl exposeService;
+
+    @Autowired
+    LogServiceImpl logService;
 
     @GetMapping(value="/")
     public String home(Model model) {
@@ -92,11 +100,13 @@ public class WebController {
     public String initGame(@ModelAttribute("start_time") String startTime) {
 //        reset player and exchange tables
 //        resetTables();
+        logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
         evidenceService.deleteAllEvidence();
         interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
+        exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
         gameService.deleteAllGames();
         LocalTime start = LocalTime.parse(startTime);
@@ -109,11 +119,14 @@ public class WebController {
     @PostMapping(value="/initGameFixed")
     public String initGameFixed() {
 //        resetTables();
+        logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
         evidenceService.deleteAllEvidence();
         interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
+        exposeService.unassignPlayers();
+        exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
         gameService.deleteAllGames();
         LocalTime start = LocalTime.now().plusMinutes(1);
@@ -163,13 +176,14 @@ public class WebController {
     }
 
     private void resetTables() {
+        logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
         evidenceService.deleteAllEvidence();
         interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
+        exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
-        gameService.deleteAllGames();
         beaconService.deleteAllBeacons();
         zoneService.deleteAllZones();
         gameService.deleteAllGames();
