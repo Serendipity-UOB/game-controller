@@ -108,7 +108,7 @@ public class DummyController {
         output.put("exchange_pending", 0);
         output.put("exposed_by", 0);
         output.put("req_new_target", false);
-//        output.put("mission_description", "Do this mission at Beacon <b>A</b> in <b>30 Seconds<\b>");
+//        output.put("mission_description", "Do this mission at Beacon A in 30 Seconds");
         output.put("mission_description", "");
         output.put("game_over", false);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
@@ -224,7 +224,7 @@ public class DummyController {
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
-        output.put("success_description", "You recovered evidence on <b>Tom</b> and <b>Nuha’s</b> activities at <b>Beacon C</b>.");
+        output.put("success_description", "You recovered evidence on Tom and Nuha’s activities at Beacon C.");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 

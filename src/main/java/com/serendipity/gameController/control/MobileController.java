@@ -308,7 +308,7 @@ public class MobileController {
 
             // Exchange pending
             Long requesterId = 0l;
-            Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeToPlayer(player);
+            Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
                 if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
@@ -328,8 +328,8 @@ public class MobileController {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
                     String missionDescription;
-                    missionDescription = "We have discovered that evidence about <b>" + p1.getRealName()
-                            + "'s</b> and <b>" + p2.getRealName() + "'s</b>";
+                    missionDescription = "We have discovered that evidence about " + p1.getRealName()
+                            + "'s and " + p2.getRealName() + "'s";
                     Zone zone = mission.getZone();
                     if( zone == null ) {
                         List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
@@ -337,8 +337,8 @@ public class MobileController {
                         zone = notCurrent.get(random.nextInt(notCurrent.size()));
                     }
 
-                    missionDescription += " activities can be found at <b>" + zone.getName() +
-                            "</b>.\n Get there in <b>30 Seconds</b> to secure it.";
+                    missionDescription += " activities can be found at " + zone.getName() +
+                            ".\n Get there in 30 Seconds to secure it.";
 
                     mission.setZone(zone);
                     mission.setCompleted(true);
@@ -434,7 +434,7 @@ public class MobileController {
                             System.out.println("Something has gone very wrong to get to here");
                         }
                     }
-                } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                } else if (exchangeService.getTimeRemaining(exchange) <= 0l || exchange.isRequesterToldComplete()) {
                     System.out.println("Creating exchange");
                     exchangeService.createExchange(requester, responder, jsonContactIds);
                     responseStatus = HttpStatus.CREATED;
@@ -598,12 +598,15 @@ public class MobileController {
         if (opPlayer.isPresent() && opTarget.isPresent()) {
             Player player = opPlayer.get();
             Player target = opTarget.get();
-            if(!player.equals(target)) {
-                // Find exchange
-                Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
-                if (optionalExchange.isPresent()) {
-                    Exchange exchange = optionalExchange.get();
-                    if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+            // Find exchange
+            Optional<Exchange> opExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
+            if (opExchange.isPresent()) {
+                Exchange exchange = opExchange.get();
+                // Ensure the player isn't part of the intercepted exchange
+                if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
+                    // Find if exchange is still active
+                    System.out.println(exchangeService.getTimeRemaining(exchange));
+                    if (!(exchangeService.getTimeRemaining(exchange) <= 0l)) {
                         // Find if player has an intercept
                         Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
                         if (opIntercept.isPresent()) {
@@ -612,12 +615,22 @@ public class MobileController {
                             if (!intercept.isExpired()) {
                                 // Find if the active intercept is for the exchange targeted
                                 if (intercept.getExchange().equals(exchange)) {
-                                    // Find if exchange is still active
+                                    // Find if exchange has had a response
                                     if (exchange.isRequesterToldComplete()) {
                                         // Determine response
                                         if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                                            List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, exchange.getRequestPlayer());
-                                            output.put("evidence", evidenceService.evidenceListToJsonArray(evidenceList));
+                                            JSONArray evidence = new JSONArray();
+                                            JSONObject p1 = new JSONObject();
+                                            p1.put("player_id", exchange.getRequestPlayer().getId());
+                                            p1.put("amount", 30);
+
+                                            JSONObject p2 = new JSONObject();
+                                            p2.put("player_id", exchange.getResponsePlayer().getId());
+                                            p2.put("amount", 10);
+
+                                            evidence.put(p1);
+                                            evidence.put(p2);
+                                            output.put("evidence", evidence);
                                             // Add expose to logs
                                             logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
                                             responseStatus = HttpStatus.OK;
@@ -652,11 +665,18 @@ public class MobileController {
                             responseStatus = HttpStatus.CREATED;
                         }
                     } else {
-                        output.put("BAD_REQUEST", "Couldn't find exchange for target given");
+                        System.out.println("Exchange has timed out, resetting intercept if present");
+                        // Find if player has an intercept
+                        Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
+                        if (opIntercept.isPresent()) {
+                            Intercept intercept = opIntercept.get();
+                            // Set intercept to be expired
+                            intercept.setExpired(true);
+                            interceptService.saveIntercept(intercept);
+                            responseStatus = HttpStatus.NO_CONTENT;
+                        }
                     }
-                } else {
-                    output.put("BAD_REQUEST", "Cannot target own exchange");
-                }
+                } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
         } else {
             System.out.println("No player exists by this id");
@@ -690,7 +710,7 @@ public class MobileController {
             Player p2 = mission.getPlayer2();
             Zone zone = mission.getZone();
             // Check if the mission hasn't timed out
-            if (LocalTime.now().isBefore(mission.getEndTime().minus(1, ChronoUnit.SECONDS))) {
+            if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS))) {
                 if (location.equals(zone)) {
                     // Evidence to return
                     JSONArray evidence = new JSONArray();
@@ -704,8 +724,8 @@ public class MobileController {
                     evidence.put(e2);
                     output.put("evidence", evidence);
                     // Success String
-                    String success = "You recovered evidence on <b>" + p1.getRealName() +"</b> and <b>" +
-                            p2.getRealName() +"’s</b> activities at <b>" + zone.getName() + "</b>.";
+                    String success = "You recovered evidence on " + p1.getRealName() +" and " +
+                            p2.getRealName() +"’s activities at " + zone.getName() + ".";
                     output.put("success_description", success);
                     // Add mission to logs
                     logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
@@ -719,8 +739,8 @@ public class MobileController {
             } else {
                 System.out.println("Mission has timed out");
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
-                String failure = "You didn’t managed to recover evidence on <b>" + p1.getRealName() +"</b> and <b>" +
-                        p2.getRealName() +"’s</b> at <b>" + zone.getName() + "</b>.";
+                String failure = "You didn’t managed to recover evidence on " + p1.getRealName() +" and " +
+                        p2.getRealName() +"’s activities at " + zone.getName() + ".";
                 output.put("failure_description", failure);
             }
         } else {
