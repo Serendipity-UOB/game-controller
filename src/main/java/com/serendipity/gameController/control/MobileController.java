@@ -425,7 +425,7 @@ public class MobileController {
                             System.out.println("Something has gone very wrong to get to here");
                         }
                     }
-                } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
+                } else if (exchangeService.getTimeRemaining(exchange) <= 0l || exchange.isRequesterToldComplete()) {
                     System.out.println("Creating exchange");
                     exchangeService.createExchange(requester, responder, jsonContactIds);
                     responseStatus = HttpStatus.CREATED;
@@ -722,7 +722,7 @@ public class MobileController {
                 System.out.println("Mission has timed out");
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
                 String failure = "You didn’t managed to recover evidence on " + p1.getRealName() +" and " +
-                        p2.getRealName() +"’s at " + zone.getName() + ".";
+                        p2.getRealName() +"’s activities at " + zone.getName() + ".";
                 output.put("failure_description", failure);
             }
         } else {
