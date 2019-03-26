@@ -106,6 +106,7 @@ public class WebController {
         evidenceService.deleteAllEvidence();
         interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
+        exposeService.unassignPlayers();
         exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
         gameService.deleteAllGames();
@@ -182,6 +183,7 @@ public class WebController {
         evidenceService.deleteAllEvidence();
         interceptService.deleteAllIntercepts();
         exchangeService.deleteAllExchanges();
+        exposeService.unassignPlayers();
         exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
         beaconService.deleteAllBeacons();
