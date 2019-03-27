@@ -96,7 +96,7 @@ public class LogServiceImpl implements LogService {
                         Exchange exchange = intercept.getExchange();
                         Player target1 = exchange.getRequestPlayer();
                         Player target2 = exchange.getResponsePlayer();
-                        text = player.getRealName() + "<span class = \"intecept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
+                        text = player.getRealName() + "<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
                     }
 
                 } else if (l.getType() == LogType.EXPOSE) {

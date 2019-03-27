@@ -248,4 +248,62 @@ public class DummyController {
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
+    @RequestMapping(value="/spectatorTest", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> spectator() {
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        // set default response status
+        HttpStatus responseStatus = HttpStatus.OK;
+
+        JSONArray logs = new JSONArray();
+        JSONObject l1 = new JSONObject();
+        l1.put("time", LocalTime.now());
+        l1.put("message", "Jack <span class = \"expose\">exposed</span> Tilly!");
+        logs.put(l1);
+        JSONObject l2 = new JSONObject();
+        l2.put("time", LocalTime.now());
+        l2.put("message", "Jack<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange" +
+                "</span> between Louis and Tilly!");
+        logs.put(l2);
+
+        JSONArray zones = new JSONArray();
+        JSONObject z1 = new JSONObject();
+        JSONObject c1 = new JSONObject();
+        c1.put("red", 255);
+        c1.put("green", 167);
+        c1.put("blue", 0);
+        z1.put("zone_id", 1);
+        z1.put("colour", c1);
+        z1.put("size", 4);
+        zones.put(z1);
+        JSONObject z2 = new JSONObject();
+        JSONObject c2 = new JSONObject();
+        c2.put("red", 255);
+        c2.put("green", 0);
+        c2.put("blue", 0);
+        z2.put("zone_id", 2);
+        z2.put("colour", c2);
+        z1.put("size", 2);
+        zones.put(z2);
+
+        JSONArray leaders = new JSONArray();
+        JSONObject p1 = new JSONObject();
+        p1.put("position", 1);
+        p1.put("real_name", "Jack");
+        p1.put("reputation", 60);
+        leaders.put(p1);
+        JSONObject p2 = new JSONObject();
+        p2.put("position", 2);
+        p2.put("real_name", "Tilly");
+        p2.put("reputation", 30);
+        leaders.put(p2);
+
+        output.put("logs", logs);
+        output.put("leaderboard", leaders);
+        output.put("zones", zones);
+
+        return new ResponseEntity<>(output.toString(), responseStatus);
+    }
+
 }
