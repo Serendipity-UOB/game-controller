@@ -3,6 +3,7 @@ package com.serendipity.gameController.service.exposeService;
 import com.serendipity.gameController.model.Expose;
 import com.serendipity.gameController.model.Player;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ExposeService {
@@ -19,7 +20,17 @@ public interface ExposeService {
     Optional<Expose> getExpose(Long id);
 
     /*
+     * @return A list of all the exposes in the database.
+     */
+    List<Expose> getAllExposes();
+
+    /*
      *
      */
     void deleteAllExposes();
+
+    /*
+     *
+     */
+    void unassignPlayers();
 }
