@@ -29,7 +29,7 @@ public class Game {
     public Game(LocalTime startTime) {
         if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
         this.startTime = startTime;
-        this.endTime = startTime.plus(8, ChronoUnit.MINUTES);
+        this.endTime = startTime.plus(6, ChronoUnit.MINUTES);
     }
 
     public Long getId() {
