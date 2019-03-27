@@ -263,7 +263,7 @@ public class DummyController {
         logs.put(l1);
         JSONObject l2 = new JSONObject();
         l2.put("time", LocalTime.now());
-        l2.put("message", "Jack<span class = \"intecept\"> intercepted</span> an <span class = \"exchange\">exchange" +
+        l2.put("message", "Jack<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange" +
                 "</span> between Louis and Tilly!");
         logs.put(l2);
 
@@ -305,4 +305,5 @@ public class DummyController {
 
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
+
 }
