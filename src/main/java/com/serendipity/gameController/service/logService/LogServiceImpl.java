@@ -111,7 +111,8 @@ public class LogServiceImpl implements LogService {
                         text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
                     }
                 }
-                obj.put(l.getTime().toString(), text);
+                obj.put("time", l.getTime());
+                obj.put("message", text);
                 output.put(obj);
                 l.setSent(true);
                 logRepository.save(l);
