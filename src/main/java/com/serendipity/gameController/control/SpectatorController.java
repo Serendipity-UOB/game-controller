@@ -18,7 +18,7 @@ public class SpectatorController {
     LogService logService;
 
     @GetMapping(value="/spectator")
-    public ResponseEntity<String> hello() {
+    public ResponseEntity<String> spectator() {
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
