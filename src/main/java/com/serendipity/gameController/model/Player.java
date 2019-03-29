@@ -35,7 +35,7 @@ public class Player {
     @ManyToOne
     private Zone currentZone;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Mission> missionsAssigned;
 
     public Player() {
