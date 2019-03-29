@@ -13,8 +13,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -174,7 +177,7 @@ public class LogServiceImpl implements LogService {
     public JSONArray topPlayers(){
         JSONArray output = new JSONArray();
         List<Player> players = playerService.getAllPlayersByScore();
-        int max = 3;
+        int max = players.size();
         if(max > players.size()) max = players.size();
         int count = 0;
         // Get number of players wanted
@@ -190,4 +193,81 @@ public class LogServiceImpl implements LogService {
         return output;
     }
 
+    @Override
+    public void printToCSV(List<String> data, String filename) {
+        try {
+            FileWriter pw = new FileWriter(filename, true);
+            Iterator d = data.iterator();
+            if (!d.hasNext()) {
+                System.out.println("Empty");
+            }
+            while (d.hasNext()) {
+                String current = replaceCharacters((String) d.next());
+                pw.append(current);
+                pw.append(",");
+            }
+            pw.append("\n");
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private String replaceCharacters(String data) {
+        if (data.contains(",")) {
+            data = data.replace(",", " | ");
+        }
+        return data;
+    }
+
+    @Override
+    public void initCSVs() {
+        // Setup CSV files and column headers
+        List<String> files = new ArrayList<>();
+        List<String[]> data = new ArrayList<>();
+        files.add("csv/registerPlayer.csv");
+        data.add(new String[] {"name", "time", "code", "request", "response"});
+        files.add("csv/gameInfo.csv");
+        data.add(new String[] {"time", "code", "response"});
+        files.add("csv/joinGame.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/startInfo.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/atHomeBeacon.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/playerUpdate.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/newTarget.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/exchangeRequest.csv");
+        data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
+        files.add("csv/exchangeResponse.csv");
+        data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
+        files.add("csv/expose.csv");
+        data.add(new String[] {"id", "name", "time", "code", "request", "response"});
+        files.add("csv/intercept.csv");
+        data.add(new String[] {"id", "name", "time", "code", "request", "response"});
+        files.add("csv/missionUpdate.csv");
+        data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
+        files.add("csv/endInfo.csv");
+        data.add(new String[] {"time", "code", "response"});
+
+        // Create new CSVs
+        for(String f: files){
+            try
+            {
+                FileWriter pw = new FileWriter(f);
+                for(String d : data.get(files.indexOf(f))) {
+                    pw.append(d);
+                    pw.append(",");
+                }
+                pw.append("\n");
+                pw.flush();
+                pw.close();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
 }
