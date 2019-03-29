@@ -16,23 +16,23 @@ public class Zone {
     @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Beacon> beacons;
 
-    private int x;
+    private float x;
 
-    private int y;
+    private float y;
 
     public Zone() {
         this.name = "";
         this.beacons = new ArrayList<>();
     }
 
-    public Zone(String name, int x, int y) {
+    public Zone(String name, float x, float y) {
         this.name = name;
         this.x = x;
         this.y = y;
         this.beacons = new ArrayList<>();
     }
 
-    public Zone(String name, List<Beacon> beacons, int x, int y) {
+    public Zone(String name, List<Beacon> beacons, float x, float y) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -55,11 +55,11 @@ public class Zone {
         this.name = name;
     }
 
-    public int getX() { return x; }
+    public float getX() { return x; }
 
     public void setX(int x) { this.x = x; }
 
-    public int getY() { return y; }
+    public float getY() { return y; }
 
     public void setY(int y) { this.y = y; }
 

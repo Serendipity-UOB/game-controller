@@ -128,6 +128,8 @@ public class LogServiceImpl implements LogService {
     public JSONArray zoneDisplay() {
         JSONArray zones = new JSONArray();
 
+        List<Player> players = playerService.getAllPlayers();
+
         for(Zone z : zoneService.getAllZones()){
             int count = 0;
             int red = 0;
@@ -167,8 +169,8 @@ public class LogServiceImpl implements LogService {
             zoneInfo.put("zone_id", z.getId());
             zoneInfo.put("zone_name", z.getName());
             zoneInfo.put("x", z.getX());
-            zoneInfo.put("z", z.getY());
-            zoneInfo.put("size", playersAtZone.size());
+            zoneInfo.put("y", z.getY());
+            zoneInfo.put("size", (playersAtZone.size() / players.size()));
             zoneInfo.put("colour", rgb);
             zones.put(zoneInfo);
         }

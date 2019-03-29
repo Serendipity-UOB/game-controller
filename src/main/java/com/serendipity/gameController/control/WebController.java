@@ -161,8 +161,8 @@ public class WebController {
 
     @PostMapping(value="/initZone")
     public String initZone(@ModelAttribute("zone_name") String name,
-                           @ModelAttribute("zone_x") int x,
-                           @ModelAttribute("zone_y") int y) {
+                           @ModelAttribute("zone_x") float x,
+                           @ModelAttribute("zone_y") float y) {
         Zone zone = new Zone(name, x, y);
         zoneService.saveZone(zone);
         return "redirect:/";
