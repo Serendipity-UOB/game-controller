@@ -190,7 +190,9 @@ public class MobileController {
                     Mission mission = missionService.createMission(game, target1, target2);
 
                     // Assign mission to player
-                    player.setMissionAssigned(mission);
+                    List<Mission> missions = player.getMissionsAssigned();
+                    missions.add(mission);
+                    player.setMissionsAssigned(missions);
                     playerService.savePlayer(player);
 
                     // Return all players
@@ -338,7 +340,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Mission
-            Optional<Mission> opMission = missionService.getMission(player.getMissionAssigned().getId());
+            Optional<Mission> opMission = missionService.getMission(player.getMissionsAssigned().get(0).getId());
             if( opMission.isPresent() ){
                 Mission mission = opMission.get();
                 // If mission should start
@@ -793,7 +795,7 @@ public class MobileController {
             Player player = opPlayer.get();
             realName = player.getRealName();
             Zone location = player.getCurrentZone();
-            Mission mission = player.getMissionAssigned();
+            Mission mission = player.getMissionsAssigned().get(0);
             // Get mission details
             Player p1 = mission.getPlayer1();
             Player p2 = mission.getPlayer2();

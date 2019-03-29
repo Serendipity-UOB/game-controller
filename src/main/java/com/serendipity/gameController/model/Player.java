@@ -3,6 +3,8 @@ package com.serendipity.gameController.model;
 import javax.persistence.*;
 import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -33,13 +35,14 @@ public class Player {
     @ManyToOne
     private Zone currentZone;
 
-    @OneToOne
-    private Mission missionAssigned;
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Mission> missionsAssigned;
 
     public Player() {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsAssigned = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName) {
@@ -48,6 +51,7 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsAssigned = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName, Player target) {
@@ -57,6 +61,7 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsAssigned = new ArrayList<>();
     }
 
     public Long getId() {
@@ -133,9 +138,9 @@ public class Player {
         else return true;
     }
 
-    public Mission getMissionAssigned() { return missionAssigned; }
+    public List<Mission> getMissionsAssigned() { return missionsAssigned; }
 
-    public void setMissionAssigned(Mission missionAssigned) { this.missionAssigned = missionAssigned; }
+    public void setMissionsAssigned(List<Mission> missionsAssigned) { this.missionsAssigned = missionsAssigned; }
 
     @Override
     public String toString() {
@@ -146,10 +151,10 @@ public class Player {
                 ", homeZone=" + homeZone +
                 ", target=" + target +
                 ", reputation=" + reputation +
-                ", exposed=" + exposedBy +
+                ", exposedBy=" + exposedBy +
                 ", returnHome=" + returnHome +
                 ", currentZone=" + currentZone +
-                ", missionAssigned=" + missionAssigned +
+                ", missionsAssigned=" + missionsAssigned +
                 '}';
     }
 }

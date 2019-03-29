@@ -44,7 +44,7 @@ public class MissionServiceImpl implements MissionService {
     public void unassignAllMissions() {
         List<Player> allPlayers = playerService.getAllPlayers();
         for (Player player : allPlayers) {
-            player.setMissionAssigned(null);
+            player.setMissionsAssigned(new ArrayList<>());
             playerService.savePlayer(player);
         }
     }
