@@ -165,8 +165,11 @@ public class LogServiceImpl implements LogService {
             // Add to output
             JSONObject zoneInfo = new JSONObject();
             zoneInfo.put("zone_id", z.getId());
-            zoneInfo.put("colour", rgb);
+            zoneInfo.put("zone_name", z.getName());
+            zoneInfo.put("x", z.getX());
+            zoneInfo.put("z", z.getY());
             zoneInfo.put("size", playersAtZone.size());
+            zoneInfo.put("colour", rgb);
             zones.put(zoneInfo);
         }
 

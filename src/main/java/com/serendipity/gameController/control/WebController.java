@@ -67,9 +67,9 @@ public class WebController {
     @PostMapping(value="/setupTestGame")
     public String setupTestGame() {
         resetTables();
-        Zone zoneA = new Zone("Zone A");
-        Zone zoneB = new Zone("Zone B");
-        Zone zoneC = new Zone("Zone C");
+        Zone zoneA = new Zone("Zone A", 1, 1);
+        Zone zoneB = new Zone("Zone B", 2, 2);
+        Zone zoneC = new Zone("Zone C", 3, 3);
         zoneService.saveZone(zoneA);
         zoneService.saveZone(zoneB);
         zoneService.saveZone(zoneC);
@@ -160,8 +160,10 @@ public class WebController {
     }
 
     @PostMapping(value="/initZone")
-    public String initZone(@ModelAttribute("zone_name") String name) {
-        Zone zone = new Zone(name);
+    public String initZone(@ModelAttribute("zone_name") String name,
+                           @ModelAttribute("zone_x") int x,
+                           @ModelAttribute("zone_y") int y) {
+        Zone zone = new Zone(name, x, y);
         zoneService.saveZone(zone);
         return "redirect:/";
     }
