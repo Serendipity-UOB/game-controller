@@ -6,7 +6,9 @@ import com.serendipity.gameController.model.Zone;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface LogService {
@@ -44,4 +46,14 @@ public interface LogService {
      * @return A JSONArray with the top players
      */
     JSONArray topPlayers();
+
+    /*
+     *
+     */
+    void printToCSV(List<String> data, String filename) throws IOException;
+
+    /*
+     *
+     */
+    void initCSVs();
 }

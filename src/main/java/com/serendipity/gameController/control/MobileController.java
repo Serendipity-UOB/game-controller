@@ -76,6 +76,7 @@ public class MobileController {
         Optional<Game> optionalNextGame = gameService.getNextGame();
         if (!optionalNextGame.isPresent()) {
             responseStatus = HttpStatus.NO_CONTENT;
+            output.put("error", "No game");
         } else if (!playerService.isValidRealNameAndCodeName(realName, codeName)) {
             output.put("error", "Code name is taken");
         } else {
@@ -84,6 +85,8 @@ public class MobileController {
             output.put("player_id", player.getId());
             responseStatus = HttpStatus.OK;
         }
+        logService.printToCSV(new ArrayList<>(Arrays.asList(realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/registerPlayer.csv");
         System.out.println("/registerPlayer returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -99,12 +102,15 @@ public class MobileController {
         Optional<Game> optionalNextGame = gameService.getNextGame();
         if (!optionalNextGame.isPresent()) {
             responseStatus =  HttpStatus.NO_CONTENT;
+            output.put("error", "No game");
         } else {
             Game nextGame = optionalNextGame.get();
             output.put("start_time", nextGame.getStartTime());
             output.put("number_players", playerService.countAllPlayers());
         }
         System.out.println("/gameInfo returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(LocalTime.now().toString(),
+                responseStatus.toString(), output.toString())), "csv/gameInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -115,7 +121,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/joinGame received: " + input);
         Long id = input.getLong("player_id");
-
+        String realName = "";
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
@@ -125,6 +131,7 @@ public class MobileController {
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
         if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
+            realName = player.getRealName();
 
             // Assign zone, if one exists
             Optional<Zone> optionalZone = zoneService.chooseHomeZone(player);
@@ -139,6 +146,8 @@ public class MobileController {
             } else System.out.println("No zones in the database");
         } else System.out.println("No player exists by this id");
         System.out.println("/joinGame returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/joinGame.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -149,6 +158,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/startInfo received: " + input);
         Long playerId = input.getLong("player_id");
+        String realName = "";
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
@@ -158,6 +168,7 @@ public class MobileController {
         if (opPlayer.isPresent()) {
             // Get two random players to gain intel on from mission
             Player player = opPlayer.get();
+            realName = player.getRealName();
             List<Player> players = playerService.getAllPlayersExcept(player);
             Random random = new Random();
             // Ensure 1 other player exists
@@ -198,6 +209,8 @@ public class MobileController {
             output.put("BAD_REQUEST", "Couldn't find player given");
         }
         System.out.println("/startInfo returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/startInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -208,6 +221,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/atHomeBeacon received: " + input);
         Long id = input.getLong("player_id");
+        String realName = "";
         JSONArray beacons = input.getJSONArray("beacons");
 
         // Create JSON object for response body
@@ -219,6 +233,7 @@ public class MobileController {
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
         if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
+            realName = player.getRealName();
             if (player.hasHomeZone()) {
                 Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, beacons);
                 if (optionalZone.isPresent()) {
@@ -240,6 +255,8 @@ public class MobileController {
             } else System.out.println("This player hasn't been assigned a home zone");
         } else System.out.println("No player exists by this id");
         System.out.println("/atHomeBeacon returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/atHomeBeacon.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -251,6 +268,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/playerUpdate received: " + input);
         Long id = input.getLong("player_id");
+        String realName = "";
         JSONArray jsonBeacons = input.getJSONArray("beacons");
 
         // Create JSON object for response body
@@ -262,7 +280,7 @@ public class MobileController {
         Optional<Player> optionalPlayer = playerService.getPlayer(id);
         if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
-
+            realName = player.getRealName();
             // Nearby players
             List<Long> nearbyPlayerIds = new ArrayList<>();
             Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, jsonBeacons);
@@ -355,6 +373,8 @@ public class MobileController {
 
         } else System.out.println("No player exists by this id");
         System.out.println("/playerUpdate returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/playerUpdate.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -364,6 +384,12 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/newTarget received: " + input);
         Long playerId = input.getLong("player_id");
+        String realName = "";
+        Optional<Player> optionalPlayer = playerService.getPlayer(playerId);
+        if (optionalPlayer.isPresent()) {
+            Player player = optionalPlayer.get();
+            realName = player.getRealName();
+        }
 
         // Create JSON object for response body
         JSONObject output = new JSONObject();
@@ -374,6 +400,8 @@ public class MobileController {
         output.put("target_player_id", newTargetId);
         responseStatus = HttpStatus.OK;
         System.out.println("/newTarget returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/newTarget.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -385,6 +413,9 @@ public class MobileController {
         System.out.println("/exchangeRequest received: " + input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
+        Long exchangeId = 0L;
+        String requesterName = "";
+        String responderName = "";
 
         // Create JSON object for response body
         JSONObject output = new JSONObject();
@@ -399,17 +430,19 @@ public class MobileController {
         // Find players
         if (optionalRequester.isPresent() && optionalResponder.isPresent()) {
             Player requester = optionalRequester.get();
+            requesterName = requester.getRealName();
             Player responder = optionalResponder.get();
-
+            responderName = responder.getRealName();
             // Find exchange
             Optional<Exchange> optionalExchange = exchangeService.getMostRecentExchangeFromPlayer(requester);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-
+                exchangeId = exchange.getId();
                 // Handle request
                 if (exchange.getResponsePlayer() == responder) {
                     if (exchange.isRequesterToldComplete()) {
-                        exchangeService.createExchange(requester, responder, jsonContactIds);
+                        exchangeId = exchangeService.createExchange(requester, responder, jsonContactIds);
+                        output.put("CREATED", "Creating exchange");
                         responseStatus = HttpStatus.CREATED;
                     } else if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
                         List<Evidence> evidenceList = exchangeService.getMyEvidence(exchange, requester);
@@ -418,37 +451,50 @@ public class MobileController {
                         exchangeService.saveExchange(exchange);
                         // Add exchange to logs
                         logService.saveLog(LogType.EXCHANGE, exchange.getId(), LocalTime.now(), requester.getCurrentZone());
+                        output.put("ACCEPTED", "Exchange accepted");
                         responseStatus = HttpStatus.ACCEPTED;
                     } else if (exchangeService.getTimeRemaining(exchange) <= 0l) {
                         exchange.setRequesterToldComplete(true);
                         exchangeService.saveExchange(exchange);
+                        output.put("REQUEST_TIMEOUT", "Exchange timeout");
                         responseStatus = HttpStatus.REQUEST_TIMEOUT;
                     } else {
                         if (exchange.getResponse().equals(ExchangeResponse.REJECTED)) {
                             exchange.setRequesterToldComplete(true);
                             exchangeService.saveExchange(exchange);
+                            output.put("NO_CONTENT", "Exchange rejected");
                             responseStatus = HttpStatus.NO_CONTENT;
                         } else if (exchange.getResponse().equals(ExchangeResponse.WAITING)) {
+                            output.put("PARTIAL_CONTENT", "Waiting for response");
                             responseStatus = HttpStatus.PARTIAL_CONTENT;
                         } else {
                             System.out.println("Something has gone very wrong to get to here");
+                            output.put("UNKNOWN", "Something has gone very wrong to get to here");
                         }
                     }
                 } else if (exchangeService.getTimeRemaining(exchange) <= 0l || exchange.isRequesterToldComplete()) {
                     System.out.println("Creating exchange");
-                    exchangeService.createExchange(requester, responder, jsonContactIds);
+                    exchangeId = exchangeService.createExchange(requester, responder, jsonContactIds);
+                    output.put("CREATED", "Creating exchange");
                     responseStatus = HttpStatus.CREATED;
                 } else {
                     System.out.println("Player already requesting exchange with someone else");
+                    output.put("NOT_FOUND", "Player already requesting exchange with someone else");
                     responseStatus = HttpStatus.NOT_FOUND;
                 }
             } else {
                 System.out.println("No exchange exists from this player, creating an exchange");
-                exchangeService.createExchange(requester, responder, jsonContactIds);
+                output.put("CREATED", "No exchange exists from this player, creating an exchange");
+                exchangeId = exchangeService.createExchange(requester, responder, jsonContactIds);
                 responseStatus = HttpStatus.CREATED;
             }
-        } else System.out.println("Couldn't find either the requester or the responder by these ids");
+        } else {
+            System.out.println("Couldn't find either the requester or the responder by these ids");
+            output.put("BAD_REQUEST", "Couldn't find either the requester or the responder by these ids");
+        }
         System.out.println("/exchangeRequest returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(exchangeId.toString(), requesterName, responderName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/exchangeRequest.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -460,6 +506,10 @@ public class MobileController {
         System.out.println("/exchangeResponse received: " + input);
         Long requesterId = input.getLong("requester_id");
         Long responderId = input.getLong("responder_id");
+        Long exchangeId = 0L;
+        String requesterName = "";
+        String responderName = "";
+
 
         // Create JSON object for response body
         JSONObject output = new JSONObject();
@@ -469,48 +519,70 @@ public class MobileController {
         int exchangeResponseIndex = input.getInt("response");
         ExchangeResponse exchangeResponse = ExchangeResponse.values()[exchangeResponseIndex];
         JSONArray jsonContactIds = input.getJSONArray("contact_ids");
-        Player requester = playerService.getPlayer(requesterId).get();
-        Player responder = playerService.getPlayer(responderId).get();
+        Optional<Player> optionalRequester = playerService.getPlayer(requesterId);
+        Optional<Player> optionalResponder = playerService.getPlayer(responderId);
 
-        // Find exchange
-        Optional<Exchange> optionalExchange = exchangeService.getExchangeByPlayers(requester, responder);
-        if (optionalExchange.isPresent()) {
-            Exchange exchange = optionalExchange.get();
+        // Find players
+        if (optionalRequester.isPresent() && optionalResponder.isPresent()) {
+            Player requester = optionalRequester.get();
+            requesterName = requester.getRealName();
+            Player responder = optionalResponder.get();
+            responderName = responder.getRealName();
 
-            // Handle response
-            if (exchangeResponse.equals(ExchangeResponse.WAITING)) {
-                long timeRemainingBuffer = 1l;
-                long timeRemaining = exchangeService.getTimeRemaining(exchange) - timeRemainingBuffer;
-                if (timeRemaining <= 0l) {
-                    responseStatus = HttpStatus.REQUEST_TIMEOUT;
-                } else {
-                    // 1s buffer for timeout, to avoid race conditions
-                    output.put("time_remaining", timeRemaining);
-                    responseStatus = HttpStatus.PARTIAL_CONTENT;
-                }
-            } else if (exchangeResponse.equals(ExchangeResponse.ACCEPTED)) {
-                List<Long> contactIds = new ArrayList<>();
-                if (jsonContactIds.length() > 0) {
-                    for (int i = 0; i < jsonContactIds.length(); i++) {
-                        Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
-                        contactIds.add(id);
+            // Find exchange
+            Optional<Exchange> optionalExchange = exchangeService.getExchangeByPlayers(requester, responder);
+            if (optionalExchange.isPresent()) {
+                Exchange exchange = optionalExchange.get();
+                exchangeId = exchange.getId();
+                // Handle response
+                if (exchangeResponse.equals(ExchangeResponse.WAITING)) {
+                    long timeRemainingBuffer = 1l;
+                    long timeRemaining = exchangeService.getTimeRemaining(exchange) - timeRemainingBuffer;
+                    if (timeRemaining <= 0l) {
+                        output.put("REQUEST_TIMEOUT", "Exchange timeout");
+                        responseStatus = HttpStatus.REQUEST_TIMEOUT;
+                    } else {
+                        // 1s buffer for timeout, to avoid race conditions
+                        output.put("time_remaining", timeRemaining);
+                        responseStatus = HttpStatus.PARTIAL_CONTENT;
                     }
+                } else if (exchangeResponse.equals(ExchangeResponse.ACCEPTED)) {
+                    List<Long> contactIds = new ArrayList<>();
+                    if (jsonContactIds.length() > 0) {
+                        for (int i = 0; i < jsonContactIds.length(); i++) {
+                            Long id = jsonContactIds.getJSONObject(i).getLong("contact_id");
+                            contactIds.add(id);
+                        }
+                    }
+                    List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
+                    output.put("evidence", evidenceService.evidenceListToJsonArray(requestEvidenceList));
+                    List<Evidence> responseEvidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
+                    exchange.setEvidenceList(responseEvidenceList);
+                    exchange.setResponse(exchangeResponse);
+                    exchangeService.saveExchange(exchange);
+                    output.put("ACCEPTED", "Exchange accepted");
+                    // Set status code
+                    responseStatus = HttpStatus.ACCEPTED;
+                } else if (exchangeResponse.equals(ExchangeResponse.REJECTED)) {
+                    exchange.setResponse(exchangeResponse);
+                    exchangeService.saveExchange(exchange);
+                    output.put("RESET_CONTENT", "Exchange rejected");
+                    responseStatus = HttpStatus.RESET_CONTENT;
+                } else {
+                    System.out.println("Exchange has no response status, something wrong on the server");
+                    output.put("BAD_REQUEST", "Exchange has no response status, something wrong on the server");
                 }
-                List<Evidence> requestEvidenceList = exchangeService.getMyEvidence(exchange, responder);
-                output.put("evidence", evidenceService.evidenceListToJsonArray(requestEvidenceList));
-                List<Evidence> responseEvidenceList = exchangeService.calculateEvidence(exchange, responder, contactIds);
-                exchange.setEvidenceList(responseEvidenceList);
-                exchange.setResponse(exchangeResponse);
-                exchangeService.saveExchange(exchange);
-                // Set status code
-                responseStatus = HttpStatus.ACCEPTED;
-            } else if (exchangeResponse.equals(ExchangeResponse.REJECTED)) {
-                exchange.setResponse(exchangeResponse);
-                exchangeService.saveExchange(exchange);
-                responseStatus = HttpStatus.RESET_CONTENT;
-            } else System.out.println("Exchange has no response status, something wrong on the server");
-        } else System.out.println("Couldn't find an exchange between these players");
+            } else {
+                System.out.println("Couldn't find an exchange between these players");
+                output.put("BAD_REQUEST", "Couldn't find an exchange between these players");
+            }
+        } else {
+            System.out.println("Couldn't find either the requester or the responder by these ids");
+            output.put("BAD_REQUEST", "Couldn't find either the requester or the responder by these ids");
+        }
         System.out.println("/exchangeResponse returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(exchangeId.toString(), requesterName, responderName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/exchangeResponse.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -522,7 +594,8 @@ public class MobileController {
         System.out.println("/expose received: " + input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-
+        String realName = "";
+        Long exposeId = 0L;
         // create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
@@ -535,6 +608,7 @@ public class MobileController {
         if (opPlayer.isPresent() && opTarget.isPresent()) {
             // unpack optional objects
             Player player = opPlayer.get();
+            realName = player.getRealName();
             Player target = opTarget.get();
             // ensure given target matches player's assign target and they haven't been exposed
             if(player.getTarget().getId().equals(target.getId())) {
@@ -558,6 +632,7 @@ public class MobileController {
                     // Create expose
                     Expose expose = new Expose(player, target);
                     exposeService.saveExpose(expose);
+                    exposeId = expose.getId();
                     // Add expose to logs
                     logService.saveLog(LogType.EXPOSE, expose.getId(), LocalTime.now(), player.getCurrentZone());
                     // set output elements
@@ -575,6 +650,8 @@ public class MobileController {
             output.put("BAD_REQUEST", "Couldn't find player or target id given");
         }
         System.out.println("/expose returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(exposeId.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/expose.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -586,7 +663,8 @@ public class MobileController {
         System.out.println("/intercept received: " + input);
         Long playerId = input.getLong("player_id");
         Long targetId = input.getLong("target_id");
-
+        String realName = "";
+        Long interceptId = 0L;
         // Create JSON object for response body
         JSONObject output = new JSONObject();
         // set default response status
@@ -597,6 +675,7 @@ public class MobileController {
         Optional<Player> opTarget = playerService.getPlayer(targetId);
         if (opPlayer.isPresent() && opTarget.isPresent()) {
             Player player = opPlayer.get();
+            realName = player.getRealName();
             Player target = opTarget.get();
             // Find exchange
             Optional<Exchange> opExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
@@ -605,12 +684,12 @@ public class MobileController {
                 // Ensure the player isn't part of the intercepted exchange
                 if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
                     // Find if exchange is still active
-                    System.out.println(exchangeService.getTimeRemaining(exchange));
                     if (!(exchangeService.getTimeRemaining(exchange) <= 0l)) {
                         // Find if player has an intercept
                         Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
                         if (opIntercept.isPresent()) {
                             Intercept intercept = opIntercept.get();
+                            interceptId = intercept.getId();
                             // Find if the intercept is still active
                             if (!intercept.isExpired()) {
                                 // Find if the active intercept is for the exchange targeted
@@ -636,6 +715,7 @@ public class MobileController {
                                             responseStatus = HttpStatus.OK;
                                         } else {
                                             System.out.println("Exchange wasn't accepted");
+                                            output.put("NO_CONTENT", "Exchange wasn't accepted");
                                             responseStatus = HttpStatus.NO_CONTENT;
                                         }
                                         // Set intercept to be expired
@@ -643,10 +723,12 @@ public class MobileController {
                                         interceptService.saveIntercept(intercept);
                                     } else {
                                         System.out.println("Still waiting");
+                                        output.put("PARTIAL_CONTENT", "Exchange pending");
                                         responseStatus = HttpStatus.PARTIAL_CONTENT;
                                     }
                                 } else {
-                                    System.out.println("Trying to intercept wrong exchange");
+                                    System.out.println("Active intercept exists for another exchange");
+                                    output.put("NOT_FOUND", "Active intercept exists for another exchange");
                                     responseStatus = HttpStatus.NOT_FOUND;
                                 }
                             } else {
@@ -655,6 +737,7 @@ public class MobileController {
                                 intercept.setExpired(false);
                                 intercept.setExchange(exchange);
                                 interceptService.saveIntercept(intercept);
+                                output.put("CREATED", "Intercept has expired, creating a new one");
                                 responseStatus = HttpStatus.CREATED;
                             }
                         } else {
@@ -662,10 +745,12 @@ public class MobileController {
                             // Create intercept
                             Intercept intercept = new Intercept(player, exchange);
                             interceptService.saveIntercept(intercept);
+                            output.put("CREATED", "No intercept exists, creating one");
                             responseStatus = HttpStatus.CREATED;
                         }
                     } else {
                         System.out.println("Exchange has timed out, resetting intercept if present");
+                        responseStatus = HttpStatus.NO_CONTENT;
                         // Find if player has an intercept
                         Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
                         if (opIntercept.isPresent()) {
@@ -673,8 +758,8 @@ public class MobileController {
                             // Set intercept to be expired
                             intercept.setExpired(true);
                             interceptService.saveIntercept(intercept);
-                            responseStatus = HttpStatus.NO_CONTENT;
-                        }
+                            output.put("NO_CONTENT", "Exchange has timed out, resetting existing intercept");
+                        } else { output.put("NO_CONTENT", "Exchange has timed out"); }
                     }
                 } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
             } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
@@ -683,6 +768,8 @@ public class MobileController {
             output.put("BAD_REQUEST", "Couldn't find player or target id given");
         }
         System.out.println("/intercept returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(interceptId.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/intercept.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -693,6 +780,7 @@ public class MobileController {
         JSONObject input = new JSONObject(json);
         System.out.println("/missionUpdate received: " + input);
         Long playerId = input.getLong("player_id");
+        String realName = "";
 
         // Create JSON object for response body
         JSONObject output = new JSONObject();
@@ -703,6 +791,7 @@ public class MobileController {
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         if (opPlayer.isPresent()) {
             Player player = opPlayer.get();
+            realName = player.getRealName();
             Zone location = player.getCurrentZone();
             Mission mission = player.getMissionAssigned();
             // Get mission details
@@ -748,6 +837,8 @@ public class MobileController {
             output.put("BAD_REQUEST", "Couldn't find player given");
         }
         System.out.println("/missionUpdate returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
+                responseStatus.toString(), input.toString(), output.toString())), "csv/missionUpdate.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -770,6 +861,8 @@ public class MobileController {
         }
         output.put("leaderboard", leaderboard);
         System.out.println("/endInfo returned: " + output);
+        logService.printToCSV(new ArrayList<>(Arrays.asList(LocalTime.now().toString(),
+                responseStatus.toString(), output.toString())), "csv/endInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 }

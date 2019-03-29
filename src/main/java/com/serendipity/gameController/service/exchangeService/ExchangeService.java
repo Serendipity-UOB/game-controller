@@ -18,9 +18,9 @@ public interface ExchangeService {
     void saveExchange(Exchange exchange);
 
     /*
-     *
+     * @return The id of the exchange
      */
-    void createExchange(Player requester, Player responder, JSONArray jsonContactIds);
+    long createExchange(Player requester, Player responder, JSONArray jsonContactIds);
 
     /*
      * @param exchange The exchange you're looking at.

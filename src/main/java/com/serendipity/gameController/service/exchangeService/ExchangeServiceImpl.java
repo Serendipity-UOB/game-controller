@@ -33,7 +33,7 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
-    public void createExchange(Player requester, Player responder, JSONArray jsonContactIds) {
+    public long createExchange(Player requester, Player responder, JSONArray jsonContactIds) {
         Exchange exchange = new Exchange(requester, responder);
         List<Long> contactIds = new ArrayList<>();
         if (jsonContactIds.length() > 0) {
@@ -45,6 +45,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         List<Evidence> evidenceList = calculateEvidence(exchange, requester, contactIds);
         exchange.setEvidenceList(evidenceList);
         saveExchange(exchange);
+        return exchange.getId();
     }
 
     @Override

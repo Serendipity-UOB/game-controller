@@ -114,6 +114,8 @@ public class WebController {
 //        get start time and save new game
         Game game = new Game(start);
         gameService.saveGame(game);
+        // Initialise CSV files for logging
+        logService.initCSVs();
         return "redirect:/";
     }
 
@@ -133,6 +135,8 @@ public class WebController {
         LocalTime start = LocalTime.now().plusMinutes(1);
         Game game = new Game(start);
         gameService.saveGame(game);
+        // Initialise CSV files for logging
+        logService.initCSVs();
         return "redirect:/";
     }
 
