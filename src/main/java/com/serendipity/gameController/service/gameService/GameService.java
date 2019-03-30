@@ -46,4 +46,9 @@ public interface GameService {
      */
     boolean isGameOver(Game game);
 
+    /*
+     * @param game The game you to get the time remaining for.
+     * @return List of the hours, minutes and seconds left.
+     */
+    List<Integer> getTimeRemaining(Game game);
 }

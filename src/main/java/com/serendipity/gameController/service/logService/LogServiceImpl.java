@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.repository.LogRepository;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.exposeService.ExposeServiceImpl;
+import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -44,6 +45,9 @@ public class LogServiceImpl implements LogService {
 
     @Autowired
     ZoneServiceImpl zoneService;
+
+    @Autowired
+    GameServiceImpl gameService;
 
     @Override
     public void saveLog(LogType type, Long id, LocalTime time, Zone zone){
@@ -159,9 +163,16 @@ public class LogServiceImpl implements LogService {
             if(green > 0) green /= count;
             // Construct rgb JSON
             JSONObject rgb = new JSONObject();
-            rgb.put("red", red);
-            rgb.put("green", green);
-            rgb.put("blue", 0);
+            // Default colour of green
+            if(red == 0 && green == 0){
+                rgb.put("red", red);
+                rgb.put("green", 255);
+                rgb.put("blue", 0);
+            } else {
+                rgb.put("red", red);
+                rgb.put("green", green);
+                rgb.put("blue", 0);
+            }
             // Get zone size
             List<Player> playersAtZone = playerService.getAllPlayersByCurrentZone(z);
             // Add to output
@@ -170,7 +181,9 @@ public class LogServiceImpl implements LogService {
             zoneInfo.put("zone_name", z.getName());
             zoneInfo.put("x", z.getX());
             zoneInfo.put("y", z.getY());
-            zoneInfo.put("size", (playersAtZone.size() / players.size()));
+            if(players.size() > 0 || playersAtZone.size() > 0) {
+                zoneInfo.put("size", (playersAtZone.size() / players.size()));
+            } else { zoneInfo.put("size", 0); }
             zoneInfo.put("colour", rgb);
             zones.put(zoneInfo);
         }
@@ -195,6 +208,16 @@ public class LogServiceImpl implements LogService {
             count++;
         }
         // TODO: what do we do if there's an overflow due to multiple people with the same position
+        return output;
+    }
+
+    @Override
+    public JSONObject timeRemaining(){
+        JSONObject output = new JSONObject();
+        List<Game> games = gameService.getAllGames();
+        List<Integer> time = gameService.getTimeRemaining(games.get(0));
+        output.put("minutes", time.get(1));
+        output.put("seconds", time.get(2));
         return output;
     }
 
