@@ -1,5 +1,8 @@
 package com.serendipity.gameController.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
@@ -35,7 +38,8 @@ public class Player {
     @ManyToOne
     private Zone currentZone;
 
-    @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Mission> missionsAssigned;
 
     public Player() {
@@ -84,9 +88,7 @@ public class Player {
         return codeName;
     }
 
-    public void setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
+    public void setCodeName(String codeName) { this.codeName = codeName; }
 
     public Zone getHomeZone() {
         return homeZone;
@@ -141,20 +143,4 @@ public class Player {
     public List<Mission> getMissionsAssigned() { return missionsAssigned; }
 
     public void setMissionsAssigned(List<Mission> missionsAssigned) { this.missionsAssigned = missionsAssigned; }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", realName='" + realName + '\'' +
-                ", codeName='" + codeName + '\'' +
-                ", homeZone=" + homeZone +
-                ", target=" + target +
-                ", reputation=" + reputation +
-                ", exposedBy=" + exposedBy +
-                ", returnHome=" + returnHome +
-                ", currentZone=" + currentZone +
-                ", missionsAssigned=" + missionsAssigned +
-                '}';
-    }
 }

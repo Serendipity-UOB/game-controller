@@ -12,16 +12,20 @@ public class Mission {
     private Long id;
 
     @NotNull
+    @ManyToOne
+    private Player player;
+
+    @NotNull
     private LocalTime startTime;
 
     @NotNull
     private LocalTime endTime;
 
     @ManyToOne
-    private Player player1;
+    private Player target1;
 
     @ManyToOne
-    private Player player2;
+    private Player target2;
 
     @ManyToOne
     private Zone zone;
@@ -31,11 +35,12 @@ public class Mission {
     public Mission() {
     }
 
-    public Mission(@NotNull LocalTime startTime, @NotNull LocalTime endTime, @NotNull Player player1, @NotNull Player player2) {
+    public Mission(@NotNull Player player, @NotNull LocalTime startTime, @NotNull LocalTime endTime, Player target1, Player target2) {
+        this.player = player;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.player1 = player1;
-        this.player2 = player2;
+        this.target1 = target1;
+        this.target2 = target2;
         this.completed = false;
     }
 
@@ -46,6 +51,10 @@ public class Mission {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Player getPlayer() { return player; }
+
+    public void setPlayer(Player player) { this.player = player; }
 
     public LocalTime getStartTime() {
         return startTime;
@@ -63,13 +72,13 @@ public class Mission {
         this.endTime = endTime;
     }
 
-    public Player getPlayer1() { return player1; }
+    public Player getTarget1() { return target1; }
 
-    public void setPlayer1(Player player1) { this.player1 = player1; }
+    public void setTarget1(Player target1) { this.target1 = target1; }
 
-    public Player getPlayer2() { return player2; }
+    public Player getTarget2() { return target2; }
 
-    public void setPlayer2(Player player2) { this.player2 = player2; }
+    public void setTarget2(Player target2) { this.target2 = target2; }
 
     public Zone getZone() { return zone; }
 
@@ -83,12 +92,13 @@ public class Mission {
     public String toString() {
         return "Mission{" +
                 "id=" + id +
+                ", player=" + player +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", player1=" + player1 +
-                ", player2=" + player2 +
-                ", Beacon=" + zone +
-                ", sent=" + completed +
+                ", target1=" + target1 +
+                ", target2=" + target2 +
+                ", zone=" + zone +
+                ", completed=" + completed +
                 '}';
     }
 }

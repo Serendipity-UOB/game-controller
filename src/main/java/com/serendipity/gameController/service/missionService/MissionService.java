@@ -37,5 +37,8 @@ public interface MissionService {
      */
     Optional<Mission> getMission(Long id);
 
-    Mission createMission(Game game, Player target1, Player target2);
+    /*
+     * @return The mission created
+     */
+    Mission createMission(Player player, Game game, Player target1, Player target2);
 }

@@ -1,5 +1,8 @@
 package com.serendipity.gameController.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ public class Exchange {
     private Player responsePlayer;
 
     @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Evidence> evidenceList; // The evidence from the requester
 
 //    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -187,7 +187,7 @@ public class MobileController {
                     output.put("end_time", game.getEndTime());
 
                     // Create a mission
-                    Mission mission = missionService.createMission(game, target1, target2);
+                    Mission mission = missionService.createMission(player, game, target1, target2);
 
                     // Assign mission to player
                     List<Mission> missions = player.getMissionsAssigned();
@@ -345,8 +345,8 @@ public class MobileController {
                 Mission mission = opMission.get();
                 // If mission should start
                 if (mission.getStartTime().isBefore(LocalTime.now()) && !mission.isCompleted()) {
-                    Player p1 = mission.getPlayer1();
-                    Player p2 = mission.getPlayer2();
+                    Player p1 = mission.getTarget1();
+                    Player p2 = mission.getTarget2();
                     String missionDescription;
                     missionDescription = "We have discovered that evidence about " + p1.getRealName()
                             + "'s and " + p2.getRealName() + "'s";
@@ -797,8 +797,8 @@ public class MobileController {
             Zone location = player.getCurrentZone();
             Mission mission = player.getMissionsAssigned().get(0);
             // Get mission details
-            Player p1 = mission.getPlayer1();
-            Player p2 = mission.getPlayer2();
+            Player p1 = mission.getTarget1();
+            Player p2 = mission.getTarget2();
             Zone zone = mission.getZone();
             // Check if the mission hasn't timed out
             if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS))) {

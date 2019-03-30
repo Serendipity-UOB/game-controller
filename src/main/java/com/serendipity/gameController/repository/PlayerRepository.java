@@ -16,7 +16,7 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     Optional<Player> findByCodeName(String codeName);
 
-    Optional<Player> findByMissionAssigned(Mission mission);
+    Optional<Player> findByMissionsAssigned(Mission mission);
 
     List<Player> findAllByCurrentZone(Zone zone);
 
