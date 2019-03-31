@@ -48,90 +48,293 @@ table {
   border-spacing: 0;
 }
 
-div {
-  margin: 20px;
-  padding: 0;
-}
-
-div.container {
-  display: flex;
-  padding: 0;
+/* ----------------------------------------------------------------------------------------------------
+Super Form Reset
+A couple of things to watch out for:
+- IE8: If a text input doesn't have padding on all sides or none the text won't be centered.
+- The default border sizes on text inputs in all UAs seem to be slightly different. You're better off using custom borders.
+- You NEED to set the font-size and family on all form elements
+- Search inputs need to have their appearance reset and the box-sizing set to content-box to match other UAs
+- You can style the upload button in webkit using ::-webkit-file-upload-button
+- ::-webkit-file-upload-button selectors can't be used in the same selector as normal ones. FF and IE freak out.
+- IE: You don't need to fake inline-block with labels and form controls in IE. They function as inline-block.
+- By turning off ::-webkit-search-decoration, it removes the extra whitespace on the left on search inputs
+----------------------------------------------------------------------------------------------------*/
+input,
+label,
+select,
+button,
+textarea {
   margin: 0;
-  border: none;
+  border: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+  background: none;
+  line-height: 1;
+  /* Browsers have different default form fonts */
+  font-size: 13px;
 }
 
-div.item {
-  flex: 1 100%;
+/* Remove the stupid outer glow in Webkit */
+input:focus {
+  outline: 0;
 }
 
-div.zone {
-  margin: 0;
-  border-top: 1px solid #EFEFEF;
-  padding: 20px 0;
+/* Box Sizing Reset
+-----------------------------------------------*/
+/* All of our custom controls should be what we expect them to be */
+input,
+textarea {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
-form {
-  display: inline;
+/* These elements are usually rendered a certain way by the browser */
+button,
+input[type=reset],
+input[type=button],
+input[type=submit],
+input[type=checkbox],
+input[type=radio],
+select {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-button {
-  border: none;
-  outline: none;
-  color: white;
-  font-weight: 500;
-  padding: 5px;
-  margin: 5px;
-  border-radius: 2px;
+/* Text Inputs
+-----------------------------------------------*/
+/* Button Controls
+-----------------------------------------------*/
+input[type=checkbox],
+input[type=radio] {
+  width: 13px;
+  height: 13px;
 }
-button i.material-icons {
-  font-size: 1rem;
+
+/* File Uploads
+-----------------------------------------------*/
+/* Search Input
+-----------------------------------------------*/
+/* Make webkit render the search input like a normal text field */
+input[type=search] {
+  -webkit-appearance: textfield;
+  -webkit-box-sizing: content-box;
 }
-button.green {
-  background-color: #2BA84A;
+
+/* Turn off the recent search for webkit. It adds about 15px padding on the left */
+::-webkit-search-decoration {
+  display: none;
 }
-button.green:hover {
-  background-color: #299E46;
+
+/* Buttons
+-----------------------------------------------*/
+button,
+input[type=reset],
+input[type=button],
+input[type=submit] {
+  /* Fix IE7 display bug */
+  overflow: visible;
+  width: auto;
 }
-button.red {
-  background-color: #CE3F35;
+
+/* IE8 and FF freak out if this rule is within another selector */
+::-webkit-file-upload-button {
+  padding: 0;
+  border: 0;
+  background: none;
 }
-button.red:hover {
-  background-color: #BF352B;
+
+/* Textarea
+-----------------------------------------------*/
+textarea {
+  /* Move the label to the top */
+  vertical-align: top;
+  /* Turn off scroll bars in IE unless needed */
+  overflow: auto;
 }
-button.grey {
-  color: #55595B;
-  background-color: #A6ADB2;
+
+/* Selects
+-----------------------------------------------*/
+select[multiple] {
+  /* Move the label to the top */
+  vertical-align: top;
 }
-button.grey:hover {
-  color: #343638;
-  background-color: #9CA3A8;
+
+* {
+  box-sizing: border-box;
 }
 
 html {
-  font-size: 16px;
-  font-family: "Raleway", sans-serif;
-  font-weight: 400;
-  color: #333333;
+  height: 100%;
+  font-family: "Share";
+  color: #9FC5E8;
 }
 
-h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
+body {
+  background-color: #001C31;
+  height: 100%;
 }
 
-h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
-  margin-bottom: 20px;
+#container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-
-h3 {
-  font-size: 1.4rem;
-  display: inline-block;
+#container #header {
+  flex-grow: 0;
 }
-
-h4 {
-  font-size: 0.8rem;
-  font-weight: 700;
+#container #main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+#container #main #zones {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+#container #main #zones .content {
+  flex-grow: 1;
+  border: none;
+  padding: 0;
+  margin: 5px;
+}
+#container #main #zones .content .zone {
+  margin-bottom: 10px;
+  border: 1px solid #00A6EE;
+  background-color: #002c4a;
+}
+#container #main #zones .content .zone .zone-header-border {
+  background: linear-gradient(to right, #00A6EE, #002c4a);
+  padding-bottom: 1px;
+  height: 100%;
+  display: table;
+  width: 100%;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header {
+  background-color: #002c4a;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: center;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .zone-name {
+  font-size: 1.2em;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .zone-edit {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .zone-delete {
+  padding: 5px 10px 5px 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header > * {
+  padding: 5px 15px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header > * span {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header > *:nth-child(3) {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .attribute {
+  color: #00111E;
   text-transform: uppercase;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+#container #main #zones .content .zone .zone-content .beacon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#container #main #zones .content .zone .zone-content .beacon .beacon-edit {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .beacon-delete {
+  padding: 5px 10px 5px 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .beacon-add {
+  padding: 5px 10px 5px 5px;
+  background-color: #002c4a;
+}
+#container #main #zones .content .zone .zone-content .beacon > * {
+  padding: 5px 15px;
+}
+#container #main #zones .content .zone .zone-content .beacon > * span {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-content .beacon > *:nth-child(3) {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border {
+  background: linear-gradient(to right, #00A6EE, #002c4a);
+  padding-top: 1px;
+  height: 100%;
+  display: table;
+  width: 100%;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon {
+  background-color: #002c4a;
+}
+#container #main #zones input {
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+#container #main #games {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+#container #main #games .content {
+  flex-grow: 1;
+  border: 1px solid #00A6EE;
+  padding: 5px;
+  margin: 5px;
+}
+
+.title {
+  flex-grow: 0;
+  width: 200px;
+  border: 1px solid #00A6EE;
+  font-size: 24px;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+}
+
+button {
+  margin: 0;
+  border: none;
+  background-color: #001C31;
+  color: #9FC5E8;
+  border-radius: 3px;
+  padding: 4px;
+  outline: none;
+  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+}
+button .material-icons {
+  font-size: 16px;
+}
+button.edit:hover {
+  color: #9B5A00;
+  background-color: #FF9F1C;
+}
+button.delete:hover {
+  color: #751B0F;
+  background-color: #FF6338;
+}
+button.add:hover {
+  color: #347228;
+  background-color: #7DD36B;
 }

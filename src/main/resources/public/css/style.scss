@@ -1,33 +1,217 @@
 @import 'reset';
 @import 'layout';
 @import 'forms';
+@import 'colors';
+@import 'form-reset';
+
+$font: 'Share';
+
+* {
+  box-sizing: border-box;
+}
 
 html {
-  font-size: 16px;
-  font-family: 'Raleway', sans-serif;
-  font-weight: 400;
-  color: #333333;
+  height: 100%;
+  font-family: $font;
+  color: $font-color;
 }
 
-h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  //margin: 0 0 20px 0;
+body {
+  background-color: $background-color;
+  height: 100%;
 }
 
-h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
-  margin-bottom: 20px;
+#container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  & #header {
+    flex-grow: 0;
+  }
+
+  & #main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+
+    & #zones {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 5px;
+
+      & .content {
+        flex-grow: 1;
+        border: none;
+        padding: 0;
+        margin: 5px;
+
+        .zone {
+          margin-bottom: 10px;
+          border: 1px solid $border-color;
+          background-color: $foreground-color;
+
+          & .zone-header-border {
+            background: linear-gradient(to right, $border-color, $foreground-color);
+            padding-bottom: 1px;
+            height: 100%;
+            display: table;
+            width: 100%;
+
+            & .zone-header {
+              background-color: $foreground-color;
+              display: flex;
+              flex-direction: row;
+              height: 100%;
+              align-items: center;
+
+              & .zone-name {
+                font-size: 1.2em;
+              }
+
+              & .zone-edit {
+                padding: 5px;
+              }
+
+              & .zone-delete {
+                padding: 5px 10px 5px 5px;
+              }
+
+              & > * {
+                padding: 5px 15px;
+
+                & span {
+                  padding: 0;
+                }
+
+                &:nth-child(3) {
+                  flex-grow: 1;
+                }
+              }
+            }
+          }
+
+          & .attribute {
+            color: #00111E;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            font-weight: bold;
+          }
+
+          & .zone-content {
+
+            & .beacon {
+              //border: 1px solid red;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              & .beacon-edit {
+                padding: 5px;
+              }
+
+              & .beacon-delete {
+                padding: 5px 10px 5px 5px;
+              }
+
+              & .beacon-add {
+                padding: 5px 10px 5px 5px;
+                background-color: $foreground-color;
+              }
+
+              & > * {
+                padding: 5px 15px;
+
+                & span {
+                  padding: 0;
+                }
+
+                &:nth-child(3) {
+                  flex-grow: 1;
+                }
+              }
+            }
+
+            & .new-beacon-border {
+              background: linear-gradient(to right, $border-color, $foreground-color);
+              padding-top: 1px;
+              height: 100%;
+              display: table;
+              width: 100%;
+
+              & .new-beacon {
+                //border: 1px solid red;
+                background-color: $foreground-color;
+              }
+            }
+          }
+        }
+      }
+
+      input {
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+    }
+
+    & #games {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 5px;
+
+      & .content {
+        flex-grow: 1;
+        border: 1px solid $border-color;
+        padding: 5px;
+        margin: 5px;
+      }
+    }
+  }
 }
 
-h3 {
-  font-size: 1.4rem;
-  display: inline-block;
+.title {
+  flex-grow: 0;
+  width: 200px;
+  border: 1px solid $border-color;
+  font-size: 24px;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
 }
 
-h4 {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
+button {
+  margin: 0;
+  border: none;
+  background-color: $background-color;
+  color: $font-color;
+  border-radius: 3px;
+  padding: 4px;
+  outline: none;
+  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+
+  & .material-icons {
+    font-size: 16px;
+  }
+
+  &.edit:hover {
+    color: $dark-orange;
+    background-color: $orange;
+  }
+
+  &.delete:hover {
+    color: $dark-red;
+    background-color: $red;
+  }
+
+  &.add:hover {
+    color: $dark-green;
+    background-color: $green;
+  }
 }
