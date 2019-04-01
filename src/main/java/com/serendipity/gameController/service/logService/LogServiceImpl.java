@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
@@ -284,8 +285,8 @@ public class LogServiceImpl implements LogService {
         // Create new CSVs
         for(String f: files){
             try
-            {
-                FileWriter pw = new FileWriter(f);
+            {   File file = new File(f);
+                FileWriter pw = new FileWriter(file);
                 for(String d : data.get(files.indexOf(f))) {
                     pw.append(d);
                     pw.append(",");
@@ -293,6 +294,7 @@ public class LogServiceImpl implements LogService {
                 pw.append("\n");
                 pw.flush();
                 pw.close();
+                file.deleteOnExit();
             } catch (IOException e) {
                 System.out.println(e);
             }
