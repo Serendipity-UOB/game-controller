@@ -78,6 +78,10 @@ body {
                 padding: 5px 10px 5px 5px;
               }
 
+              & .zone-add {
+                padding: 5px 10px 5px 5px;
+              }
+
               & > * {
                 padding: 5px 15px;
 
@@ -93,7 +97,8 @@ body {
           }
 
           & .attribute {
-            color: #00111E;
+            color: $font-color;
+            opacity: 0.5;
             text-transform: uppercase;
             font-size: 0.8em;
             font-weight: bold;
@@ -107,17 +112,15 @@ body {
               flex-direction: row;
               align-items: center;
 
-              & .beacon-edit {
+              & .beacon-edit,
+              & .beacon-update {
                 padding: 5px;
               }
 
-              & .beacon-delete {
+              & .beacon-delete,
+              & .beacon-add,
+              & .beacon-cancel {
                 padding: 5px 10px 5px 5px;
-              }
-
-              & .beacon-add {
-                padding: 5px 10px 5px 5px;
-                background-color: $foreground-color;
               }
 
               & > * {
@@ -127,7 +130,7 @@ body {
                   padding: 0;
                 }
 
-                &:nth-child(3) {
+                &.beacon-minor {
                   flex-grow: 1;
                 }
               }
@@ -150,9 +153,19 @@ body {
       }
 
       input {
-        border: none;
-        background: none;
+        background-color: #00243D;
+        //border-bottom: 1px solid $border-color;
+        padding: 5px;
         font-family: inherit;
+        font-size: 1em;
+        color: $font-color;
+        width: 100px;
+
+        &:focus {
+          //background-color: white;
+          background-color: $background-color;
+
+        }
       }
     }
 
@@ -205,7 +218,7 @@ button {
     background-color: $orange;
   }
 
-  &.delete:hover {
+  &.delete:hover, &.cancel:hover {
     color: $dark-red;
     background-color: $red;
   }
@@ -214,4 +227,12 @@ button {
     color: $dark-green;
     background-color: $green;
   }
+}
+
+.old {
+  display: block;
+}
+
+.new {
+  display: none;
 }

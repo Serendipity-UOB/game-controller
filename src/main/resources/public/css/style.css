@@ -232,6 +232,9 @@ body {
 #container #main #zones .content .zone .zone-header-border .zone-header .zone-delete {
   padding: 5px 10px 5px 5px;
 }
+#container #main #zones .content .zone .zone-header-border .zone-header .zone-add {
+  padding: 5px 10px 5px 5px;
+}
 #container #main #zones .content .zone .zone-header-border .zone-header > * {
   padding: 5px 15px;
 }
@@ -242,7 +245,8 @@ body {
   flex-grow: 1;
 }
 #container #main #zones .content .zone .attribute {
-  color: #00111E;
+  color: #9FC5E8;
+  opacity: 0.5;
   text-transform: uppercase;
   font-size: 0.8em;
   font-weight: bold;
@@ -252,15 +256,11 @@ body {
   flex-direction: row;
   align-items: center;
 }
-#container #main #zones .content .zone .zone-content .beacon .beacon-edit {
+#container #main #zones .content .zone .zone-content .beacon .beacon-edit, #container #main #zones .content .zone .zone-content .beacon .beacon-update {
   padding: 5px;
 }
-#container #main #zones .content .zone .zone-content .beacon .beacon-delete {
+#container #main #zones .content .zone .zone-content .beacon .beacon-delete, #container #main #zones .content .zone .zone-content .beacon .beacon-add, #container #main #zones .content .zone .zone-content .beacon .beacon-cancel {
   padding: 5px 10px 5px 5px;
-}
-#container #main #zones .content .zone .zone-content .beacon .beacon-add {
-  padding: 5px 10px 5px 5px;
-  background-color: #002c4a;
 }
 #container #main #zones .content .zone .zone-content .beacon > * {
   padding: 5px 15px;
@@ -268,7 +268,7 @@ body {
 #container #main #zones .content .zone .zone-content .beacon > * span {
   padding: 0;
 }
-#container #main #zones .content .zone .zone-content .beacon > *:nth-child(3) {
+#container #main #zones .content .zone .zone-content .beacon > *.beacon-minor {
   flex-grow: 1;
 }
 #container #main #zones .content .zone .zone-content .new-beacon-border {
@@ -282,9 +282,15 @@ body {
   background-color: #002c4a;
 }
 #container #main #zones input {
-  border: none;
-  background: none;
+  background-color: #00243D;
+  padding: 5px;
   font-family: inherit;
+  font-size: 1em;
+  color: #9FC5E8;
+  width: 100px;
+}
+#container #main #zones input:focus {
+  background-color: #001C31;
 }
 #container #main #games {
   flex-grow: 1;
@@ -330,11 +336,19 @@ button.edit:hover {
   color: #9B5A00;
   background-color: #FF9F1C;
 }
-button.delete:hover {
+button.delete:hover, button.cancel:hover {
   color: #751B0F;
   background-color: #FF6338;
 }
 button.add:hover {
   color: #347228;
   background-color: #7DD36B;
+}
+
+.old {
+  display: block;
+}
+
+.new {
+  display: none;
 }
