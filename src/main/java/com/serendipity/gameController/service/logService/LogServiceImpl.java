@@ -255,31 +255,31 @@ public class LogServiceImpl implements LogService {
         // Setup CSV files and column headers
         List<String> files = new ArrayList<>();
         List<String[]> data = new ArrayList<>();
-        files.add("csv/registerPlayer.csv");
+        files.add("tmp/registerPlayer.csv");
         data.add(new String[] {"name", "time", "code", "request", "response"});
-        files.add("csv/gameInfo.csv");
+        files.add("tmp/gameInfo.csv");
         data.add(new String[] {"time", "code", "response"});
-        files.add("csv/joinGame.csv");
+        files.add("tmp/joinGame.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/startInfo.csv");
+        files.add("tmp/startInfo.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/atHomeBeacon.csv");
+        files.add("tmp/atHomeBeacon.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/playerUpdate.csv");
+        files.add("tmp/playerUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/newTarget.csv");
+        files.add("tmp/newTarget.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/exchangeRequest.csv");
+        files.add("tmp/exchangeRequest.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/exchangeResponse.csv");
+        files.add("tmp/exchangeResponse.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/expose.csv");
+        files.add("tmp/expose.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/intercept.csv");
+        files.add("tmp/intercept.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/missionUpdate.csv");
+        files.add("tmp/missionUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/endInfo.csv");
+        files.add("tmp/endInfo.csv");
         data.add(new String[] {"time", "code", "response"});
 
         // Create new CSVs
