@@ -13,6 +13,7 @@ import com.serendipity.gameController.service.logService.LogServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @CrossOrigin
@@ -64,9 +66,42 @@ public class WebController {
         return "admin";
     }
 
-    @PostMapping(value="/setupTestGame")
-    public String setupTestGame() {
+    private void resetTables() {
+        logService.deleteAllLogs();
+        missionService.unassignAllMissions();
+        missionService.deleteAllMissions();
+        evidenceService.deleteAllEvidence();
+        interceptService.deleteAllIntercepts();
+        exchangeService.deleteAllExchanges();
+        exposeService.unassignPlayers();
+        exposeService.deleteAllExposes();
+        playerService.deleteAllPlayers();
+        beaconService.deleteAllBeacons();
+        zoneService.deleteAllZones();
+        gameService.deleteAllGames();
+    }
+
+    @PostMapping(value="/resetAll")
+    public String resetAll() {
         resetTables();
+        return "redirect:/";
+    }
+
+    @PostMapping(value="/addTestBeacons")
+    public String setupTestGame() {
+//        resetTables();
+        logService.deleteAllLogs();
+        missionService.unassignAllMissions();
+        missionService.deleteAllMissions();
+        evidenceService.deleteAllEvidence();
+        interceptService.deleteAllIntercepts();
+        exchangeService.deleteAllExchanges();
+        exposeService.unassignPlayers();
+        exposeService.deleteAllExposes();
+        playerService.deleteAllPlayers();
+        beaconService.deleteAllBeacons();
+        zoneService.deleteAllZones();
+
         Zone italy = new Zone("Italy", 0.06f, 0.15f);
         Zone sweden = new Zone("Sweden", 0.25f, 0.55f);
         Zone colombia = new Zone("Colombia", 0.55f, 0.55f);
@@ -87,58 +122,48 @@ public class WebController {
         beaconService.saveBeacon(beacon3);
         beaconService.saveBeacon(beacon4);
         beaconService.saveBeacon(beacon5);
-        Game game = new Game(LocalTime.now().plusMinutes(1));
-        gameService.saveGame(game);
         return "redirect:/";
     }
 
-    @PostMapping(value="/resetAll")
-    public String resetAll() {
-        resetTables();
+    @PostMapping(value="/initZone")
+    public String initZone(@ModelAttribute("zone_name") String name,
+                           @ModelAttribute("zone_x") float x,
+                           @ModelAttribute("zone_y") float y) {
+        Zone zone = new Zone(name, x, y);
+        zoneService.saveZone(zone);
         return "redirect:/";
     }
 
-    @PostMapping(value="/initGame")
-    public String initGame(@ModelAttribute("start_time") String startTime) {
-//        reset player and exchange tables
-//        resetTables();
-        logService.deleteAllLogs();
-        missionService.unassignAllMissions();
-        missionService.deleteAllMissions();
-        evidenceService.deleteAllEvidence();
-        interceptService.deleteAllIntercepts();
-        exchangeService.deleteAllExchanges();
-        exposeService.unassignPlayers();
-        exposeService.deleteAllExposes();
-        playerService.deleteAllPlayers();
-        gameService.deleteAllGames();
-        LocalTime start = LocalTime.parse(startTime);
-//        get start time and save new game
-        Game game = new Game(start);
-        gameService.saveGame(game);
-        // Initialise CSV files for logging
-        logService.initCSVs();
+    @PostMapping(value="/updateZone")
+    public String updateZone(@ModelAttribute("zone_id") Long id,
+                             @ModelAttribute("zone_name") String name,
+                             @ModelAttribute("zone_x") float x,
+                             @ModelAttribute("zone_y") float y) {
+        Optional<Zone> optionalZone = zoneService.getZoneById(id);
+        if (optionalZone.isPresent()) {
+            Zone zone = optionalZone.get();
+            zone.setName(name);
+            zone.setX(x);
+            zone.setY(y);
+            zoneService.saveZone(zone);
+        }
         return "redirect:/";
     }
 
-    @PostMapping(value="/initGameFixed")
-    public String initGameFixed() {
-//        resetTables();
-        logService.deleteAllLogs();
-        missionService.unassignAllMissions();
-        missionService.deleteAllMissions();
-        evidenceService.deleteAllEvidence();
-        interceptService.deleteAllIntercepts();
-        exchangeService.deleteAllExchanges();
-        exposeService.unassignPlayers();
-        exposeService.deleteAllExposes();
-        playerService.deleteAllPlayers();
-        gameService.deleteAllGames();
-        LocalTime start = LocalTime.now().plusMinutes(1);
-        Game game = new Game(start);
-        gameService.saveGame(game);
-        // Initialise CSV files for logging
-        logService.initCSVs();
+    @Transactional
+    @PostMapping(value="delZone")
+    public String delZone(@ModelAttribute("zone_id") Long id) {
+        Optional<Zone> optionalZone = zoneService.getZoneById(id);
+        if (optionalZone.isPresent()) {
+            Zone zone = optionalZone.get();
+            List<Beacon> beacons = zone.getBeacons();
+            for (Iterator<Beacon> it = beacons.iterator(); it.hasNext();) {
+                Beacon beacon = it.next();
+                it.remove();
+                beaconService.deleteBeaconById(beacon.getId());
+            }
+            zoneService.deleteZone(zone);
+        }
         return "redirect:/";
     }
 
@@ -152,6 +177,22 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping(value="/updateBeacon")
+    public String updateBeacon(@ModelAttribute("beacon_id") Long id,
+                               @ModelAttribute("beacon_identifier") String identifier,
+                               @ModelAttribute("beacon_major") int major,
+                               @ModelAttribute("beacon_minor") int minor) {
+        Optional<Beacon> optionalBeacon = beaconService.getBeaconById(id);
+        if (optionalBeacon.isPresent()) {
+            Beacon beacon = optionalBeacon.get();
+            beacon.setIdentifier(identifier);
+            beacon.setMajor(major);
+            beacon.setMinor(minor);
+            beaconService.saveBeacon(beacon);
+        }
+        return "redirect:/";
+    }
+
     @Transactional
     @PostMapping(value="/delBeacon")
     public String delBeacon(@ModelAttribute("beacon_id") Long id) {
@@ -161,30 +202,11 @@ public class WebController {
         return "redirect:/";
     }
 
-    @PostMapping(value="/initZone")
-    public String initZone(@ModelAttribute("zone_name") String name,
-                           @ModelAttribute("zone_x") float x,
-                           @ModelAttribute("zone_y") float y) {
-        Zone zone = new Zone(name, x, y);
-        zoneService.saveZone(zone);
-        return "redirect:/";
-    }
-
-    @Transactional
-    @PostMapping(value="delZone")
-    public String delZone(@ModelAttribute("zone_id") Long id) {
-        Zone zone = zoneService.getZoneById(id);
-        List<Beacon> beacons = zone.getBeacons();
-        for (Iterator<Beacon> it = beacons.iterator(); it.hasNext();) {
-            Beacon beacon = it.next();
-            it.remove();
-            beaconService.deleteBeaconById(beacon.getId());
-        }
-        zoneService.deleteZone(zone);
-        return "redirect:/";
-    }
-
-    private void resetTables() {
+    @PostMapping(value="/initGame")
+    public String initGame(@ModelAttribute("start_time") int start,
+                           @ModelAttribute("minutes") int length,
+                           @ModelAttribute("missions") int missions) {
+        // Reset all tables except beacons/zones
         logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
@@ -194,9 +216,17 @@ public class WebController {
         exposeService.unassignPlayers();
         exposeService.deleteAllExposes();
         playerService.deleteAllPlayers();
-        beaconService.deleteAllBeacons();
-        zoneService.deleteAllZones();
         gameService.deleteAllGames();
+
+        // Start game
+        LocalTime startTime = LocalTime.now().plusMinutes(start);
+        Game game = new Game(startTime, startTime.plusMinutes(length));
+         // TODO: Handle number of missions
+        gameService.saveGame(game);
+
+        // Initialise CSV files for logging
+        logService.initCSVs();
+        return "redirect:/";
     }
 
 }

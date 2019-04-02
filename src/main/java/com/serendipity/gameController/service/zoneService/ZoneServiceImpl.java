@@ -29,8 +29,8 @@ public class ZoneServiceImpl implements ZoneService {
     BeaconServiceImpl beaconService;
 
     @Override
-    public Zone getZoneById(Long id) {
-        return zoneRepository.findById(id).get();
+    public Optional<Zone> getZoneById(Long id) {
+        return zoneRepository.findById(id);
     }
 
     @Override
