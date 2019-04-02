@@ -216,9 +216,22 @@ public class LogServiceImpl implements LogService {
     public JSONObject timeRemaining(){
         JSONObject output = new JSONObject();
         List<Game> games = gameService.getAllGames();
-        List<Integer> time = gameService.getTimeRemaining(games.get(0));
-        output.put("minutes", time.get(1));
-        output.put("seconds", time.get(2));
+        if(games.size() > 0) {
+            List<Integer> time = gameService.getTimeRemaining(games.get(0));
+            String minutes = "";
+            String seconds = "";
+            if(time.get(1) < 10){
+                minutes = "0" + time.get(1).toString();
+            }
+            if(time.get(0) < 10){
+                seconds = "0" + time.get(0).toString();
+            }
+            output.put("minutes", time.get(1));
+            output.put("seconds", time.get(2));
+        } else {
+            output.put("minutes", "00");
+            output.put("seconds", "00");
+        }
         return output;
     }
 
