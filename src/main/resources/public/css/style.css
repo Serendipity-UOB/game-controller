@@ -218,30 +218,82 @@ body {
 }
 #container #main #zones .content .zone .zone-header-border .zone-header {
   background-color: #002c4a;
-  display: flex;
-  flex-direction: row;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new {
+  display: none;
   height: 100%;
+  flex-direction: row;
   align-items: center;
 }
-#container #main #zones .content .zone .zone-header-border .zone-header .zone-name {
-  font-size: 1.2em;
+#container #main #zones .content .zone .zone-header-border .zone-header .new > * {
+  margin: 0;
+  padding: 5px 10px;
 }
-#container #main #zones .content .zone .zone-header-border .zone-header .zone-edit {
+#container #main #zones .content .zone .zone-header-border .zone-header .new > *.zone-y {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new > *.end-button {
+  padding: 0;
+  margin: 0 10px 0 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new > *.end-button button {
   padding: 5px;
 }
-#container #main #zones .content .zone .zone-header-border .zone-header .zone-delete {
-  padding: 5px 10px 5px 5px;
-}
-#container #main #zones .content .zone .zone-header-border .zone-header .zone-add {
-  padding: 5px 10px 5px 5px;
-}
-#container #main #zones .content .zone .zone-header-border .zone-header > * {
-  padding: 5px 15px;
-}
-#container #main #zones .content .zone .zone-header-border .zone-header > * span {
+#container #main #zones .content .zone .zone-header-border .zone-header .new > *.non-end-button {
   padding: 0;
 }
-#container #main #zones .content .zone .zone-header-border .zone-header > *:nth-child(3) {
+#container #main #zones .content .zone .zone-header-border .zone-header .new > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > * span {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.zone-name {
+  font-size: 1.2em;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.zone-y {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.zone-delete form {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.end-button {
+  padding: 0;
+  margin: 0 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.end-button button {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.non-end-button {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .old > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new-zone {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new-zone > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+#container #main #zones .content .zone .zone-header-border .zone-header .new-zone > *.zone-y {
   flex-grow: 1;
 }
 #container #main #zones .content .zone .attribute {
@@ -251,25 +303,63 @@ body {
   font-size: 0.8em;
   font-weight: bold;
 }
-#container #main #zones .content .zone .zone-content .beacon {
+#container #main #zones .content .zone .zone-content .beacon .old {
   display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > *.beacon-minor {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > *.end-button {
+  padding: 0;
+  margin: 0 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > *.end-button button {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > *.non-end-button {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-content .beacon .old > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .new {
+  display: none;
+  height: 100%;
   flex-direction: row;
   align-items: center;
 }
-#container #main #zones .content .zone .zone-content .beacon .beacon-edit, #container #main #zones .content .zone .zone-content .beacon .beacon-update {
+#container #main #zones .content .zone .zone-content .beacon .new > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+#container #main #zones .content .zone .zone-content .beacon .new > * span {
   padding: 5px;
 }
-#container #main #zones .content .zone .zone-content .beacon .beacon-delete, #container #main #zones .content .zone .zone-content .beacon .beacon-add, #container #main #zones .content .zone .zone-content .beacon .beacon-cancel {
-  padding: 5px 10px 5px 5px;
+#container #main #zones .content .zone .zone-content .beacon .new > *.beacon-minor {
+  flex-grow: 1;
 }
-#container #main #zones .content .zone .zone-content .beacon > * {
-  padding: 5px 15px;
+#container #main #zones .content .zone .zone-content .beacon .new > *.end-button {
+  padding: 0;
+  margin: 0 10px 0 5px;
 }
-#container #main #zones .content .zone .zone-content .beacon > * span {
+#container #main #zones .content .zone .zone-content .beacon .new > *.end-button button {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .beacon .new > *.non-end-button {
   padding: 0;
 }
-#container #main #zones .content .zone .zone-content .beacon > *.beacon-minor {
-  flex-grow: 1;
+#container #main #zones .content .zone .zone-content .beacon .new > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
 }
 #container #main #zones .content .zone .zone-content .new-beacon-border {
   background: linear-gradient(to right, #00A6EE, #002c4a);
@@ -280,6 +370,29 @@ body {
 }
 #container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon {
   background-color: #002c4a;
+  display: flex;
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > * {
+  padding: 0 5px;
+  flex-grow: 0;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > *.beacon-minor {
+  flex-grow: 1;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > *.end-button {
+  padding: 0;
+  margin: 0 5px 0 0;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > *.end-button button {
+  padding: 5px;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > *.non-end-button {
+  padding: 0;
+}
+#container #main #zones .content .zone .zone-content .new-beacon-border .new-beacon > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
 }
 #container #main #zones input {
   background-color: #00243D;
@@ -321,8 +434,8 @@ button {
   border: none;
   background-color: #001C31;
   color: #9FC5E8;
-  border-radius: 3px;
-  padding: 4px;
+  border-radius: 2px;
+  padding: 5px;
   outline: none;
   -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
   -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
@@ -346,9 +459,61 @@ button.add:hover {
 }
 
 .old {
-  display: block;
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
+}
+.old > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+.old > *.beacon-minor {
+  flex-grow: 1;
+}
+.old > *.end-button {
+  padding: 0;
+  margin: 0 5px;
+}
+.old > *.end-button button {
+  padding: 5px;
+}
+.old > *.non-end-button {
+  padding: 0;
+}
+.old > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
 }
 
 .new {
   display: none;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+}
+.new > * {
+  padding: 5px 10px;
+  flex-grow: 0;
+}
+.new > * span {
+  padding: 5px;
+}
+.new > *.beacon-minor {
+  flex-grow: 1;
+}
+.new > *.end-button {
+  padding: 0;
+  margin: 0 10px 0 5px;
+}
+.new > *.end-button button {
+  padding: 5px;
+}
+.new > *.non-end-button {
+  padding: 0;
+}
+.new > *.non-end-button button {
+  padding: 5px;
+  margin: 0 5px;
 }

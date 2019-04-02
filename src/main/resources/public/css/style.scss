@@ -61,36 +61,104 @@ body {
 
             & .zone-header {
               background-color: $foreground-color;
-              display: flex;
-              flex-direction: row;
-              height: 100%;
-              align-items: center;
 
-              & .zone-name {
-                font-size: 1.2em;
-              }
+              & .new {
+                display: none;
+                height: 100%;
+                flex-direction: row;
+                align-items: center;
 
-              & .zone-edit {
-                padding: 5px;
-              }
+                & > * {
+                  margin: 0;
+                  padding: 5px 10px;
 
-              & .zone-delete {
-                padding: 5px 10px 5px 5px;
-              }
+                  &.zone-y {
+                    flex-grow: 1;
+                  }
 
-              & .zone-add {
-                padding: 5px 10px 5px 5px;
-              }
+                  &.end-button {
+                    padding: 0;
+                    margin: 0 10px 0 5px;
 
-              & > * {
-                padding: 5px 15px;
+                    & button {
+                      padding: 5px;
+                    }
+                  }
 
-                & span {
-                  padding: 0;
+                  &.non-end-button {
+                    padding: 0;
+
+                    & button {
+                      padding: 5px;
+                      margin: 0 5px;
+                    }
+                  }
                 }
+              }
 
-                &:nth-child(3) {
-                  flex-grow: 1;
+              & .old {
+                display: flex;
+                height: 100%;
+                flex-direction: row;
+                align-items: center;
+                padding: 5px;
+
+                & > * {
+                  padding: 5px 10px;
+                  flex-grow: 0;
+
+                  & span {
+                    padding: 5px;
+                  }
+
+                  &.zone-name {
+                    font-size: 1.2em;
+                  }
+
+                  &.zone-y {
+                    flex-grow: 1;
+                  }
+
+                  &.zone-delete {
+                    & form {
+                      padding: 0;
+                    }
+                  }
+
+                  &.end-button {
+                    padding: 0;
+                    margin: 0 5px;
+
+                    & button {
+                      padding: 5px;
+                    }
+                  }
+
+                  &.non-end-button {
+                    padding: 0;
+
+                    & button {
+                      padding: 5px;
+                      margin: 0 5px;
+                    }
+                  }
+                }
+              }
+
+              & .new-zone {
+                display: flex;
+                height: 100%;
+                flex-direction: row;
+                align-items: center;
+                //padding: 5px;
+
+                & > * {
+                  padding: 5px 10px;
+                  flex-grow: 0;
+
+                  &.zone-y {
+                    flex-grow: 1;
+                  }
                 }
               }
             }
@@ -107,31 +175,77 @@ body {
           & .zone-content {
 
             & .beacon {
-              //border: 1px solid red;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
 
-              & .beacon-edit,
-              & .beacon-update {
+              & .old {
+                display: flex;
+                height: 100%;
+                flex-direction: row;
+                align-items: center;
                 padding: 5px;
-              }
 
-              & .beacon-delete,
-              & .beacon-add,
-              & .beacon-cancel {
-                padding: 5px 10px 5px 5px;
-              }
+                & > * {
+                  padding: 5px 10px;
+                  flex-grow: 0;
 
-              & > * {
-                padding: 5px 15px;
+                  &.beacon-minor {
+                    flex-grow: 1;
+                  }
 
-                & span {
-                  padding: 0;
+                  &.end-button {
+                    padding: 0;
+                    margin: 0 5px;
+
+                    & button {
+                      padding: 5px;
+                    }
+                  }
+
+                  &.non-end-button {
+                    padding: 0;
+
+                    & button {
+                      padding: 5px;
+                      margin: 0 5px;
+                    }
+                  }
                 }
+              }
 
-                &.beacon-minor {
-                  flex-grow: 1;
+              & .new {
+                display: none;
+                height: 100%;
+                flex-direction: row;
+                align-items: center;
+
+                & > * {
+                  padding: 5px 10px;
+                  flex-grow: 0;
+
+                  & span {
+                    padding: 5px;
+                  }
+
+                  &.beacon-minor {
+                    flex-grow: 1;
+                  }
+
+                  &.end-button {
+                    padding: 0;
+                    margin: 0 10px 0 5px;
+
+                    & button {
+                      padding: 5px;
+                    }
+                  }
+
+                  &.non-end-button {
+                    padding: 0;
+
+                    & button {
+                      padding: 5px;
+                      margin: 0 5px;
+                    }
+                  }
                 }
               }
             }
@@ -144,8 +258,36 @@ body {
               width: 100%;
 
               & .new-beacon {
-                //border: 1px solid red;
                 background-color: $foreground-color;
+                display: flex;
+                padding: 5px;
+
+                & > * {
+                  padding: 0 5px;
+                  flex-grow: 0;
+
+                  &.beacon-minor {
+                    flex-grow: 1;
+                  }
+
+                  &.end-button {
+                    padding: 0;
+                    margin: 0 5px 0 0;
+
+                    & button {
+                      padding: 5px;
+                    }
+                  }
+
+                  &.non-end-button {
+                    padding: 0;
+
+                    & button {
+                      padding: 5px;
+                      margin: 0 5px;
+                    }
+                  }
+                }
               }
             }
           }
@@ -201,8 +343,8 @@ button {
   border: none;
   background-color: $background-color;
   color: $font-color;
-  border-radius: 3px;
-  padding: 4px;
+  border-radius: 2px;
+  padding: 5px;
   outline: none;
   -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
   -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
@@ -230,9 +372,75 @@ button {
 }
 
 .old {
-  display: block;
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
+
+  & > * {
+    padding: 5px 10px;
+    flex-grow: 0;
+
+    &.beacon-minor {
+      flex-grow: 1;
+    }
+
+    &.end-button {
+      padding: 0;
+      margin: 0 5px;
+
+      & button {
+        padding: 5px;
+      }
+    }
+
+    &.non-end-button {
+      padding: 0;
+
+      & button {
+        padding: 5px;
+        margin: 0 5px;
+      }
+    }
+  }
 }
 
 .new {
   display: none;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  //padding: 5px;
+
+  & > * {
+    padding: 5px 10px;
+    flex-grow: 0;
+
+    & span {
+      padding: 5px;
+    }
+
+    &.beacon-minor {
+      flex-grow: 1;
+    }
+
+    &.end-button {
+      padding: 0;
+      margin: 0 10px 0 5px;
+
+      & button {
+        padding: 5px;
+      }
+    }
+
+    &.non-end-button {
+      padding: 0;
+
+      & button {
+        padding: 5px;
+        margin: 0 5px;
+      }
+    }
+  }
 }
