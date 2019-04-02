@@ -183,7 +183,8 @@ public class LogServiceImpl implements LogService {
             zoneInfo.put("x", z.getX());
             zoneInfo.put("y", z.getY());
             if(players.size() > 0 || playersAtZone.size() > 0) {
-                zoneInfo.put("size", (playersAtZone.size() / players.size()));
+                float size = ((float)playersAtZone.size() / (float)players.size());
+                zoneInfo.put("size", size);
             } else { zoneInfo.put("size", 0); }
             zoneInfo.put("colour", rgb);
             zones.put(zoneInfo);
@@ -216,9 +217,22 @@ public class LogServiceImpl implements LogService {
     public JSONObject timeRemaining(){
         JSONObject output = new JSONObject();
         List<Game> games = gameService.getAllGames();
-        List<Integer> time = gameService.getTimeRemaining(games.get(0));
-        output.put("minutes", time.get(1));
-        output.put("seconds", time.get(2));
+        if(games.size() > 0) {
+            List<Integer> time = gameService.getTimeRemaining(games.get(0));
+            String minutes = "";
+            String seconds = "";
+            if(time.get(1) < 10){
+                minutes = "0" + time.get(1).toString();
+            }
+            if(time.get(0) < 10){
+                seconds = "0" + time.get(0).toString();
+            }
+            output.put("minutes", time.get(1));
+            output.put("seconds", time.get(2));
+        } else {
+            output.put("minutes", "00");
+            output.put("seconds", "00");
+        }
         return output;
     }
 
