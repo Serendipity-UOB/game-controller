@@ -183,7 +183,8 @@ public class LogServiceImpl implements LogService {
             zoneInfo.put("x", z.getX());
             zoneInfo.put("y", z.getY());
             if(players.size() > 0 || playersAtZone.size() > 0) {
-                zoneInfo.put("size", (playersAtZone.size() / players.size()));
+                float size = ((float)playersAtZone.size() / (float)players.size());
+                zoneInfo.put("size", size);
             } else { zoneInfo.put("size", 0); }
             zoneInfo.put("colour", rgb);
             zones.put(zoneInfo);
