@@ -21,6 +21,6 @@ public interface ExchangeRepository extends CrudRepository<Exchange, Long> {
 
     List<Exchange> findAllByResponsePlayerAndRequestSentOrderByStartTimeDesc(Player responsePlayer, boolean requestSent);
 
-    List<Exchange> findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(Player responsePlayer, LocalTime time, boolean requestSent);
+    List<Exchange> findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(Player responsePlayer, boolean requestSent, LocalTime time);
 
 }

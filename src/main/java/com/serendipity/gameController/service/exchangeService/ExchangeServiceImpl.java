@@ -99,7 +99,7 @@ public class ExchangeServiceImpl implements ExchangeService {
                 // If yes, get the next exchange
                 // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
                 List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(
-                        responder, LocalTime.now().minus(9, SECONDS), false);
+                        responder, false, LocalTime.now().minus(9, SECONDS));
                 // Get first from list if exists
                 if (newExchanges.size() > 0) {
                     System.out.println("Found exchange waiting");
@@ -111,7 +111,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         } else {
             // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
             List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(
-                    responder, LocalTime.now().minus(9, SECONDS), false);
+                    responder, false, LocalTime.now().minus(9, SECONDS));
             // Get first from list if exists
             if (newExchanges.size() > 0) {
                 Exchange newExchange = newExchanges.get(0);
