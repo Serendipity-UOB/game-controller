@@ -86,7 +86,7 @@ public class MobileController {
             responseStatus = HttpStatus.OK;
         }
         logService.printToCSV(new ArrayList<>(Arrays.asList(realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/registerPlayer.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "registerPlayer.csv");
         System.out.println("/registerPlayer returned: " + output);
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
@@ -110,7 +110,7 @@ public class MobileController {
         }
         System.out.println("/gameInfo returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(LocalTime.now().toString(),
-                responseStatus.toString(), output.toString())), "csv/gameInfo.csv");
+                responseStatus.toString(), output.toString())), "gameInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -147,7 +147,7 @@ public class MobileController {
         } else System.out.println("No player exists by this id");
         System.out.println("/joinGame returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/joinGame.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "joinGame.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -210,7 +210,7 @@ public class MobileController {
         }
         System.out.println("/startInfo returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/startInfo.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "startInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -256,7 +256,7 @@ public class MobileController {
         } else System.out.println("No player exists by this id");
         System.out.println("/atHomeBeacon returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/atHomeBeacon.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "atHomeBeacon.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -329,7 +329,7 @@ public class MobileController {
             Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-                if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                if (!exchange.isRequestSent()) {
                     requesterId = exchange.getRequestPlayer().getId();
                     exchange.setRequestSent(true);
                     exchangeService.saveExchange(exchange);
@@ -374,7 +374,7 @@ public class MobileController {
         } else System.out.println("No player exists by this id");
         System.out.println("/playerUpdate returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(id.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/playerUpdate.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "playerUpdate.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -401,7 +401,7 @@ public class MobileController {
         responseStatus = HttpStatus.OK;
         System.out.println("/newTarget returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/newTarget.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "newTarget.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -494,7 +494,7 @@ public class MobileController {
         }
         System.out.println("/exchangeRequest returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(exchangeId.toString(), requesterName, responderName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/exchangeRequest.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "exchangeRequest.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -582,7 +582,7 @@ public class MobileController {
         }
         System.out.println("/exchangeResponse returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(exchangeId.toString(), requesterName, responderName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/exchangeResponse.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "exchangeResponse.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -651,7 +651,7 @@ public class MobileController {
         }
         System.out.println("/expose returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(exposeId.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/expose.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "expose.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -769,7 +769,7 @@ public class MobileController {
         }
         System.out.println("/intercept returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(interceptId.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/intercept.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "intercept.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -838,7 +838,7 @@ public class MobileController {
         }
         System.out.println("/missionUpdate returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
-                responseStatus.toString(), input.toString(), output.toString())), "csv/missionUpdate.csv");
+                responseStatus.toString(), input.toString(), output.toString())), "missionUpdate.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
@@ -862,7 +862,7 @@ public class MobileController {
         output.put("leaderboard", leaderboard);
         System.out.println("/endInfo returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(LocalTime.now().toString(),
-                responseStatus.toString(), output.toString())), "csv/endInfo.csv");
+                responseStatus.toString(), output.toString())), "endInfo.csv");
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 }

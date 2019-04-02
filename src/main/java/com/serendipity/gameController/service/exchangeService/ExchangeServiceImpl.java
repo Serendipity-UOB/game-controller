@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -97,18 +98,20 @@ public class ExchangeServiceImpl implements ExchangeService {
                 System.out.println("Most recent exchange is responded to or completed");
                 // If yes, get the next exchange
                 // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
-                List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(responder, false);
+                List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(
+                        responder, false, LocalTime.now().minus(9, SECONDS));
                 // Get first from list if exists
                 if (newExchanges.size() > 0) {
                     System.out.println("Found exchange waiting");
-                    Exchange newExchange = newExchanges.get(0);
+                        Exchange newExchange = newExchanges.get(0);
                     // Wrap it in an optional
                     optionalExchange = Optional.of(newExchange);
                 }
             }
         } else {
             // Get all exchanges by: responsePlayer, and requestSent==false, and startTime > now.plusSeconds(), orderByStartTimeAsc
-            List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(responder, false);
+            List<Exchange> newExchanges = exchangeRepository.findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(
+                    responder, false, LocalTime.now().minus(9, SECONDS));
             // Get first from list if exists
             if (newExchanges.size() > 0) {
                 Exchange newExchange = newExchanges.get(0);

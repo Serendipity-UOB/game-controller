@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
@@ -254,38 +255,38 @@ public class LogServiceImpl implements LogService {
         // Setup CSV files and column headers
         List<String> files = new ArrayList<>();
         List<String[]> data = new ArrayList<>();
-        files.add("csv/registerPlayer.csv");
+        files.add("registerPlayer.csv");
         data.add(new String[] {"name", "time", "code", "request", "response"});
-        files.add("csv/gameInfo.csv");
+        files.add("gameInfo.csv");
         data.add(new String[] {"time", "code", "response"});
-        files.add("csv/joinGame.csv");
+        files.add("joinGame.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/startInfo.csv");
+        files.add("startInfo.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/atHomeBeacon.csv");
+        files.add("atHomeBeacon.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/playerUpdate.csv");
+        files.add("playerUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/newTarget.csv");
+        files.add("newTarget.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/exchangeRequest.csv");
+        files.add("exchangeRequest.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/exchangeResponse.csv");
+        files.add("exchangeResponse.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/expose.csv");
+        files.add("expose.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/intercept.csv");
+        files.add("intercept.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/missionUpdate.csv");
+        files.add("missionUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/endInfo.csv");
+        files.add("endInfo.csv");
         data.add(new String[] {"time", "code", "response"});
 
         // Create new CSVs
         for(String f: files){
             try
-            {
-                FileWriter pw = new FileWriter(f);
+            {   File file = new File(f);
+                FileWriter pw = new FileWriter(file);
                 for(String d : data.get(files.indexOf(f))) {
                     pw.append(d);
                     pw.append(",");
@@ -293,6 +294,7 @@ public class LogServiceImpl implements LogService {
                 pw.append("\n");
                 pw.flush();
                 pw.close();
+                file.deleteOnExit();
             } catch (IOException e) {
                 System.out.println(e);
             }

@@ -2,6 +2,7 @@ package com.serendipity.gameController.repository;
 
 import com.serendipity.gameController.model.Exchange;
 import com.serendipity.gameController.model.Player;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,6 @@ public interface ExchangeRepository extends CrudRepository<Exchange, Long> {
 
     List<Exchange> findAllByResponsePlayerAndRequestSentOrderByStartTimeDesc(Player responsePlayer, boolean requestSent);
 
-    List<Exchange> findAllByResponsePlayerAndRequestSentOrderByStartTimeAsc(Player responsePlayer, boolean requestSent);
+    List<Exchange> findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(Player responsePlayer, boolean requestSent, LocalTime time);
 
 }
