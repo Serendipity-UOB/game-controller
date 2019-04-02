@@ -44,7 +44,7 @@ public class MissionServiceImpl implements MissionService {
     public void unassignAllMissions() {
         List<Player> allPlayers = playerService.getAllPlayers();
         for (Player player : allPlayers) {
-            player.setMissionsAssigned(new ArrayList<>());
+            player.setMissionAssigned(null);
             playerService.savePlayer(player);
         }
     }
@@ -55,7 +55,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public Mission createMission(Player player, Game game, Player target1, Player target2) {
+    public Mission createMission(Game game, Player target1, Player target2) {
         // Find length of game in seconds
         String datePattern = "HH:mm:ss";
         DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
@@ -83,7 +83,7 @@ public class MissionServiceImpl implements MissionService {
         // TODO: May need to make the player assignment more dynamic
         // TODO: May need to consider multiple missions
         // Save new mission
-        Mission mission = new Mission(player, missionStart, missionEnd, target1, target2);
+        Mission mission = new Mission(missionStart, missionEnd, target1, target2);
         saveMission(mission);
 
         return mission;

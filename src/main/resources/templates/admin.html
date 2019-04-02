@@ -5,114 +5,240 @@
 <head>
     <meta charset="UTF-8">
 
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-
-    <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700,800" rel="stylesheet">
-
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Share:400,400i,700,700i" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
 
     <title>Hacker Hunt Admin</title>
 </head>
 <body>
+<div id="container">
+    <div id="header">
+        <form method="post" th:action="@{/resetAll}">
+            <button class="delete">Clear Database</button>
+        </form>
+        <form method="post" th:action="@{/addTestBeacons}">
+            <button class="add">Default Beacons</button>
+        </form>
+    </div>
+    <div id="main">
+        <div id="zones" class="section">
+            <div id="zones-header">
+                <div class="title">Zones</div>
+            </div>
+            <div class="content">
+                <div th:each="zone : ${zones}" class="zone">
+                    <div class="zone-header-border">
+                        <div class="zone-header" th:id="zone+${zone.id}">
+                            <div class="old">
+                                <div class="zone-name" th:text="${zone.name}"></div>
+                                <div class="zone-x">
+                                    <span class="attribute">x: </span>
+                                    <span th:text="${zone.x}"></span>
+                                </div>
+                                <div class="zone-y">
+                                    <span class="attribute">y: </span>
+                                    <span th:text="${zone.y}"></span>
+                                </div>
+                                <div class="zone-edit non-end-button">
+                                    <button type="button" class="edit" th:onclick="'edit(zone'+${zone.id}+');'"><i class="material-icons">edit</i></button>
+                                </div>
+                                <div class="zone-delete end-button">
+                                    <form method="post" th:action="@{/delZone}">
+                                        <input type="hidden" th:value="${zone.id}" name="zone_id"/>
+                                        <button type="submit" class="delete"><i class="material-icons">delete</i></button>
+                                    </form>
+                                </div>
+                            </div>
+                            <form method="post" th:action="@{/updateZone}" class="new">
+                                <input type="hidden" th:value="${zone.id}" name="zone_id"/>
+                                <div class="zone-name">
+                                    <span class="attribute">name: </span>
+                                    <input type="text" name="zone_name" th:value="${zone.name}"/>
+                                </div>
+                                <div class="zone-x">
+                                    <span class="attribute">x: </span>
+                                    <input type="text" name="zone_x" th:value="${zone.x}"/>
+                                </div>
+                                <div class="zone-y">
+                                    <span class="attribute">y: </span>
+                                    <input type="text" name="zone_y" th:value="${zone.y}"/>
+                                </div>
+                                <div class="zone-update non-end-button">
+                                    <button type="submit" class="add"><i class="material-icons">done</i></button>
+                                </div>
+                                <div class="zone-cancel end-button">
+                                    <button type="button" class="cancel" th:onclick="'cancel(zone'+${zone.id}+');'"><i class="material-icons">clear</i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="zone-content">
+                        <div th:each="beacon : ${zone.beacons}" class="beacon" th:id="beacon+${beacon.id}">
+                            <div class="old">
+                                <div class="beacon-identifier">
+                                    <span class="attribute">id: </span>
+                                    <span th:text="${beacon.identifier}"></span>
+                                </div>
+                                <div class="beacon-major">
+                                    <span class="attribute">major: </span>
+                                    <span th:text="${beacon.major}"></span>
+                                </div>
+                                <div class="beacon-minor">
+                                    <span class="attribute">minor: </span>
+                                    <span th:text="${beacon.minor}"></span>
+                                </div>
+                                <div class="beacon-edit non-end-button">
+                                    <button type="button" class="edit" th:onclick="'edit(beacon'+${beacon.id}+');'"><i class="material-icons">edit</i></button>
+                                </div>
+                                <div class="beacon-delete end-button">
+                                    <form method="post" th:action="@{/delBeacon}">
+                                        <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
+                                        <button type="submit" class="delete"><i class="material-icons">delete</i></button>
+                                    </form>
+                                </div>
+                            </div>
+                            <form method="post" th:action="@{/updateBeacon}" class="new">
+                                <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
+                                <div class="beacon-identifier">
+                                    <span class="attribute">id: </span>
+                                    <input type="text" name="beacon_identifier" th:value="${beacon.identifier}"/>
+                                </div>
+                                <div class="beacon-major">
+                                    <span class="attribute">major: </span>
+                                    <input type="text" name="beacon_major" th:value="${beacon.major}"/>
+                                </div>
+                                <div class="beacon-minor">
+                                    <span class="attribute">minor: </span>
+                                    <input type="text" name="beacon_minor" th:value="${beacon.minor}"/>
+                                </div>
+                                <div class="beacon-update non-end-button">
+                                    <button type="submit" class="add"><i class="material-icons">done</i></button>
+                                </div>
+                                <div class="beacon-cancel end-button">
+                                    <button type="button" class="cancel" th:onclick="'cancel(beacon'+${beacon.id}+');'"><i class="material-icons">clear</i></button>
+                                </div>
+                            </form>
+                        </div>
+                        <form method="post" th:action="@{/initBeacon}">
+                            <div class="new-beacon-border">
+                                <div class="new-beacon">
+                                    <div class="beacon-identifier">
+                                        <span class="attribute">id: </span>
+                                        <input type="text" name="beacon_identifier"/>
+                                    </div>
+                                    <div class="beacon-major">
+                                        <span class="attribute">major: </span>
+                                        <input type="text" name="beacon_major"/>
+                                    </div>
+                                    <div class="beacon-minor">
+                                        <span class="attribute">minor: </span>
+                                        <input type="text" name="beacon_minor"/>
+                                    </div>
+                                    <div class="beacon-add end-button">
+                                        <input type="hidden" th:value="${zone.id}" name="beacon_zone"/>
+                                        <button class="add"><i class="material-icons">add</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="zone">
+                    <form method="post" th:action="@{/initZone}">
+                        <div class="zone-header-border">
+                            <div class="zone-header">
+                                <div class="new-zone">
+                                    <div class="zone-name">
+                                        <span class="attribute">zone name: </span>
+                                        <input type="text" name="zone_name"/>
+                                    </div>
+                                    <div class="zone-x">
+                                        <span class="attribute">x: </span>
+                                        <input type="text" name="zone_x"/>
 
-<div>
-    <h1>Hacker Hunt Admin Page</h1>
-    <form method="post" th:action="@{/setupTestGame}">
-        <button type="submit" class="grey">Initialise test game</button>
-    </form>
-    <form method="post" th:action="@{/resetAll}">
-        <button type="submit" class="red">Reset all</button>
-    </form>
+                                    </div>
+                                    <div class="zone-y">
+                                        <span class="attribute">y: </span>
+                                        <input type="text" name="zone_y"/>
+
+                                    </div>
+                                    <div class="zone-add">
+                                        <button class="add"><i class="material-icons">add</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="games" class="section">
+            <div class="title">Games</div>
+            <div class="content">
+                <div th:each="game : ${games}" class="game">
+                    <div>
+                        <span class="attribute">Start Time: </span>
+                        <span th:text="${game.startTime}"></span>
+                    </div>
+                    <div>
+                        <span class="attribute">End Time: </span>
+                        <span th:text="${game.endTime}"></span>
+                    </div>
+                    <div>
+                        <span class="attribute">Missions: </span>
+                        <span>TODO</span>
+                    </div>
+                </div>
+                <form method="post" th:action="@{/initGame}" class="game new-game">
+                    <div>
+                        <span class="attribute">Start in: </span>
+                        <input type="text" name="start_time" value="1" placeholder="minutes"/>
+                    </div>
+                    <div>
+                        <span class="attribute">Game length: </span>
+                        <input type="text" name="minutes" value="6" placeholder="minutes"/>
+                    </div>
+                    <div class="game-missions">
+                        <span class="attribute">Missions: </span>
+                        <input type="text" name="missions"  value="1"/>
+                    </div>
+                    <button type="submit" class="add"><i class="material-icons">add</i></button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="container">
+<script>
+    function edit(elem) {
+        document.getElementById(elem.id).childNodes.forEach(function(child) {
+            // console.log(child);
+            if (child.classList !== undefined) {
+                if (child.classList.contains('old')) {
+                    child.style.display = 'none';
+                } else if (child.classList.contains('new')) {
+                    child.style.display = 'flex';
+                }
+            }
+        });
+    }
 
-    <div class="item">
-        <h2>Zones</h2>
-
-        <div th:each="zone : ${zones}" class="zone">
-
-            <h3 th:text="${zone.name}"></h3>
-
-            <form method="post" th:action="@{/delZone}">
-                <input type="hidden" th:value="${zone.id}" name="zone_id"/>
-                <button type="submit" class="red"><i class="material-icons">delete</i></button>
-            </form>
-
-            <table>
-                <tr>
-                    <td><h4>Beacon</h4></td>
-                    <td><h4>Major</h4></td>
-                    <td><h4>Minor</h4></td>
-                    <td></td>
-                </tr>
-                <tr th:each="beacon : ${zone.beacons}">
-                    <form method="post" th:action="@{/delBeacon}">
-                        <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
-                        <td><span th:text="${beacon.identifier}"/></td>
-                        <td><span th:text="${beacon.major}"/></td>
-                        <td><span th:text="${beacon.minor}"/></td>
-                        <td>
-                            <button type="submit" class="red"><i class="material-icons">delete</i></button>
-                        </td>
-                    </form>
-                </tr>
-                <tr>
-                    <form method="post" th:action="@{/initBeacon}">
-                        <input type="hidden" th:value="${zone.id}" name="beacon_zone"/>
-                        <td><input type="text" name="beacon_identifier" placeholder="Code"/></td>
-                        <td><input type="text" name="beacon_major" placeholder="Major"/></td>
-                        <td><input type="text" name="beacon_minor" placeholder="Minor"/></td>
-                        <td><button type="submit" class="green"><i class="material-icons">add</i></button></td>
-                    </form>
-                </tr>
-            </table>
-
-        </div>
-
-        <div class="zone">
-            <h3>New Zone</h3>
-
-            <form method="post" th:action="@{/initZone}">
-                <input type="text" name="zone_name" placeholder="Name"/>
-                <button type="submit" class="green"><i class="material-icons">add</i></button>
-            </form>
-        </div>
-
-    </div>
-
-    <div class="item">
-
-        <h2>Games</h2>
-
-        <table>
-            <tr>
-                <td><h4>Start Time</h4></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr th:each="game : ${games}">
-                <td><span th:text="${game.startTime}"/></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <form method="post" th:action="@{/initGame}">
-                    <td><input type="text" name="start_time" placeholder="HH:MM:SS.MSS"/></td>
-                    <td><button type="submit" class="green"><i class="material-icons">add</i></button></td>
-                </form>
-                <form method="post" th:action="@{/initGameFixed}">
-                    <td>
-                        <button type="submit" class="grey">Start new game in 1 minute</button>
-                    </td>
-                </form>
-            </tr>
-        </table>
-
-    </div>
-
-</div>
+    function cancel(elem) {
+        document.getElementById(elem.id).childNodes.forEach(function(child) {
+            if (child.classList !== undefined) {
+                if (child.classList.contains('old')) {
+                    child.style.display = 'flex';
+                } else if (child.classList.contains('new')) {
+                    child.style.display = 'none';
+                }
+            }
+        });
+    }
+</script>
 
 </body>
 </html>

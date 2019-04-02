@@ -274,8 +274,11 @@ public class DummyController {
         c1.put("green", 167);
         c1.put("blue", 0);
         z1.put("zone_id", 1);
+        z1.put("zone_name", "Italy");
         z1.put("colour", c1);
-        z1.put("size", 4);
+        z1.put("size", 0.7);
+        z1.put("x", 0.2);
+        z1.put("y", 0.4);
         zones.put(z1);
         JSONObject z2 = new JSONObject();
         JSONObject c2 = new JSONObject();
@@ -283,8 +286,11 @@ public class DummyController {
         c2.put("green", 0);
         c2.put("blue", 0);
         z2.put("zone_id", 2);
+        z2.put("zone_name", "Sweden");
         z2.put("colour", c2);
-        z1.put("size", 2);
+        z2.put("size", 0.3);
+        z2.put("x", 0.7);
+        z2.put("y", 0.3);
         zones.put(z2);
 
         JSONArray leaders = new JSONArray();

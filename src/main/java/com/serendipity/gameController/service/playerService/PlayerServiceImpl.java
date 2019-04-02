@@ -32,7 +32,7 @@ public class PlayerServiceImpl implements PlayerService {
     public Optional<Player> getPlayerByCodeName(String codeName) { return playerRepository.findByCodeName(codeName); }
 
     @Override
-    public Optional<Player> getPlayerByMission(Mission mission) { return playerRepository.findByMissionsAssigned(mission); }
+    public Optional<Player> getPlayerByMission(Mission mission) { return playerRepository.findByMissionAssigned(mission); }
 
     @Override
     public List<Player> getAllPlayersByCurrentZone(Zone zone) { return playerRepository.findAllByCurrentZone(zone); }

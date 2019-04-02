@@ -33,7 +33,7 @@ public interface LogService {
     void deleteAllLogs();
 
     /*
-     * @return A JSONObject with all new logs
+     * @return A JSONArray with all new logs
      */
     JSONArray logOutput();
 
@@ -46,6 +46,11 @@ public interface LogService {
      * @return A JSONArray with the top players
      */
     JSONArray topPlayers();
+
+    /*
+     * @return A JSONObject with the minutes and seconds remaining
+     */
+    JSONObject timeRemaining();
 
     /*
      *

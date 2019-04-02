@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.*;
 import com.serendipity.gameController.repository.LogRepository;
 import com.serendipity.gameController.service.exchangeService.ExchangeServiceImpl;
 import com.serendipity.gameController.service.exposeService.ExposeServiceImpl;
+import com.serendipity.gameController.service.gameService.GameServiceImpl;
 import com.serendipity.gameController.service.interceptService.InterceptServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
@@ -44,6 +46,9 @@ public class LogServiceImpl implements LogService {
 
     @Autowired
     ZoneServiceImpl zoneService;
+
+    @Autowired
+    GameServiceImpl gameService;
 
     @Override
     public void saveLog(LogType type, Long id, LocalTime time, Zone zone){
@@ -128,6 +133,8 @@ public class LogServiceImpl implements LogService {
     public JSONArray zoneDisplay() {
         JSONArray zones = new JSONArray();
 
+        List<Player> players = playerService.getAllPlayers();
+
         for(Zone z : zoneService.getAllZones()){
             int count = 0;
             int red = 0;
@@ -157,16 +164,29 @@ public class LogServiceImpl implements LogService {
             if(green > 0) green /= count;
             // Construct rgb JSON
             JSONObject rgb = new JSONObject();
-            rgb.put("red", red);
-            rgb.put("green", green);
-            rgb.put("blue", 0);
+            // Default colour of green
+            if(red == 0 && green == 0){
+                rgb.put("red", red);
+                rgb.put("green", 255);
+                rgb.put("blue", 0);
+            } else {
+                rgb.put("red", red);
+                rgb.put("green", green);
+                rgb.put("blue", 0);
+            }
             // Get zone size
             List<Player> playersAtZone = playerService.getAllPlayersByCurrentZone(z);
             // Add to output
             JSONObject zoneInfo = new JSONObject();
             zoneInfo.put("zone_id", z.getId());
+            zoneInfo.put("zone_name", z.getName());
+            zoneInfo.put("x", z.getX());
+            zoneInfo.put("y", z.getY());
+            if(players.size() > 0 || playersAtZone.size() > 0) {
+                float size = ((float)playersAtZone.size() / (float)players.size());
+                zoneInfo.put("size", size);
+            } else { zoneInfo.put("size", 0); }
             zoneInfo.put("colour", rgb);
-            zoneInfo.put("size", playersAtZone.size());
             zones.put(zoneInfo);
         }
 
@@ -190,6 +210,29 @@ public class LogServiceImpl implements LogService {
             count++;
         }
         // TODO: what do we do if there's an overflow due to multiple people with the same position
+        return output;
+    }
+
+    @Override
+    public JSONObject timeRemaining(){
+        JSONObject output = new JSONObject();
+        List<Game> games = gameService.getAllGames();
+        if(games.size() > 0) {
+            List<Integer> time = gameService.getTimeRemaining(games.get(0));
+            String minutes = "";
+            String seconds = "";
+            if(time.get(1) < 10){
+                minutes = "0" + time.get(1).toString();
+            }
+            if(time.get(0) < 10){
+                seconds = "0" + time.get(0).toString();
+            }
+            output.put("minutes", time.get(1));
+            output.put("seconds", time.get(2));
+        } else {
+            output.put("minutes", "00");
+            output.put("seconds", "00");
+        }
         return output;
     }
 
@@ -226,38 +269,38 @@ public class LogServiceImpl implements LogService {
         // Setup CSV files and column headers
         List<String> files = new ArrayList<>();
         List<String[]> data = new ArrayList<>();
-        files.add("csv/registerPlayer.csv");
+        files.add("registerPlayer.csv");
         data.add(new String[] {"name", "time", "code", "request", "response"});
-        files.add("csv/gameInfo.csv");
+        files.add("gameInfo.csv");
         data.add(new String[] {"time", "code", "response"});
-        files.add("csv/joinGame.csv");
+        files.add("joinGame.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/startInfo.csv");
+        files.add("startInfo.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/atHomeBeacon.csv");
+        files.add("atHomeBeacon.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/playerUpdate.csv");
+        files.add("playerUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/newTarget.csv");
+        files.add("newTarget.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/exchangeRequest.csv");
+        files.add("exchangeRequest.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/exchangeResponse.csv");
+        files.add("exchangeResponse.csv");
         data.add(new String[] {"id", "requester", "responder", "time", "code", "request", "response"});
-        files.add("csv/expose.csv");
+        files.add("expose.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/intercept.csv");
+        files.add("intercept.csv");
         data.add(new String[] {"id", "name", "time", "code", "request", "response"});
-        files.add("csv/missionUpdate.csv");
+        files.add("missionUpdate.csv");
         data.add(new String[] {"player_id", "name", "time", "code", "request", "response"});
-        files.add("csv/endInfo.csv");
+        files.add("endInfo.csv");
         data.add(new String[] {"time", "code", "response"});
 
         // Create new CSVs
         for(String f: files){
             try
-            {
-                FileWriter pw = new FileWriter(f);
+            {   File file = new File(f);
+                FileWriter pw = new FileWriter(file);
                 for(String d : data.get(files.indexOf(f))) {
                     pw.append(d);
                     pw.append(",");
@@ -265,6 +308,7 @@ public class LogServiceImpl implements LogService {
                 pw.append("\n");
                 pw.flush();
                 pw.close();
+                file.deleteOnExit();
             } catch (IOException e) {
                 System.out.println(e);
             }

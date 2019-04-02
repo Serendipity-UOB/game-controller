@@ -20,18 +20,26 @@ public class Zone {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Beacon> beacons;
 
+    private float x;
+
+    private float y;
+
     public Zone() {
         this.name = "";
         this.beacons = new ArrayList<>();
     }
 
-    public Zone(String name) {
+    public Zone(String name, float x, float y) {
         this.name = name;
+        this.x = x;
+        this.y = y;
         this.beacons = new ArrayList<>();
     }
 
-    public Zone(String name, List<Beacon> beacons) {
+    public Zone(String name, List<Beacon> beacons, float x, float y) {
         this.name = name;
+        this.x = x;
+        this.y = y;
         this.beacons = beacons;
     }
 
@@ -50,6 +58,14 @@ public class Zone {
     public void setName(String name) {
         this.name = name;
     }
+
+    public float getX() { return x; }
+
+    public void setX(float x) { this.x = x; }
+
+    public float getY() { return y; }
+
+    public void setY(float y) { this.y = y; }
 
     public List<Beacon> getBeacons() {
         return beacons;

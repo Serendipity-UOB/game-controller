@@ -35,7 +35,9 @@ public class SpectatorController {
         JSONArray logs = logService.logOutput();
         JSONArray zones = logService.zoneDisplay();
         JSONArray leaders = logService.topPlayers();
+        JSONObject time = logService.timeRemaining();
 
+        output.put("time", time);
         output.put("logs", logs);
         output.put("leaderboard", leaders);
         output.put("zones", zones);

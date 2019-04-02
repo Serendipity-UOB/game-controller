@@ -1,13 +1,8 @@
 package com.serendipity.gameController.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -38,15 +33,13 @@ public class Player {
     @ManyToOne
     private Zone currentZone;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
-    private List<Mission> missionsAssigned;
+    @OneToOne
+    private Mission missionAssigned;
 
     public Player() {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
-        this.missionsAssigned = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName) {
@@ -55,7 +48,6 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
-        this.missionsAssigned = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName, Player target) {
@@ -65,7 +57,6 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
-        this.missionsAssigned = new ArrayList<>();
     }
 
     public Long getId() {
@@ -88,7 +79,9 @@ public class Player {
         return codeName;
     }
 
-    public void setCodeName(String codeName) { this.codeName = codeName; }
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
 
     public Zone getHomeZone() {
         return homeZone;
@@ -140,7 +133,23 @@ public class Player {
         else return true;
     }
 
-    public List<Mission> getMissionsAssigned() { return missionsAssigned; }
+    public Mission getMissionAssigned() { return missionAssigned; }
 
-    public void setMissionsAssigned(List<Mission> missionsAssigned) { this.missionsAssigned = missionsAssigned; }
+    public void setMissionAssigned(Mission missionAssigned) { this.missionAssigned = missionAssigned; }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", realName='" + realName + '\'' +
+                ", codeName='" + codeName + '\'' +
+                ", homeZone=" + homeZone +
+                ", target=" + target +
+                ", reputation=" + reputation +
+                ", exposed=" + exposedBy +
+                ", returnHome=" + returnHome +
+                ", currentZone=" + currentZone +
+                ", missionAssigned=" + missionAssigned +
+                '}';
+    }
 }
