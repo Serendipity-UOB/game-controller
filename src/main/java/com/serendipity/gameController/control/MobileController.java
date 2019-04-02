@@ -329,7 +329,7 @@ public class MobileController {
             Optional<Exchange> optionalExchange = exchangeService.getNextExchangeToPlayer(player);
             if (optionalExchange.isPresent()) {
                 Exchange exchange = optionalExchange.get();
-                if (exchangeService.getTimeRemaining(exchange) != 0l && !exchange.isRequestSent()) {
+                if (!exchange.isRequestSent()) {
                     requesterId = exchange.getRequestPlayer().getId();
                     exchange.setRequestSent(true);
                     exchangeService.saveExchange(exchange);
