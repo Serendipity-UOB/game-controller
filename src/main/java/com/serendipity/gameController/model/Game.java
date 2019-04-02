@@ -26,10 +26,10 @@ public class Game {
         this.endTime = this.startTime.plus(6, ChronoUnit.MINUTES);
     }
 
-    public Game(LocalTime startTime) {
+    public Game(LocalTime startTime, LocalTime endTime) {
         if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
         this.startTime = startTime;
-        this.endTime = startTime.plus(6, ChronoUnit.MINUTES);
+        this.endTime = endTime;
     }
 
     public Long getId() {

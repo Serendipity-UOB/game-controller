@@ -16,14 +16,20 @@
 </head>
 <body>
 <div id="container">
-    <!--<div id="header">-->
-        <!--Hacker Hunt-->
-    <!--</div>-->
+    <div id="header">
+        <form method="post" th:action="@{/resetAll}">
+            <button class="delete">Clear Database</button>
+        </form>
+        <form method="post" th:action="@{/addTestBeacons}">
+            <button class="add">Default Beacons</button>
+        </form>
+    </div>
     <div id="main">
         <div id="zones" class="section">
-            <div class="title">Zones</div>
+            <div id="zones-header">
+                <div class="title">Zones</div>
+            </div>
             <div class="content">
-
                 <div th:each="zone : ${zones}" class="zone">
                     <div class="zone-header-border">
                         <div class="zone-header" th:id="zone+${zone.id}">
@@ -173,31 +179,35 @@
         <div id="games" class="section">
             <div class="title">Games</div>
             <div class="content">
-
-                <!--<table>-->
-                    <!--<tr>-->
-                        <!--<td><h4>Start Time</h4></td>-->
-                        <!--<td></td>-->
-                        <!--<td></td>-->
-                    <!--</tr>-->
-                    <!--<tr th:each="game : ${games}">-->
-                        <!--<td><span th:text="${game.startTime}"/></td>-->
-                        <!--<td></td>-->
-                        <!--<td></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<form method="post" th:action="@{/initGame}">-->
-                            <!--<td><input type="text" name="start_time" placeholder="HH:MM:SS.MSS"/></td>-->
-                            <!--<td><button type="submit" class="green"><i class="material-icons">add</i></button></td>-->
-                        <!--</form>-->
-                        <!--<form method="post" th:action="@{/initGameFixed}">-->
-                            <!--<td>-->
-                                <!--<button type="submit" class="grey">Start new game in 1 minute</button>-->
-                            <!--</td>-->
-                        <!--</form>-->
-                    <!--</tr>-->
-                <!--</table>-->
-
+                <div th:each="game : ${games}" class="game">
+                    <div>
+                        <span class="attribute">Start Time: </span>
+                        <span th:text="${game.startTime}"></span>
+                    </div>
+                    <div>
+                        <span class="attribute">End Time: </span>
+                        <span th:text="${game.endTime}"></span>
+                    </div>
+                    <div>
+                        <span class="attribute">Missions: </span>
+                        <span>TODO</span>
+                    </div>
+                </div>
+                <form method="post" th:action="@{/initGame}" class="game new-game">
+                    <div>
+                        <span class="attribute">Start in: </span>
+                        <input type="text" name="start_time" value="1" placeholder="minutes"/>
+                    </div>
+                    <div>
+                        <span class="attribute">Game length: </span>
+                        <input type="text" name="minutes" value="6" placeholder="minutes"/>
+                    </div>
+                    <div class="game-missions">
+                        <span class="attribute">Missions: </span>
+                        <input type="text" name="missions"  value="1"/>
+                    </div>
+                    <button type="submit" class="add"><i class="material-icons">add</i></button>
+                </form>
             </div>
         </div>
     </div>

@@ -27,25 +27,40 @@ body {
   flex-direction: column;
 
   & #header {
-    flex-grow: 0;
+    //flex-grow: 0;
+    //padding: 10px;
+    //text-align: center;
+    //font-size: 1.5em;
+    //border: 1px solid $border-color;
+    //margin: 10px;
+    display: flex;
+    align-items: center;
+
+    & > * {
+      margin: 10px 0 0 10px;
+    }
   }
 
   & #main {
     flex-grow: 1;
     display: flex;
     flex-direction: row;
+    height: 100%;
 
     & #zones {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       padding: 5px;
+      height: 100%;
 
       & .content {
         flex-grow: 1;
         border: none;
         padding: 0;
         margin: 5px;
+        height: 100%;
+        overflow: scroll;
 
         .zone {
           margin-bottom: 10px;
@@ -163,13 +178,13 @@ body {
             }
           }
 
-          & .attribute {
-            color: $font-color;
-            opacity: 0.5;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            font-weight: bold;
-          }
+          //& .attribute {
+          //  color: $font-color;
+          //  opacity: 0.5;
+          //  text-transform: uppercase;
+          //  font-size: 0.8em;
+          //  font-weight: bold;
+          //}
 
           & .zone-content {
 
@@ -293,21 +308,21 @@ body {
         }
       }
 
-      input {
-        background-color: #00243D;
-        //border-bottom: 1px solid $border-color;
-        padding: 5px;
-        font-family: inherit;
-        font-size: 1em;
-        color: $font-color;
-        width: 100px;
-
-        &:focus {
-          //background-color: white;
-          background-color: $background-color;
-
-        }
-      }
+      //input {
+      //  background-color: #00243D;
+      //  //border-bottom: 1px solid $border-color;
+      //  padding: 5px;
+      //  font-family: inherit;
+      //  font-size: 1em;
+      //  color: $font-color;
+      //  width: 100px;
+      //
+      //  &:focus {
+      //    //background-color: white;
+      //    background-color: $background-color;
+      //
+      //  }
+      //}
     }
 
     & #games {
@@ -318,56 +333,69 @@ body {
 
       & .content {
         flex-grow: 1;
-        border: 1px solid $border-color;
-        padding: 5px;
-        margin: 5px;
+        //border: 1px solid $border-color;
+        //padding: 5px;
+        //margin: 5px;
+
+        & .game {
+          border: 1px solid $border-color;
+          margin: 5px 5px 10px 5px;
+          background-color: $foreground-color;
+          display: flex;
+          align-items: center;
+
+          & > * {
+            margin: 10px;
+          }
+        }
+
+        & .new-game {
+
+          & > * {
+            margin: 5px 5px 5px 10px;
+          }
+
+          & .game-missions {
+            flex-grow: 1;
+          }
+        }
       }
     }
   }
-}
 
-.title {
-  flex-grow: 0;
-  width: 200px;
-  border: 1px solid $border-color;
-  font-size: 24px;
-  font-style: italic;
-  text-align: center;
-  padding: 10px;
-  margin: 5px;
-}
-
-button {
-  margin: 0;
-  border: none;
-  background-color: $background-color;
-  color: $font-color;
-  border-radius: 2px;
-  padding: 5px;
-  outline: none;
-  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  transition: background-color 0.3s ease-out, color 0.2s ease-out;
-
-  & .material-icons {
-    font-size: 16px;
-  }
-
-  &.edit:hover {
-    color: $dark-orange;
-    background-color: $orange;
-  }
-
-  &.delete:hover, &.cancel:hover {
-    color: $dark-red;
-    background-color: $red;
-  }
-
-  &.add:hover {
-    color: $dark-green;
-    background-color: $green;
-  }
+  //button {
+  //  margin: 0;
+  //  border: none;
+  //  background-color: #00243D;
+  //  color: $font-color;
+  //  border-radius: 2px;
+  //  padding: 5px;
+  //  outline: none;
+  //  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  //  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  //  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  //  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  //  font-family: inherit;
+  //
+  //  & .material-icons {
+  //    font-size: 16px;
+  //  }
+  //
+  //  &.edit:hover {
+  //    color: $dark-orange;
+  //    background-color: $orange;
+  //  }
+  //
+  //  &.delete:hover, &.cancel:hover {
+  //    color: $dark-red;
+  //    background-color: $red;
+  //  }
+  //
+  //  &.add:hover {
+  //    color: $dark-green;
+  //    background-color: $green;
+  //  }
+  //}
 }
 
 .old {
@@ -441,5 +469,77 @@ button {
         margin: 0 5px;
       }
     }
+  }
+}
+
+.title {
+  flex-grow: 0;
+  width: 200px;
+  border: 1px solid $border-color;
+  font-size: 24px;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+}
+
+.attribute {
+  color: $font-color;
+  opacity: 0.5;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+input {
+  background-color: #00243D;
+  padding: 5px;
+  font-family: inherit;
+  font-size: 1em;
+  color: $font-color;
+  width: 100px;
+
+  &:focus {
+    background-color: $background-color;
+  }
+
+  &::placeholder {
+    color: $font-color;
+    opacity: 0.2;
+    font-size: 0.9em;
+  }
+}
+
+button {
+  margin: 0;
+  border: none;
+  background-color: #00243D;
+  color: $font-color;
+  border-radius: 2px;
+  padding: 5px;
+  outline: none;
+  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  font-family: inherit;
+
+  & .material-icons {
+    font-size: 16px;
+  }
+
+  &.edit:hover {
+    color: $dark-orange;
+    background-color: $orange;
+  }
+
+  &.delete:hover, &.cancel:hover {
+    color: $dark-red;
+    background-color: $red;
+  }
+
+  &.add:hover {
+    color: $dark-green;
+    background-color: $green;
   }
 }

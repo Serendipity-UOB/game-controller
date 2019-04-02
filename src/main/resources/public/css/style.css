@@ -185,24 +185,32 @@ body {
   flex-direction: column;
 }
 #container #header {
-  flex-grow: 0;
+  display: flex;
+  align-items: center;
+}
+#container #header > * {
+  margin: 10px 0 0 10px;
 }
 #container #main {
   flex-grow: 1;
   display: flex;
   flex-direction: row;
+  height: 100%;
 }
 #container #main #zones {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   padding: 5px;
+  height: 100%;
 }
 #container #main #zones .content {
   flex-grow: 1;
   border: none;
   padding: 0;
   margin: 5px;
+  height: 100%;
+  overflow: scroll;
 }
 #container #main #zones .content .zone {
   margin-bottom: 10px;
@@ -296,13 +304,6 @@ body {
 #container #main #zones .content .zone .zone-header-border .zone-header .new-zone > *.zone-y {
   flex-grow: 1;
 }
-#container #main #zones .content .zone .attribute {
-  color: #9FC5E8;
-  opacity: 0.5;
-  text-transform: uppercase;
-  font-size: 0.8em;
-  font-weight: bold;
-}
 #container #main #zones .content .zone .zone-content .beacon .old {
   display: flex;
   height: 100%;
@@ -394,17 +395,6 @@ body {
   padding: 5px;
   margin: 0 5px;
 }
-#container #main #zones input {
-  background-color: #00243D;
-  padding: 5px;
-  font-family: inherit;
-  font-size: 1em;
-  color: #9FC5E8;
-  width: 100px;
-}
-#container #main #zones input:focus {
-  background-color: #001C31;
-}
 #container #main #games {
   flex-grow: 1;
   display: flex;
@@ -413,49 +403,22 @@ body {
 }
 #container #main #games .content {
   flex-grow: 1;
+}
+#container #main #games .content .game {
   border: 1px solid #00A6EE;
-  padding: 5px;
-  margin: 5px;
+  margin: 5px 5px 10px 5px;
+  background-color: #002c4a;
+  display: flex;
+  align-items: center;
 }
-
-.title {
-  flex-grow: 0;
-  width: 200px;
-  border: 1px solid #00A6EE;
-  font-size: 24px;
-  font-style: italic;
-  text-align: center;
-  padding: 10px;
-  margin: 5px;
+#container #main #games .content .game > * {
+  margin: 10px;
 }
-
-button {
-  margin: 0;
-  border: none;
-  background-color: #001C31;
-  color: #9FC5E8;
-  border-radius: 2px;
-  padding: 5px;
-  outline: none;
-  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
-  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+#container #main #games .content .new-game > * {
+  margin: 5px 5px 5px 10px;
 }
-button .material-icons {
-  font-size: 16px;
-}
-button.edit:hover {
-  color: #9B5A00;
-  background-color: #FF9F1C;
-}
-button.delete:hover, button.cancel:hover {
-  color: #751B0F;
-  background-color: #FF6338;
-}
-button.add:hover {
-  color: #347228;
-  background-color: #7DD36B;
+#container #main #games .content .new-game .game-missions {
+  flex-grow: 1;
 }
 
 .old {
@@ -516,4 +479,70 @@ button.add:hover {
 .new > *.non-end-button button {
   padding: 5px;
   margin: 0 5px;
+}
+
+.title {
+  flex-grow: 0;
+  width: 200px;
+  border: 1px solid #00A6EE;
+  font-size: 24px;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+}
+
+.attribute {
+  color: #9FC5E8;
+  opacity: 0.5;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+input {
+  background-color: #00243D;
+  padding: 5px;
+  font-family: inherit;
+  font-size: 1em;
+  color: #9FC5E8;
+  width: 100px;
+}
+input:focus {
+  background-color: #001C31;
+}
+input::placeholder {
+  color: #9FC5E8;
+  opacity: 0.2;
+  font-size: 0.9em;
+}
+
+button {
+  margin: 0;
+  border: none;
+  background-color: #00243D;
+  color: #9FC5E8;
+  border-radius: 2px;
+  padding: 5px;
+  outline: none;
+  -webkit-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -moz-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  -o-transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  transition: background-color 0.3s ease-out, color 0.2s ease-out;
+  font-family: inherit;
+}
+button .material-icons {
+  font-size: 16px;
+}
+button.edit:hover {
+  color: #9B5A00;
+  background-color: #FF9F1C;
+}
+button.delete:hover, button.cancel:hover {
+  color: #751B0F;
+  background-color: #FF6338;
+}
+button.add:hover {
+  color: #347228;
+  background-color: #7DD36B;
 }
