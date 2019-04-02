@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @CrossOrigin
@@ -152,6 +153,22 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping(value="/updateBeacon")
+    public String updateBeacon(@ModelAttribute("beacon_id") Long id,
+                               @ModelAttribute("beacon_identifier") String identifier,
+                               @ModelAttribute("beacon_major") int major,
+                               @ModelAttribute("beacon_minor") int minor) {
+        Optional<Beacon> optionalBeacon = beaconService.getBeaconById(id);
+        if (optionalBeacon.isPresent()) {
+            Beacon beacon = optionalBeacon.get();
+            beacon.setIdentifier(identifier);
+            beacon.setMajor(major);
+            beacon.setMinor(minor);
+            beaconService.saveBeacon(beacon);
+        }
+        return "redirect:/";
+    }
+
     @Transactional
     @PostMapping(value="/delBeacon")
     public String delBeacon(@ModelAttribute("beacon_id") Long id) {
@@ -170,17 +187,36 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping(value="/updateZone")
+    public String updateZone(@ModelAttribute("zone_id") Long id,
+                             @ModelAttribute("zone_name") String name,
+                             @ModelAttribute("zone_x") float x,
+                             @ModelAttribute("zone_y") float y) {
+        Optional<Zone> optionalZone = zoneService.getZoneById(id);
+        if (optionalZone.isPresent()) {
+            Zone zone = optionalZone.get();
+            zone.setName(name);
+            zone.setX(x);
+            zone.setY(y);
+            zoneService.saveZone(zone);
+        }
+        return "redirect:/";
+    }
+
     @Transactional
     @PostMapping(value="delZone")
     public String delZone(@ModelAttribute("zone_id") Long id) {
-        Zone zone = zoneService.getZoneById(id);
-        List<Beacon> beacons = zone.getBeacons();
-        for (Iterator<Beacon> it = beacons.iterator(); it.hasNext();) {
-            Beacon beacon = it.next();
-            it.remove();
-            beaconService.deleteBeaconById(beacon.getId());
+        Optional<Zone> optionalZone = zoneService.getZoneById(id);
+        if (optionalZone.isPresent()) {
+            Zone zone = optionalZone.get();
+            List<Beacon> beacons = zone.getBeacons();
+            for (Iterator<Beacon> it = beacons.iterator(); it.hasNext();) {
+                Beacon beacon = it.next();
+                it.remove();
+                beaconService.deleteBeaconById(beacon.getId());
+            }
+            zoneService.deleteZone(zone);
         }
-        zoneService.deleteZone(zone);
         return "redirect:/";
     }
 

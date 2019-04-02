@@ -15,7 +15,7 @@ public interface ZoneService {
     /*
      * @param id The zone's id.
      */
-    Zone getZoneById(Long id);
+    Optional<Zone> getZoneById(Long id);
 
     /*
      * @return A list of all the zones in the database.

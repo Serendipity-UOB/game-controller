@@ -47,7 +47,8 @@
                                     </form>
                                 </div>
                             </div>
-                            <form class="new">
+                            <form method="post" th:action="@{/updateZone}" class="new">
+                                <input type="hidden" th:value="${zone.id}" name="zone_id"/>
                                 <div class="zone-name">
                                     <span class="attribute">name: </span>
                                     <input type="text" name="zone_name" th:value="${zone.name}"/>
@@ -94,7 +95,8 @@
                                     </form>
                                 </div>
                             </div>
-                            <form class="new">
+                            <form method="post" th:action="@{/updateBeacon}" class="new">
+                                <input type="hidden" th:value="${beacon.id}" name="beacon_id"/>
                                 <div class="beacon-identifier">
                                     <span class="attribute">id: </span>
                                     <input type="text" name="beacon_identifier" th:value="${beacon.identifier}"/>
