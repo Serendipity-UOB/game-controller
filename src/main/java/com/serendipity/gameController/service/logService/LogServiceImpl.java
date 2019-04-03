@@ -147,6 +147,7 @@ public class LogServiceImpl implements LogService {
                         count++;
                         break;
                     case INTERCEPT:
+                        colour -= 0.25;
                         count++;
                         break;
                     case EXPOSE:
