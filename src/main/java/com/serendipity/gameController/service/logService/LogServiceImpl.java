@@ -137,42 +137,30 @@ public class LogServiceImpl implements LogService {
 
         for(Zone z : zoneService.getAllZones()){
             int count = 0;
-            int red = 0;
-            int green = 0;
+            float colour = 0;
             // Select colour
             for(Log l : logRepository.findAllByZone(z)){
                 // Add to correct colour
                 switch(l.getType()) {
                     case EXCHANGE:
-                        green += 255;
+                        colour += 1;
                         count++;
                         break;
                     case INTERCEPT:
-                        red += 255;
-                        green += 165;
                         count++;
                         break;
                     case EXPOSE:
-                        red += 255;
+                        colour -= 1;
                         count++;
                         break;
                     default:
                         break;
                 }
             }
-            if(red > 0) red /= count;
-            if(green > 0) green /= count;
-            // Construct rgb JSON
-            JSONObject rgb = new JSONObject();
+            if(colour != 0) colour /= count;
             // Default colour of green
-            if(red == 0 && green == 0){
-                rgb.put("red", red);
-                rgb.put("green", 255);
-                rgb.put("blue", 0);
-            } else {
-                rgb.put("red", red);
-                rgb.put("green", green);
-                rgb.put("blue", 0);
+            if(colour == 0 && count == 0){
+                colour = 1;
             }
             // Get zone size
             List<Player> playersAtZone = playerService.getAllPlayersByCurrentZone(z);
@@ -186,7 +174,7 @@ public class LogServiceImpl implements LogService {
                 float size = ((float)playersAtZone.size() / (float)players.size());
                 zoneInfo.put("size", size);
             } else { zoneInfo.put("size", 0); }
-            zoneInfo.put("colour", rgb);
+            zoneInfo.put("colour", colour);
             zones.put(zoneInfo);
         }
 
