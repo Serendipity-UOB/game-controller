@@ -211,7 +211,7 @@ public class LogServiceImpl implements LogService {
         for (Player player : players) {
             JSONObject playerInfo = new JSONObject();
             playerInfo.put("position", playerService.getLeaderboardPosition(player));
-            playerInfo.put("real_name", player.getId());
+            playerInfo.put("real_name", player.getRealName());
             playerInfo.put("reputation", player.getReputation());
             output.put(playerInfo);
         }
