@@ -118,6 +118,15 @@ public class LogServiceImpl implements LogService {
                         Player target = expose.getTarget();
                         text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
                     }
+                } else if (l.getType() == LogType.EXCHANGE) {
+                    Optional<Exchange> opExchange = exchangeService.getExchange(l.getInteractionId());
+                    // See if expose exists
+                    if (opExchange.isPresent()) {
+                        Exchange exchange = opExchange.get();
+                        Player requester = exchange.getRequestPlayer();
+                        Player responder = exchange.getResponsePlayer();
+                        text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with"  + responder.getRealName() + "!";
+                    }
                 }
                 obj.put("time", l.getTime());
                 obj.put("message", text);
