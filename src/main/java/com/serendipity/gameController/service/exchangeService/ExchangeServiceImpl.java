@@ -34,6 +34,9 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public Optional<Exchange> getExchange(Long id) { return exchangeRepository.findById(id); }
+
+    @Override
     public long createExchange(Player requester, Player responder, JSONArray jsonContactIds) {
         Exchange exchange = new Exchange(requester, responder);
         List<Long> contactIds = new ArrayList<>();

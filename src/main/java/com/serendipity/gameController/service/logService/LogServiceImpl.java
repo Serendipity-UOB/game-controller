@@ -194,18 +194,26 @@ public class LogServiceImpl implements LogService {
     @Override
     public JSONArray topPlayers(){
         JSONArray output = new JSONArray();
+//        List<Player> players = playerService.getAllPlayersByScore();
+//        int max = players.size();
+//        if(max > players.size()) max = players.size();
+//        int count = 0;
+//        // Get number of players wanted
+//        while(count < max) {
+//            JSONObject player = new JSONObject();
+//            player.put("position", (count + 1));
+//            player.put("real_name", players.get(count).getRealName());
+//            player.put("reputation", players.get(count).getReputation());
+//            output.put(player);
+//            count++;
+//        }
         List<Player> players = playerService.getAllPlayersByScore();
-        int max = players.size();
-        if(max > players.size()) max = players.size();
-        int count = 0;
-        // Get number of players wanted
-        while(count < max) {
-            JSONObject player = new JSONObject();
-            player.put("position", (count + 1));
-            player.put("real_name", players.get(count).getRealName());
-            player.put("reputation", players.get(count).getReputation());
-            output.put(player);
-            count++;
+        for (Player player : players) {
+            JSONObject playerInfo = new JSONObject();
+            playerInfo.put("position", playerService.getLeaderboardPosition(player));
+            playerInfo.put("real_name", player.getId());
+            playerInfo.put("reputation", player.getReputation());
+            output.put(playerInfo);
         }
         // TODO: what do we do if there's an overflow due to multiple people with the same position
         return output;
