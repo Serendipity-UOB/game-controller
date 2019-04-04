@@ -18,6 +18,12 @@ public interface ExchangeService {
     void saveExchange(Exchange exchange);
 
     /*
+     * @param id Id of the exchange wanted
+     * @return The exchange of relating to the id
+     */
+    Optional<Exchange> getExchange(Long id);
+
+    /*
      * @return The id of the exchange
      */
     long createExchange(Player requester, Player responder, JSONArray jsonContactIds);
