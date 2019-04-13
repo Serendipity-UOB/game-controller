@@ -74,66 +74,64 @@ public class LogServiceImpl implements LogService {
         List<Log> logs = logRepository.findAllBySent(false);
 
         for (Log l : logs) {
-            if(!(l.getType() == LogType.EXCHANGE)){
-                JSONObject obj = new JSONObject();
-                String text = "";
-                if (l.getType() == LogType.MISSION) {
-                    // Compose string for mission log
-                    // Get mission
-                    Optional<Mission> opMission = missionService.getMission(l.getInteractionId());
-                    // See if mission exists
-                    if (opMission.isPresent()) {
-                        Mission mission = opMission.get();
-                        Optional<Player> opPlayer = playerService.getPlayerByMission(mission);
-                        // See if player exists for the given mission assignment
-                        if (opPlayer.isPresent()) {
-                            Player player = opPlayer.get();
-                            text = player.getRealName() + " completed a mission!";
-                        }
-                    }
-                } else if (l.getType() == LogType.INTERCEPT) {
-                    // Compose string for intercept log
-                    // Get intercept
-                    Optional<Intercept> opIntercept = interceptService.getIntercept(l.getInteractionId());
-                    // See if intercept exists
-                    if (opIntercept.isPresent()) {
-                        Intercept intercept = opIntercept.get();
-                        // Get player
-                        Player player = intercept.getIntercepter();
-                        // Get target
-                        Exchange exchange = intercept.getExchange();
-                        Player target1 = exchange.getRequestPlayer();
-                        Player target2 = exchange.getResponsePlayer();
-                        text = player.getRealName() + "<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
-                    }
-
-                } else if (l.getType() == LogType.EXPOSE) {
-                    // Compose string for expose log
-                    // Get expose
-                    Optional<Expose> opExpose = exposeService.getExpose(l.getInteractionId());
-                    // See if expose exists
-                    if (opExpose.isPresent()) {
-                        Expose expose = opExpose.get();
-                        Player player = expose.getPlayer();
-                        Player target = expose.getTarget();
-                        text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
-                    }
-                } else if (l.getType() == LogType.EXCHANGE) {
-                    Optional<Exchange> opExchange = exchangeService.getExchange(l.getInteractionId());
-                    // See if expose exists
-                    if (opExchange.isPresent()) {
-                        Exchange exchange = opExchange.get();
-                        Player requester = exchange.getRequestPlayer();
-                        Player responder = exchange.getResponsePlayer();
-                        text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with"  + responder.getRealName() + "!";
+            JSONObject obj = new JSONObject();
+            String text = "";
+            if (l.getType() == LogType.MISSION) {
+                // Compose string for mission log
+                // Get mission
+                Optional<Mission> opMission = missionService.getMission(l.getInteractionId());
+                // See if mission exists
+                if (opMission.isPresent()) {
+                    Mission mission = opMission.get();
+                    Optional<Player> opPlayer = playerService.getPlayerByMission(mission);
+                    // See if player exists for the given mission assignment
+                    if (opPlayer.isPresent()) {
+                        Player player = opPlayer.get();
+                        text = player.getRealName() + " completed a mission!";
                     }
                 }
-                obj.put("time", l.getTime());
-                obj.put("message", text);
-                output.put(obj);
-                l.setSent(true);
-                logRepository.save(l);
+            } else if (l.getType() == LogType.INTERCEPT) {
+                // Compose string for intercept log
+                // Get intercept
+                Optional<Intercept> opIntercept = interceptService.getIntercept(l.getInteractionId());
+                // See if intercept exists
+                if (opIntercept.isPresent()) {
+                    Intercept intercept = opIntercept.get();
+                    // Get player
+                    Player player = intercept.getIntercepter();
+                    // Get target
+                    Exchange exchange = intercept.getExchange();
+                    Player target1 = exchange.getRequestPlayer();
+                    Player target2 = exchange.getResponsePlayer();
+                    text = player.getRealName() + "<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
+                }
+
+            } else if (l.getType() == LogType.EXPOSE) {
+                // Compose string for expose log
+                // Get expose
+                Optional<Expose> opExpose = exposeService.getExpose(l.getInteractionId());
+                // See if expose exists
+                if (opExpose.isPresent()) {
+                    Expose expose = opExpose.get();
+                    Player player = expose.getPlayer();
+                    Player target = expose.getTarget();
+                    text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
+                }
+            } else if (l.getType() == LogType.EXCHANGE) {
+                Optional<Exchange> opExchange = exchangeService.getExchange(l.getInteractionId());
+                // See if expose exists
+                if (opExchange.isPresent()) {
+                    Exchange exchange = opExchange.get();
+                    Player requester = exchange.getRequestPlayer();
+                    Player responder = exchange.getResponsePlayer();
+                    text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with"  + responder.getRealName() + "!";
+                }
             }
+            obj.put("time", l.getTime());
+            obj.put("message", text);
+            output.put(obj);
+            l.setSent(true);
+            logRepository.save(l);
         }
         return output;
     }
@@ -193,6 +191,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public JSONArray topPlayers(){
+        JSONArray output = new JSONArray();
 //        List<Player> players = playerService.getAllPlayersByScore();
 //        int max = players.size();
 //        if(max > players.size()) max = players.size();
@@ -206,17 +205,14 @@ public class LogServiceImpl implements LogService {
 //            output.put(player);
 //            count++;
 //        }
-        JSONArray output = new JSONArray();
-        JSONArray leaderboard = new JSONArray();
         List<Player> players = playerService.getAllPlayersByScore();
         for (Player player : players) {
             JSONObject playerInfo = new JSONObject();
-            playerInfo.put("player_id", player.getId());
             playerInfo.put("position", playerService.getLeaderboardPosition(player));
-            playerInfo.put("score", player.getReputation());
-            leaderboard.put(playerInfo);
+            playerInfo.put("real_name", player.getRealName());
+            playerInfo.put("reputation", player.getReputation());
+            output.put(playerInfo);
         }
-        output.put("leaderboard", leaderboard);
         // TODO: what do we do if there's an overflow due to multiple people with the same position
         return output;
     }
