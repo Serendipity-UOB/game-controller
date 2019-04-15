@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -132,14 +133,12 @@ public class MobileController {
         if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
             realName = player.getRealName();
-
             // Assign zone, if one exists
             Optional<Zone> optionalZone = zoneService.chooseHomeZone(player);
             if (optionalZone.isPresent()) {
                 Zone zone = optionalZone.get();
                 player.setHomeZone(zone);
                 playerService.savePlayer(player);
-
                 // Handle response
                 output.put("home_zone_name", zone.getName());
                 responseStatus = HttpStatus.OK;
@@ -165,44 +164,51 @@ public class MobileController {
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         // Ensure player exists
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
-        if (opPlayer.isPresent()) {
-            // Get two random players to gain intel on from mission
+        if (opPlayer.isPresent()){
             Player player = opPlayer.get();
             realName = player.getRealName();
-            List<Player> players = playerService.getAllPlayersExcept(player);
-            Random random = new Random();
-            // Ensure 1 other player exists
-            System.out.println("Players in game:" + players.size());
-            if(players.size() > 0) {
-                Player target1 = players.get(random.nextInt(players.size()));
-                System.out.println("Target 1:" + target1.getId());
-                players.remove(target1);
-                // Ensure 2 other players exist
-                if (players.size() > 0) {
-                    Player target2 = players.get(random.nextInt(players.size()));
-                    System.out.println("Target 2:" + target2.getId());
-                    // Ensure game exists
-                    // TODO: Deal with multiple game instances
-                    Game game = gameService.getAllGames().get(0);
-                    output.put("end_time", game.getEndTime());
-
-                    // Create a mission
-                    Mission mission = missionService.createMission(game, target1, target2);
-
-                    // Assign mission to player
-                    player.setMissionAssigned(mission);
-                    playerService.savePlayer(player);
-
-                    // Return all players
-                    responseStatus = HttpStatus.OK;
-                    output.put("all_players", playerService.getAllPlayersStartInfo());
+            List<Game> games = gameService.getAllGames();
+            // TODO: Deal with multiple game instances
+            if(games.size() > 0) {
+                // Ensure game exists
+                Game game = gameService.getAllGames().get(0);
+                // Assign initial Mission
+                Optional<Mission> opMission = missionService.createMission(player);
+                if(opMission.isPresent()){
+                    // Set mission parameters
+                    Mission mission = opMission.get();
+                    mission.setStartTime(game.getStartTime());
+                    mission.setEndTime(game.getEndTime());
+                    // Assign random zone
+                    List<Zone> zones = zoneService.getAllZonesExceptUN();
+                    Random random = new Random();
+                    mission.setZone(zones.get(random.nextInt(zones.size())));
+                    mission.setStart(true);
+                    missionService.saveMission(mission);
+                    // Assign new target
+                    Long targetId = playerService.newTarget(player.getId());
+                    Optional<Player> opTarget = playerService.getPlayer(targetId);
+                    if(opTarget.isPresent()){
+                        Player target = opTarget.get();
+                        player.setTarget(target);
+                        playerService.savePlayer(player);
+                        // Return all players
+                        responseStatus = HttpStatus.OK;
+                        output.put("all_players", playerService.getAllPlayersStartInfo());
+                        // Return game endTime
+                        output.put("end_time", game.getEndTime());
+                    } else {
+                        System.out.println("Unable to assign target");
+                        output.put("BAD_REQUEST", "Unable to assign target");
+                    }
                 } else {
-                    System.out.println("There aren't enough players in the game");
+                    System.out.println("Not enough players");
                     output.put("BAD_REQUEST", "Not enough players");
                 }
             } else {
-                System.out.println("There are no players in the game");
-                output.put("BAD_REQUEST", "Not enough players");
+                System.out.println("No game");
+                responseStatus = HttpStatus.NO_CONTENT;
+                output.put("NO_CONTENT", "No game");
             }
         } else {
             System.out.println("No player exists by this id");
@@ -346,22 +352,29 @@ public class MobileController {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
                     String missionDescription;
-                    missionDescription = "We have discovered that evidence about " + p1.getRealName()
-                            + "'s and " + p2.getRealName() + "'s";
-                    Zone zone = mission.getZone();
-                    if( zone == null ) {
-                        List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
-                        Random random = new Random();
-                        zone = notCurrent.get(random.nextInt(notCurrent.size()));
+                    if(mission.isStart()){
+                        Zone location = mission.getZone();
+                        missionDescription = "Welcome, Agent.\nGo to " + location.getName() +
+                                " for a hint on your target's location.";
+                    } else {
+                        missionDescription = "Evidence available on " + p1.getRealName()
+                                + " and " + p2.getRealName() + ".\nGo to";
+                        Zone zone = mission.getZone();
+                        if (zone == null) {
+                            List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
+                            // Remove UN from selection
+                            List<Zone> notUN = new ArrayList<>();
+                            for(Zone z : notCurrent){
+                                if(!z.getName().equals("UN")){ notUN.add(z); }
+                            }
+                            Random random = new Random();
+                            zone = notCurrent.get(random.nextInt(notUN.size()));
+                        }
+                        missionDescription += zone.getName() + ".";
+                        mission.setZone(zone);
                     }
-
-                    missionDescription += " activities can be found at " + zone.getName() +
-                            ".\n Get there in 30 Seconds to secure it.";
-
-                    mission.setZone(zone);
                     mission.setCompleted(true);
                     missionService.saveMission(mission);
-
                     output.put("mission_description", missionDescription);
                 } else { output.put("mission_description", ""); }
             } else {
@@ -677,95 +690,89 @@ public class MobileController {
             Player player = opPlayer.get();
             realName = player.getRealName();
             Player target = opTarget.get();
-            // Find exchange
-            Optional<Exchange> opExchange = exchangeService.getMostRecentExchangeFromPlayer(target);
-            if (opExchange.isPresent()) {
-                Exchange exchange = opExchange.get();
-                // Ensure the player isn't part of the intercepted exchange
-                if(!exchange.getRequestPlayer().equals(player) && !exchange.getResponsePlayer().equals(player)) {
-                    // Find if exchange is still active
-                    if (!(exchangeService.getTimeRemaining(exchange) <= 0l)) {
-                        // Find if player has an intercept
-                        Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
-                        if (opIntercept.isPresent()) {
-                            Intercept intercept = opIntercept.get();
-                            interceptId = intercept.getId();
-                            // Find if the intercept is still active
-                            if (!intercept.isExpired()) {
-                                // Find if the active intercept is for the exchange targeted
-                                if (intercept.getExchange().equals(exchange)) {
-                                    // Find if exchange has had a response
-                                    if (exchange.isRequesterToldComplete()) {
-                                        // Determine response
-                                        if (exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                                            JSONArray evidence = new JSONArray();
-                                            JSONObject p1 = new JSONObject();
-                                            p1.put("player_id", exchange.getRequestPlayer().getId());
-                                            p1.put("amount", 30);
-
-                                            JSONObject p2 = new JSONObject();
-                                            p2.put("player_id", exchange.getResponsePlayer().getId());
-                                            p2.put("amount", 10);
-
-                                            evidence.put(p1);
-                                            evidence.put(p2);
-                                            output.put("evidence", evidence);
-                                            // Add expose to logs
-                                            logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
-                                            responseStatus = HttpStatus.OK;
-                                        } else {
-                                            System.out.println("Exchange wasn't accepted");
-                                            output.put("NO_CONTENT", "Exchange wasn't accepted");
-                                            responseStatus = HttpStatus.NO_CONTENT;
-                                        }
-                                        // Set intercept to be expired
-                                        intercept.setExpired(true);
-                                        interceptService.saveIntercept(intercept);
-                                    } else {
-                                        System.out.println("Still waiting");
-                                        output.put("PARTIAL_CONTENT", "Exchange pending");
-                                        responseStatus = HttpStatus.PARTIAL_CONTENT;
-                                    }
+            // Find intercept if it exists
+            Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
+            if (opIntercept.isPresent()) {
+                Intercept intercept = opIntercept.get();
+                // Check if intercept has expired
+                if (!intercept.isExpired()) {
+                    // Check if intercept should expire
+                    // Check 9 second after as .isBefore doesn't cover is equal
+                    if (LocalTime.now().isBefore(intercept.getStartTime().plusSeconds(10))) {
+                        // Check if the correct target has been sent
+                        if (target.equals(intercept.getTarget())) {
+                            // Find if exchange has been set
+                            if (intercept.getExchange() == null) {
+                                // Set exchange if exists
+                                Optional<Exchange> opExchange = exchangeService.getEarliestActiveExchange(target);
+                                if (opExchange.isPresent()) {
+                                    Exchange exchange = opExchange.get();
+                                    intercept.setExchange(exchange);
+                                    interceptService.saveIntercept(intercept);
+                                    System.out.println("Exchange set");
+                                    output.put("PARTIAL_CONTENT", "Exchange set");
+                                    responseStatus = HttpStatus.PARTIAL_CONTENT;
                                 } else {
-                                    System.out.println("Active intercept exists for another exchange");
-                                    output.put("NOT_FOUND", "Active intercept exists for another exchange");
-                                    responseStatus = HttpStatus.NOT_FOUND;
+                                    System.out.println("No exchange found");
+                                    output.put("PARTIAL_CONTENT", "No exchange found");
+                                    responseStatus = HttpStatus.PARTIAL_CONTENT;
                                 }
                             } else {
-                                System.out.println("Intercept has expired, creating a new one");
-                                // Overwrite expired intercept
-                                intercept.setExpired(false);
-                                intercept.setExchange(exchange);
-                                interceptService.saveIntercept(intercept);
-                                output.put("CREATED", "Intercept has expired, creating a new one");
-                                responseStatus = HttpStatus.CREATED;
+                                System.out.println("Waiting for intercept window");
+                                output.put("PARTIAL_CONTENT", "Waiting for intercept window");
+                                responseStatus = HttpStatus.PARTIAL_CONTENT;
                             }
                         } else {
-                            System.out.println("No intercept exists, creating one");
-                            // Create intercept
-                            Intercept intercept = new Intercept(player, exchange);
-                            interceptService.saveIntercept(intercept);
-                            output.put("CREATED", "No intercept exists, creating one");
-                            responseStatus = HttpStatus.CREATED;
+                            System.out.println("Active intercept exists for another target");
+                            output.put("NOT_FOUND", "Active intercept exists for another target");
+                            responseStatus = HttpStatus.NOT_FOUND;
                         }
                     } else {
-                        System.out.println("Exchange has timed out, resetting intercept if present");
-                        responseStatus = HttpStatus.NO_CONTENT;
-                        // Find if player has an intercept
-                        Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
-                        if (opIntercept.isPresent()) {
-                            Intercept intercept = opIntercept.get();
-                            // Set intercept to be expired
-                            intercept.setExpired(true);
-                            interceptService.saveIntercept(intercept);
-                            output.put("NO_CONTENT", "Exchange has timed out, resetting existing intercept");
-                        } else { output.put("NO_CONTENT", "Exchange has timed out"); }
+                        intercept.setExpired(true);
+                        interceptService.saveIntercept(intercept);
+                        Exchange exchange = intercept.getExchange();
+                        // Determine response
+                        if (exchange != null && exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                            JSONArray evidence = new JSONArray();
+                            JSONObject p1 = new JSONObject();
+                            p1.put("player_id", exchange.getRequestPlayer().getId());
+                            p1.put("amount", 30);
+
+                            JSONObject p2 = new JSONObject();
+                            p2.put("player_id", exchange.getResponsePlayer().getId());
+                            p2.put("amount", 10);
+
+                            evidence.put(p1);
+                            evidence.put(p2);
+                            output.put("evidence", evidence);
+                            // Add expose to logs
+                            logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
+                            responseStatus = HttpStatus.OK;
+                        } else {
+                            System.out.println("Exchange wasn't accepted");
+                            output.put("NO_CONTENT", "Exchange wasn't accepted");
+                            responseStatus = HttpStatus.NO_CONTENT;
+                        }
                     }
-                } else { output.put("BAD_REQUEST", "Cannot target own exchange"); }
-            } else { output.put("BAD_REQUEST", "Couldn't find exchange for target given"); }
-        } else {
-            System.out.println("No player exists by this id");
-            output.put("BAD_REQUEST", "Couldn't find player or target id given");
+                } else {
+                    System.out.println("Intercept has expired, creating a new one");
+                    // Overwrite expired intercept
+                    intercept.setExpired(false);
+                    intercept.setTarget(target);
+                    intercept.setExchange(null);
+                    intercept.setStartTime(LocalTime.now());
+                    interceptService.saveIntercept(intercept);
+                    output.put("CREATED", "Intercept has expired, creating a new one");
+                    responseStatus = HttpStatus.CREATED;
+                }
+            } else {
+                System.out.println("No intercept exists, creating one");
+                // Create intercept
+                Intercept intercept = new Intercept(player, target, LocalTime.now());
+                interceptService.saveIntercept(intercept);
+                output.put("CREATED", "No intercept exists, creating one");
+                responseStatus = HttpStatus.CREATED;
+            }
         }
         System.out.println("/intercept returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(interceptId.toString(), realName, LocalTime.now().toString(),
@@ -799,37 +806,47 @@ public class MobileController {
             Player p2 = mission.getPlayer2();
             Zone zone = mission.getZone();
             // Check if the mission hasn't timed out
-            if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS))) {
+            if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS)) || mission.isStart()) {
                 if (location.equals(zone)) {
                     // Evidence to return
                     JSONArray evidence = new JSONArray();
                     JSONObject e1 = new JSONObject();
                     e1.put("player_id", p1.getId());
-                    e1.put("amount", 10);
+                    e1.put("amount", 50);
                     evidence.put(e1);
                     JSONObject e2 = new JSONObject();
                     e2.put("player_id", p2.getId());
-                    e2.put("amount", 10);
+                    e2.put("amount", 50);
                     evidence.put(e2);
                     output.put("evidence", evidence);
                     // Success String
-                    String success = "You recovered evidence on " + p1.getRealName() +" and " +
-                            p2.getRealName() +"’s activities at " + zone.getName() + ".";
+                    String success = "";
+                    if(mission.isStart()) {
+                        Player target = player.getTarget();
+                        success = "Your target, " + target.getCodeName() + ", was last seen in " +
+                                target.getCurrentZone().getName() + ".\nGo find them!";
+                    } else {
+                        success = "Reward: Evidence on " + p1.getRealName() +" and " +
+                                p2.getRealName() + ".";
+                    }
                     output.put("success_description", success);
                     // Add mission to logs
                     logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
                     responseStatus = HttpStatus.OK;
                 } else {
                     System.out.println("Not at mission location yet");
-                    Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
-                    output.put("time_remaining", timeRemaining);
-                    responseStatus = HttpStatus.PARTIAL_CONTENT;
+                    if(mission.isStart()){
+                        responseStatus = HttpStatus.NO_CONTENT;
+                    } else {
+                        Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
+                        output.put("time_remaining", timeRemaining);
+                        responseStatus = HttpStatus.PARTIAL_CONTENT;
+                    }
                 }
             } else {
                 System.out.println("Mission has timed out");
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
-                String failure = "You didn’t managed to recover evidence on " + p1.getRealName() +" and " +
-                        p2.getRealName() +"’s activities at " + zone.getName() + ".";
+                String failure = "No evidence gained.";
                 output.put("failure_description", failure);
             }
         } else {

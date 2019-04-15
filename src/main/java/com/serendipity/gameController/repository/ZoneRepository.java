@@ -13,4 +13,5 @@ public interface ZoneRepository extends CrudRepository<Zone, Long> {
 
     List<Zone> findAllByIdNot(Long id);
 
+    List<Zone> findAllByNameNot(String name);
 }

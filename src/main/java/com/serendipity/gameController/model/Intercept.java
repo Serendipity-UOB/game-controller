@@ -1,7 +1,10 @@
 package com.serendipity.gameController.model;
 
+import org.apache.tomcat.jni.Local;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalTime;
 
 @Entity
 public class Intercept {
@@ -14,16 +17,23 @@ public class Intercept {
     private Player intercepter;
 
     @ManyToOne
+    private Player target;
+
+    @ManyToOne
     private Exchange exchange;
+
+    private LocalTime startTime;
 
     private boolean expired;
 
     public Intercept() {
     }
 
-    public Intercept(Player intercepter, Exchange exchange) {
+    public Intercept(Player intercepter, Player target, LocalTime startTime) {
         this.intercepter = intercepter;
-        this.exchange = exchange;
+        this.target = target;
+        this.exchange = null;
+        this.startTime = startTime;
         this.expired = false;
     }
 
@@ -35,9 +45,17 @@ public class Intercept {
 
     public void setIntercepter(Player intercepter) { this.intercepter = intercepter; }
 
+    public Player getTarget() { return target; }
+
+    public void setTarget(Player target) { this.target = target; }
+
     public Exchange getExchange() { return exchange; }
 
     public void setExchange(Exchange exchange) { this.exchange = exchange; }
+
+    public LocalTime getStartTime() { return startTime; }
+
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
 
     public boolean isExpired() { return expired; }
 
@@ -48,7 +66,9 @@ public class Intercept {
         return "Intercept{" +
                 "id=" + id +
                 ", intercepter=" + intercepter +
+                ", target=" + target +
                 ", exchange=" + exchange +
+                ", startTime=" + startTime +
                 ", expired=" + expired +
                 '}';
     }

@@ -23,4 +23,5 @@ public interface ExchangeRepository extends CrudRepository<Exchange, Long> {
 
     List<Exchange> findAllByResponsePlayerAndRequestSentAndStartTimeAfterOrderByStartTimeAsc(Player responsePlayer, boolean requestSent, LocalTime time);
 
+    List<Exchange> findAllByRequestPlayerAndRequesterToldCompleteOrResponsePlayerAndRequesterToldCompleteOrderByStartTimeAsc(Player requestPlayer, boolean requesterToldComplete1, Player responsePlayer, boolean requesterToldComplete2);
 }

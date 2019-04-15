@@ -57,6 +57,9 @@ public class ZoneServiceImpl implements ZoneService {
     public List<Zone> getAllZonesExcept(Long id) { return zoneRepository.findAllByIdNot(id); }
 
     @Override
+    public List<Zone> getAllZonesExceptUN() { return zoneRepository.findAllByNameNot("UN"); }
+
+    @Override
     public void removeBeaconFromZone(Beacon beacon) {
         Zone zone = beacon.getZone();
         zone.getBeacons().remove(beacon);
@@ -80,23 +83,35 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public Optional<Zone> chooseHomeZone(Player player) {
         List<Zone> allZones = getAllZones();
-        List<Zone> minZones = new ArrayList<>();
-        int minPlayers = Integer.MAX_VALUE;
+        Optional<Zone> UN = null;
+        if (allZones.size() > 0) {
+            UN = Optional.of(allZones.get(0));
+        } else {
+            UN = Optional.empty();
+        }
         for (Zone zone : allZones) {
-            if (getNumPlayersWhoseHomeZone(zone) < minPlayers) {
-                minPlayers = getNumPlayersWhoseHomeZone(zone);
-                minZones = new ArrayList<>();
-                minZones.add(zone);
-            } else if (getNumPlayersWhoseHomeZone(zone) == minPlayers) {
-                minZones.add(zone);
+            if(zone.getName().equals("UN")){
+                UN = Optional.of(zone);
             }
         }
-        if (minZones.size() > 0) {
-            Random random = new Random();
-            return Optional.of(minZones.get(random.nextInt(minZones.size())));
-        } else {
-            return Optional.empty();
-        }
+        return UN;
+//        List<Zone> minZones = new ArrayList<>();
+//        int minPlayers = Integer.MAX_VALUE;
+//        for (Zone zone : allZones) {
+//            if (getNumPlayersWhoseHomeZone(zone) < minPlayers) {
+//                minPlayers = getNumPlayersWhoseHomeZone(zone);
+//                minZones = new ArrayList<>();
+//                minZones.add(zone);
+//            } else if (getNumPlayersWhoseHomeZone(zone) == minPlayers) {
+//                minZones.add(zone);
+//            }
+//        }
+//        if (minZones.size() > 0) {
+//            Random random = new Random();
+//            return Optional.of(minZones.get(random.nextInt(minZones.size())));
+//        } else {
+//            return Optional.empty();
+//        }
     }
 
     @Override

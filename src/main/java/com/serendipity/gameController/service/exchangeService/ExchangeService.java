@@ -59,6 +59,12 @@ public interface ExchangeService {
     Optional<Exchange> getNextExchangeToPlayer(Player responder);
 
     /*
+     * @param player The player you want to find the exchanges for
+     * @return An optional exchange of the earliest active exchange
+     */
+    Optional<Exchange> getEarliestActiveExchange(Player player);
+
+    /*
      * @param exchange The exchange you are calculating evidence for.
      * @param player The player giving evidence about themselves.
      * @param contactIds The list of their contacts.

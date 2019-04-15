@@ -44,6 +44,11 @@ public interface ZoneService {
     List<Zone> getAllZonesExcept(Long id);
 
     /*
+     * @return A list of all the zones except the UN.
+     */
+    List<Zone> getAllZonesExceptUN();
+
+    /*
      * @param beacon The beacon to remove from its zone.
      */
     void removeBeaconFromZone(Beacon beacon);

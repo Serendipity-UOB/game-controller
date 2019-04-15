@@ -126,6 +126,13 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public Optional<Exchange> getEarliestActiveExchange(Player player) {
+        List<Exchange> exchangeList = exchangeRepository.findAllByRequestPlayerAndRequesterToldCompleteOrResponsePlayerAndRequesterToldCompleteOrderByStartTimeAsc(player, false, player, false);
+        if (exchangeList.size() > 0) return Optional.of(exchangeList.get(0));
+        else return Optional.empty();
+    }
+
+    @Override
     public List<Evidence> calculateEvidence(Exchange exchange, Player player, List<Long> contactIds) {
         List<Evidence> evidenceList = new ArrayList<>();
 

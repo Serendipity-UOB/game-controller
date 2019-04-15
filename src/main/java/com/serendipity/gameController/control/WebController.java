@@ -104,17 +104,17 @@ public class WebController {
 
         Zone italy = new Zone("Italy", 0.06f, 0.15f);
         Zone sweden = new Zone("Sweden", 0.25f, 0.55f);
-        Zone colombia = new Zone("Colombia", 0.55f, 0.55f);
+        Zone UN = new Zone("UN", 0.8f, 0.7f);
         Zone switzerland = new Zone("Switzerland", 0.75f, 0.15f);
         Zone czechRepublic = new Zone("Czech Republic", 0.85f, 0.8f);
         zoneService.saveZone(italy);
         zoneService.saveZone(sweden);
-        zoneService.saveZone(colombia);
+        zoneService.saveZone(UN);
         zoneService.saveZone(switzerland);
         zoneService.saveZone(czechRepublic);
         Beacon beacon1 = new Beacon(1, 1, "Beacon 1", italy);
         Beacon beacon2 = new Beacon(1, 2, "Beacon 2", sweden);
-        Beacon beacon3 = new Beacon(2, 1, "Beacon 3", colombia);
+        Beacon beacon3 = new Beacon(2, 1, "Beacon 3", UN);
         Beacon beacon4 = new Beacon(2, 2, "Beacon 4", switzerland);
         Beacon beacon5 = new Beacon(3, 1, "Beacon 5", czechRepublic);
         beaconService.saveBeacon(beacon1);

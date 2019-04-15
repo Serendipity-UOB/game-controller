@@ -55,38 +55,26 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public Mission createMission(Game game, Player target1, Player target2) {
-        // Find length of game in seconds
-        String datePattern = "HH:mm:ss";
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(datePattern);
-        LocalTime gameEnd = game.getEndTime();
-        String endString = df.format(gameEnd);
-        LocalTime gameStart = game.getStartTime();
-        String startString = df.format(gameStart);
-        String[] unitsEnd = endString.split(":");
-        String[] unitsStart = startString.split(":");
-        int end = 3600 * Integer.parseInt(unitsEnd[0]) + 60 * Integer.parseInt(unitsEnd[1]) +
-                Integer.parseInt(unitsEnd[2]);
-        int start = 3600 * Integer.parseInt(unitsStart[0]) + 60 *
-                Integer.parseInt(unitsStart[1]) + Integer.parseInt(unitsStart[2]);
-
-        // Find upper and lower boundaries for mission time assignment
-        int quarter = (end - start) / 4;
-        int upper = end - quarter;
-        int lower = start + quarter;
-
-        // Pick random time
-        Random randomTime = new Random();
-        int time = quarter + randomTime.nextInt(upper - lower);
-        LocalTime missionStart = gameStart.plus(time, ChronoUnit.SECONDS);
-        LocalTime missionEnd = missionStart.plus(30, ChronoUnit.SECONDS);
-        // TODO: May need to make the player assignment more dynamic
-        // TODO: May need to consider multiple missions
-        // Save new mission
-        Mission mission = new Mission(missionStart, missionEnd, target1, target2);
-        saveMission(mission);
-
-        return mission;
+    public Optional<Mission> createMission(Player player) {
+        List<Player> players = playerService.getAllPlayersExcept(player);
+        Random random = new Random();
+        // Ensure there's enough players
+        if(players.size() > 1) {
+            // Get 2 random targets
+            Player target1 = players.get(random.nextInt(players.size()));
+            players.remove(target1);
+            Player target2 = players.get(random.nextInt(players.size()));
+            players.remove(target2);
+            // Create mission
+            Mission mission = new Mission(target1, target2);
+            saveMission(mission);
+            // Assign mission
+            player.setMissionAssigned(mission);
+            playerService.savePlayer(player);
+            return Optional.of(mission);
+        } else {
+            return Optional.empty();
+        }
     }
 
 

@@ -11,10 +11,8 @@ public class Mission {
     @GeneratedValue
     private Long id;
 
-    @NotNull
     private LocalTime startTime;
 
-    @NotNull
     private LocalTime endTime;
 
     @ManyToOne
@@ -26,14 +24,14 @@ public class Mission {
     @ManyToOne
     private Zone zone;
 
+    private boolean start;
+
     private boolean completed;
 
     public Mission() {
     }
 
-    public Mission(@NotNull LocalTime startTime, @NotNull LocalTime endTime, @NotNull Player player1, @NotNull Player player2) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public Mission(@NotNull Player player1, @NotNull Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.completed = false;
@@ -75,6 +73,10 @@ public class Mission {
 
     public void setZone(Zone zone) { this.zone = zone; }
 
+    public boolean isStart() { return start; }
+
+    public void setStart(boolean start) { this.start = start; }
+
     public boolean isCompleted() { return completed; }
 
     public void setCompleted(boolean completed) { this.completed = completed; }
@@ -87,8 +89,9 @@ public class Mission {
                 ", endTime=" + endTime +
                 ", player1=" + player1 +
                 ", player2=" + player2 +
-                ", Beacon=" + zone +
-                ", sent=" + completed +
+                ", zone=" + zone +
+                ", start=" + start +
+                ", completed=" + completed +
                 '}';
     }
 }
