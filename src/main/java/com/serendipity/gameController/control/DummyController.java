@@ -1,5 +1,7 @@
 package com.serendipity.gameController.control;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.JsonAdapter;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -60,26 +63,18 @@ public class DummyController {
 //                "{ \"id\": 4, \"real_name\": \"tom walker\", \"code_name\": \"Cookingking\"}]";
         List<JSONObject> jsonObjects = new ArrayList<>();
 
-        Player jack = new Player("jack jones", "CutieKitten");
-        JSONObject jsonJack = new JSONObject();
-        jsonJack.put("id", 2);
-        jsonJack.put("real_name", jack.getRealName());
-        jsonJack.put("code_name", jack.getCodeName());
-        jsonObjects.add(jsonJack);
+        List<String> names = new ArrayList<String>(Arrays.asList("Jack", "Palvi", "Tom", "Tilly", "Louis", "Nuha",
+                "David", "Callum", "James", "Sibela", "Elias", "Myles", "Katie"));
+        List<String> codes = new ArrayList<String>(Arrays.asList("Alpha", "Beta", "Charlie", "Delta", "Echo", "Foxtrot",
+                "Golf", "Hotel", "India", "Juliett", "Kilo", "Lima", "Mike"));
 
-        Player tilly = new Player("tilly woodfield", "PuppyLover");
-        JSONObject jsonTilly = new JSONObject();
-        jsonTilly.put("id", 3);
-        jsonTilly.put("real_name", tilly.getRealName());
-        jsonTilly.put("code_name", tilly.getCodeName());
-        jsonObjects.add(jsonTilly);
-
-        Player tom = new Player("tom walker", "CookingKing");
-        JSONObject jsonTom = new JSONObject();
-        jsonTom.put("id", 4);
-        jsonTom.put("real_name", tom.getRealName());
-        jsonTom.put("code_name", tom.getCodeName());
-        jsonObjects.add(jsonTom);
+        for(int i = 0; i < names.size(); i++){
+            JSONObject player = new JSONObject();
+            player.put("id", i);
+            player.put("real_name", names.get(i));
+            player.put("code_name", codes.get(i));
+            jsonObjects.add(player);
+        }
 
         JSONObject output = new JSONObject();
         output.put("all_players", jsonObjects);
