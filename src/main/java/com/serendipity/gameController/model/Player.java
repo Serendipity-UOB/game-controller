@@ -3,6 +3,7 @@ package com.serendipity.gameController.model;
 import javax.persistence.*;
 import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Entity
@@ -32,6 +33,8 @@ public class Player {
 
     @ManyToOne
     private Zone currentZone;
+
+    private LocalTime timeEnteredZone;
 
     @OneToOne
     private Mission missionAssigned;
@@ -120,9 +123,7 @@ public class Player {
 
     public void setReturnHome(boolean returnHome) { this.returnHome = returnHome; }
 
-    public Zone getCurrentZone() {
-        return currentZone;
-    }
+    public Zone getCurrentZone() { return currentZone; }
 
     public void setCurrentZone(Zone currentZone) {
         this.currentZone = currentZone;
@@ -132,6 +133,10 @@ public class Player {
         if (this.currentZone == null) return false;
         else return true;
     }
+
+    public LocalTime getTimeEnteredZone() { return timeEnteredZone; }
+
+    public void setTimeEnteredZone(LocalTime timeEnteredZone) { this.timeEnteredZone = timeEnteredZone; }
 
     public Mission getMissionAssigned() { return missionAssigned; }
 

@@ -4,6 +4,7 @@ import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.repository.PlayerRepository;
+import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     PlayerRepository playerRepository;
+
+    @Autowired
+    ZoneServiceImpl zoneService;
 
     @Override
     public void savePlayer(Player player){
@@ -200,14 +204,35 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Long> getNearbyPlayerIds(Player player) {
-        List<Long> playerIds = new ArrayList<>();
+    public List<JSONObject> getNearbyPlayers(Player player) {
+        List<JSONObject> players = new ArrayList<>();
         if (player.hasCurrentZone()) {
             Zone zone = player.getCurrentZone();
-            List<Player> players = playerRepository.findAllByCurrentZone(zone);
-            for (Player p : players) playerIds.add(p.getId());
+            List<Player> nearPlayers = playerRepository.findAllByCurrentZone(zone);
+            for (Player p : nearPlayers) {
+                JSONObject info = new JSONObject();
+                info.put("id", p.getId());
+                info.put("location", zoneService.locationMapping(p.getCurrentZone()));
+                players.add(info);
+            }
         }
-        return playerIds;
+        return players;
+    }
+
+    @Override
+    public List<JSONObject> getFarPlayers(Player player) {
+        List<JSONObject> players = new ArrayList<>();
+        if (player.hasCurrentZone()) {
+            Zone zone = player.getCurrentZone();
+            List<Player> farPlayers = playerRepository.findAllByCurrentZoneNot(zone);
+            for (Player p : farPlayers) {
+                JSONObject info = new JSONObject();
+                info.put("id", p.getId());
+                info.put("location", zoneService.locationMapping(p.getCurrentZone()));
+                players.add(info);
+            }
+        }
+        return players;
     }
 
     @Override

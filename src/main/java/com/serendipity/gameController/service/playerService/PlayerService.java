@@ -111,9 +111,15 @@ public interface PlayerService {
 
     /*
      * @param player The current player
-     * @return List of ids of the nearby players
+     * @return List of ids and locations of the nearby players
      */
-    List<Long> getNearbyPlayerIds(Player player);
+    List<JSONObject> getNearbyPlayers(Player player);
+
+    /*
+     * @param player The current player
+     * @return List of ids and locations of the far players
+     */
+    List<JSONObject> getFarPlayers(Player player);
 
     /*
      * @param realName The real name that has been entered by the user

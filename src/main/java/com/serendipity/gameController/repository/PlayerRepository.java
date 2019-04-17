@@ -20,6 +20,8 @@ public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     List<Player> findAllByCurrentZone(Zone zone);
 
+    List<Player> findAllByCurrentZoneNot(Zone zone);
+
     List<Player> findAllByCodeNameNot(String codename);
 
     List<Player> findAllByCodeNameNotAndCodeNameNot(String codename1, String codename2);

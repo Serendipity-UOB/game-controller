@@ -72,4 +72,15 @@ public interface ZoneService {
      */
     Optional<Zone> calculateCurrentZone(Player player, JSONArray jsonBeacons);
 
+    /*
+     * @param id The id of the zone not wanted.
+     * @return A list of all the zones in the database except the one specified and the UN.
+     */
+    List<Zone> getAllZonesExceptUNandOne(Long id);
+
+    /*
+     * @param location The zone the player is at.
+     * @return The predefined mapping.
+     */
+    int locationMapping(Zone location);
 }

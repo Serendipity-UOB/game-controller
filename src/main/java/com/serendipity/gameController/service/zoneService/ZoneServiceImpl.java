@@ -147,4 +147,40 @@ public class ZoneServiceImpl implements ZoneService {
         } else return Optional.empty();
     }
 
+    @Override
+    public List<Zone> getAllZonesExceptUNandOne(Long id){
+        List<Zone> notOne = zoneRepository.findAllByIdNot(id);
+        // Remove UN from selection
+        List<Zone> notUN = new ArrayList<>();
+        for(Zone z : notOne) {
+            if (!z.getName().equals("UN")) { notUN.add(z); }
+        }
+        return notUN;
+    }
+
+    @Override
+    public int locationMapping(Zone location){
+        String zoneName = location.getName();
+        int mapping = -1;
+        switch(zoneName){
+            case "UN":
+                mapping = 0;
+                break;
+            case "Italy":
+                mapping = 1;
+                break;
+            case "Sweden":
+                mapping = 2;
+                break;
+            case "Switzerland":
+                mapping = 3;
+                break;
+            case "Czech Republic":
+                mapping = 4;
+                break;
+            default:
+                break;
+        }
+        return mapping;
+    }
 }

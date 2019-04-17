@@ -26,6 +26,8 @@ public class Mission {
 
     private boolean start;
 
+    private boolean sent;
+
     private boolean completed;
 
     public Mission() {
@@ -34,6 +36,8 @@ public class Mission {
     public Mission(@NotNull Player player1, @NotNull Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        this.start = false;
+        this.sent = false;
         this.completed = false;
     }
 
@@ -76,6 +80,10 @@ public class Mission {
     public boolean isStart() { return start; }
 
     public void setStart(boolean start) { this.start = start; }
+
+    public boolean isSent() { return sent; }
+
+    public void setSent(boolean sent) { this.sent = sent; }
 
     public boolean isCompleted() { return completed; }
 
