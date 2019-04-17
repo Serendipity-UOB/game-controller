@@ -12,6 +12,7 @@ import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 
+import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,9 @@ public class MobileController {
             if(games.size() > 0) {
                 // Ensure game exists
                 Game game = gameService.getAllGames().get(0);
+                // Setup zone dispersion variables
+                player.setCurrentZone(player.getHomeZone());
+                player.setTimeEnteredZone(LocalTime.now());
                 // Assign initial Mission
                 Optional<Mission> opMission = missionService.createMission(player);
                 if(opMission.isPresent()){
@@ -185,6 +189,7 @@ public class MobileController {
                     mission.setZone(zones.get(random.nextInt(zones.size())));
                     mission.setStart(true);
                     missionService.saveMission(mission);
+                    player.setMissionAssigned(mission);
                     // Assign new target
                     Long targetId = playerService.newTarget(player.getId());
                     Optional<Player> opTarget = playerService.getPlayer(targetId);
@@ -288,15 +293,26 @@ public class MobileController {
             Player player = optionalPlayer.get();
             realName = player.getRealName();
             // Nearby players
-            List<Long> nearbyPlayerIds = new ArrayList<>();
+            List<JSONObject> nearbyPlayers = new ArrayList<>();
+            // Far away players
+            List<JSONObject> farPlayers = new ArrayList<>();
             Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, jsonBeacons);
             if (optionalZone.isPresent()) {
                 Zone zone = optionalZone.get();
-                player.setCurrentZone(zone);
-                playerService.savePlayer(player);
-                nearbyPlayerIds = playerService.getNearbyPlayerIds(player);
+                if(!zone.equals(player.getCurrentZone())){
+                    player.setCurrentZone(zone);
+                    player.setTimeEnteredZone(LocalTime.now());
+                    playerService.savePlayer(player);
+                }
+                nearbyPlayers = playerService.getNearbyPlayers(player);
+                farPlayers = playerService.getFarPlayers(player);
             } else System.out.println("Couldn't calculate the player's current zone");
-            output.put("nearby_players", nearbyPlayerIds);
+            output.put("nearby_players", nearbyPlayers);
+            output.put("far_players", farPlayers);
+
+            // Location
+            int location = zoneService.locationMapping(player.getCurrentZone());
+            output.put("location", location);
 
             // Reputation
             output.put("reputation", player.getReputation());
@@ -343,37 +359,47 @@ public class MobileController {
             }
             output.put("exchange_pending", requesterId);
 
+            // Dispersion of players
+            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
+                // See if previous mission has been completed
+                if(player.getMissionAssigned().isCompleted()) {
+                    // Assign mission
+                    Optional<Mission> opMission = missionService.createMission(player);
+                    if (opMission.isPresent()) {
+                        // Set mission parameters
+                        Mission mission = opMission.get();
+                        mission.setStartTime(LocalTime.now());
+                        // 30 seconds to complete mission, extra second for polling delay
+                        mission.setEndTime(LocalTime.now().plusSeconds(31));
+                        // Assign random zone
+                        List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
+                        Random random = new Random();
+                        mission.setZone(zones.get(random.nextInt(zones.size())));
+                        missionService.saveMission(mission);
+                        player.setMissionAssigned(mission);
+                        playerService.savePlayer(player);
+                    }
+                }
+            }
+
             // Mission
             Optional<Mission> opMission = missionService.getMission(player.getMissionAssigned().getId());
             if( opMission.isPresent() ){
                 Mission mission = opMission.get();
                 // If mission should start
-                if (mission.getStartTime().isBefore(LocalTime.now()) && !mission.isCompleted()) {
+                if (!mission.isCompleted()) {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
                     String missionDescription;
+                    Zone loc = mission.getZone();
                     if(mission.isStart()){
-                        Zone location = mission.getZone();
-                        missionDescription = "Welcome, Agent.\nGo to " + location.getName() +
+                        missionDescription = "Welcome, Agent.\nGo to " + loc.getName() +
                                 " for a hint on your target's location.";
                     } else {
                         missionDescription = "Evidence available on " + p1.getRealName()
-                                + " and " + p2.getRealName() + ".\nGo to";
-                        Zone zone = mission.getZone();
-                        if (zone == null) {
-                            List<Zone> notCurrent = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
-                            // Remove UN from selection
-                            List<Zone> notUN = new ArrayList<>();
-                            for(Zone z : notCurrent){
-                                if(!z.getName().equals("UN")){ notUN.add(z); }
-                            }
-                            Random random = new Random();
-                            zone = notCurrent.get(random.nextInt(notUN.size()));
-                        }
-                        missionDescription += zone.getName() + ".";
-                        mission.setZone(zone);
+                                + " and " + p2.getRealName() + ".\nGo to " + loc.getName() + ".";
                     }
-                    mission.setCompleted(true);
+                    mission.setSent(true);
                     missionService.saveMission(mission);
                     output.put("mission_description", missionDescription);
                 } else { output.put("mission_description", ""); }
@@ -830,6 +856,9 @@ public class MobileController {
                                 p2.getRealName() + ".";
                     }
                     output.put("success_description", success);
+                    // Set mission complete
+                    mission.setCompleted(true);
+                    missionService.saveMission(mission);
                     // Add mission to logs
                     logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
                     responseStatus = HttpStatus.OK;
@@ -848,6 +877,9 @@ public class MobileController {
                 responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
                 String failure = "No evidence gained.";
                 output.put("failure_description", failure);
+                // Set mission complete
+                mission.setCompleted(true);
+                missionService.saveMission(mission);
             }
         } else {
             System.out.println("No player exists by this id");
