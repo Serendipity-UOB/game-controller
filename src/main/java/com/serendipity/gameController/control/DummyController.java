@@ -1,7 +1,5 @@
 package com.serendipity.gameController.control;
 
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.JsonAdapter;
 import com.serendipity.gameController.model.Player;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import org.json.JSONArray;
@@ -41,7 +39,7 @@ public class DummyController {
     public ResponseEntity<String> getGameInfo() {
         JSONObject output = new JSONObject();
         output.put("start_time", LocalTime.now().plus(4, ChronoUnit.SECONDS));
-        output.put("number_players", 3);
+        output.put("number_players", 13);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
@@ -51,7 +49,7 @@ public class DummyController {
         JSONObject input = new JSONObject(json);
         Long id = input.getLong("player_id");
         JSONObject output = new JSONObject();
-        output.put("home_zone_name", "Server Team Is Best");
+        output.put("home_zone_name", "UN");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
@@ -70,7 +68,7 @@ public class DummyController {
 
         for(int i = 0; i < names.size(); i++){
             JSONObject player = new JSONObject();
-            player.put("id", i);
+            player.put("id", i+1);
             player.put("real_name", names.get(i));
             player.put("code_name", codes.get(i));
             jsonObjects.add(player);
@@ -93,17 +91,49 @@ public class DummyController {
     @RequestMapping(value="/playerUpdateTest", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> playerUpdate(@RequestBody String json) {
-        List<Long> nearbyPlayerIds = new ArrayList<>();
-        nearbyPlayerIds.add(2l);
-        nearbyPlayerIds.add(3l);
+        List<JSONObject> nearbyPlayers = new ArrayList<>();
+        List<JSONObject> farPlayers = new ArrayList<>();
+
+        for(int i = 0; i < 5; i++){
+            JSONObject near = new JSONObject();
+            near.put("id", i+1);
+            near.put("location", 2);
+            nearbyPlayers.add(near);
+        }
+        for(int i = 5; i < 7; i++){
+            JSONObject far = new JSONObject();
+            far.put("id", i+1);
+            far.put("location", 0);
+            farPlayers.add(far);
+        }
+        for(int i = 7; i < 10; i++) {
+            JSONObject far = new JSONObject();
+            far.put("id", i + 1);
+            far.put("location", 1);
+            farPlayers.add(far);
+        }
+        for(int i = 10; i < 11; i++){
+            JSONObject far = new JSONObject();
+            far.put("id", i+1);
+            far.put("location", 3);
+            farPlayers.add(far);
+        }
+        for(int i = 11; i < 13; i++){
+            JSONObject far = new JSONObject();
+            far.put("id", i+1);
+            far.put("location", 4);
+            farPlayers.add(far);
+        }
         JSONObject output = new JSONObject();
-        output.put("nearby_players", nearbyPlayerIds);
+        output.put("location", 2);
+        output.put("nearby_players", nearbyPlayers);
+        output.put("far_players", farPlayers);
         output.put("reputation", 0);
         output.put("position", 1);
         output.put("exchange_pending", 0);
         output.put("exposed_by", 0);
         output.put("req_new_target", false);
-//        output.put("mission_description", "Do this mission at Beacon A in 30 Seconds");
+//        output.put("mission_description", "Evidence available on Nuha and Tom.\nGo to Italy.");
         output.put("mission_description", "");
         output.put("game_over", false);
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
@@ -193,12 +223,12 @@ public class DummyController {
         Long targetId = input.getLong("target_id");
         JSONArray evidence = new JSONArray();
         JSONObject p1 = new JSONObject();
-        p1.put("player_id",3);
-        p1.put("amount",20);
+        p1.put("player_id",targetId);
+        p1.put("amount",30);
         evidence.put(p1);
         JSONObject p2 = new JSONObject();
         p2.put("player_id",4);
-        p2.put("amount",20);
+        p2.put("amount",10);
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
@@ -211,15 +241,15 @@ public class DummyController {
         JSONArray evidence = new JSONArray();
         JSONObject p1 = new JSONObject();
         p1.put("player_id",3);
-        p1.put("amount",10);
+        p1.put("amount",50);
         evidence.put(p1);
         JSONObject p2 = new JSONObject();
-        p2.put("player_id",4);
-        p2.put("amount",10);
+        p2.put("player_id",6);
+        p2.put("amount",50);
         evidence.put(p2);
         JSONObject output = new JSONObject();
         output.put("evidence", evidence);
-        output.put("success_description", "You recovered evidence on Tom and Nuha’s activities at Beacon C.");
+        output.put("success_description", "Reward: Evidence on Nuha and Tom.");
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
 
