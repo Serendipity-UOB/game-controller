@@ -387,7 +387,7 @@ public class MobileController {
             if( opMission.isPresent() ){
                 Mission mission = opMission.get();
                 // If mission should start
-                if (!mission.isCompleted()) {
+                if (!mission.isSent()) {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
                     String missionDescription;
