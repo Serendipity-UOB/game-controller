@@ -76,6 +76,7 @@ public class LogServiceImpl implements LogService {
         for (Log l : logs) {
             JSONObject obj = new JSONObject();
             String text = "";
+            boolean found = false;
             if (l.getType() == LogType.MISSION) {
                 // Compose string for mission log
                 // Get mission
@@ -88,6 +89,8 @@ public class LogServiceImpl implements LogService {
                     if (opPlayer.isPresent()) {
                         Player player = opPlayer.get();
                         text = player.getRealName() + " completed a mission!";
+                        obj.put("interaction", "mission");
+                        found = true;
                     }
                 }
             } else if (l.getType() == LogType.INTERCEPT) {
@@ -104,8 +107,9 @@ public class LogServiceImpl implements LogService {
                     Player target1 = exchange.getRequestPlayer();
                     Player target2 = exchange.getResponsePlayer();
                     text = player.getRealName() + "<span class = \"intercept\"> intercepted</span> an <span class = \"exchange\">exchange</span> between " + target1.getRealName() + " and " + target2.getRealName() + "!";
+                    obj.put("interaction", "intercept");
+                    found = true;
                 }
-
             } else if (l.getType() == LogType.EXPOSE) {
                 // Compose string for expose log
                 // Get expose
@@ -116,8 +120,12 @@ public class LogServiceImpl implements LogService {
                     Player player = expose.getPlayer();
                     Player target = expose.getTarget();
                     text = player.getRealName() + " <span class = \"expose\">exposed</span> " + target.getRealName() + "!";
+                    obj.put("interaction", "expose");
+                    found = true;
                 }
             } else if (l.getType() == LogType.EXCHANGE) {
+                // Compose string for exchange log
+                // Get exchange
                 Optional<Exchange> opExchange = exchangeService.getExchange(l.getInteractionId());
                 // See if expose exists
                 if (opExchange.isPresent()) {
@@ -125,14 +133,18 @@ public class LogServiceImpl implements LogService {
                     Player requester = exchange.getRequestPlayer();
                     Player responder = exchange.getResponsePlayer();
                     text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with "  + responder.getRealName() + "!";
+                    obj.put("interaction", "exchange");
+                    found = true;
                 }
             }
-            obj.put("time", l.getTime());
-            obj.put("message", text);
-            obj.put("zone_name", l.getZone().getName());
-            output.put(obj);
-            l.setSent(true);
-            logRepository.save(l);
+            if(found) {
+                obj.put("time", l.getTime());
+                obj.put("message", text);
+                obj.put("zone_name", l.getZone().getName());
+                output.put(obj);
+                l.setSent(true);
+                logRepository.save(l);
+            }
         }
         return output;
     }
