@@ -124,11 +124,12 @@ public class LogServiceImpl implements LogService {
                     Exchange exchange = opExchange.get();
                     Player requester = exchange.getRequestPlayer();
                     Player responder = exchange.getResponsePlayer();
-                    text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with"  + responder.getRealName() + "!";
+                    text = requester.getRealName() + " <span class = \"exchange\">exchanged</span> with "  + responder.getRealName() + "!";
                 }
             }
             obj.put("time", l.getTime());
             obj.put("message", text);
+            obj.put("zone_name", l.getZone().getName());
             output.put(obj);
             l.setSent(true);
             logRepository.save(l);
