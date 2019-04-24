@@ -252,11 +252,11 @@ public class MobileController {
                 if (optionalZone.isPresent()) {
                     Zone currentZone = optionalZone.get();
                     player.setCurrentZone(currentZone);
-                    player.setMissionsPaused(false);
-                    playerService.savePlayer(player);
                     Zone homeZone = player.getHomeZone();
                     if (currentZone.equals(homeZone)) {
                         output.put("home", true);
+                        player.setMissionsPaused(false);
+                        playerService.savePlayer(player);
                     } else {
                         output.put("home", false);
                     }
