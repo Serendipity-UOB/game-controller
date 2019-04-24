@@ -360,7 +360,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(300).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
+            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
                     // Assign mission
@@ -734,11 +734,17 @@ public class MobileController {
                                 Optional<Exchange> opExchange = exchangeService.getEarliestActiveExchange(target);
                                 if (opExchange.isPresent()) {
                                     Exchange exchange = opExchange.get();
-                                    intercept.setExchange(exchange);
-                                    interceptService.saveIntercept(intercept);
-                                    System.out.println("Exchange set");
-                                    output.put("PARTIAL_CONTENT", "Exchange set");
-                                    responseStatus = HttpStatus.PARTIAL_CONTENT;
+                                    if(!exchange.getResponsePlayer().equals(player)) {
+                                        intercept.setExchange(exchange);
+                                        interceptService.saveIntercept(intercept);
+                                        System.out.println("Exchange set");
+                                        output.put("PARTIAL_CONTENT", "Exchange set");
+                                        responseStatus = HttpStatus.PARTIAL_CONTENT;
+                                    } else {
+                                        System.out.println("No exchange found");
+                                        output.put("PARTIAL_CONTENT", "No exchange found");
+                                        responseStatus = HttpStatus.PARTIAL_CONTENT;
+                                    }
                                 } else {
                                     System.out.println("No exchange found");
                                     output.put("PARTIAL_CONTENT", "No exchange found");
