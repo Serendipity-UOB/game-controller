@@ -669,12 +669,14 @@ public class MobileController {
                             p.setReturnHome(true);
                             p.setMissionsPaused(true);
                             playerService.savePlayer(p);
+                            if (p.isMissionsPaused()) System.out.println("JACK IS MAD, WHAT THE HELL");
                         }
                     }
                     // set targets exposed attribute
                     target.setExposedBy(playerId);
                     target.setMissionsPaused(true);
                     playerService.savePlayer(target);
+                    if (target.isMissionsPaused()) System.out.println("JACK IS MAD, WHAT THE HELL");
                     // Create expose
                     Expose expose = new Expose(player, target);
                     exposeService.saveExpose(expose);
