@@ -200,6 +200,8 @@ public class MobileController {
                         // Return all players
                         responseStatus = HttpStatus.OK;
                         output.put("all_players", playerService.getAllPlayersStartInfo());
+                        // Return first target
+                        output.put("first_target_id", target.getId());
                         // Return game endTime
                         output.put("end_time", game.getEndTime());
                     } else {
