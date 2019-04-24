@@ -376,8 +376,8 @@ public class MobileController {
                         // 30 seconds to complete mission, extra second for polling delay
                         mission.setEndTime(LocalTime.now().plusSeconds(31));
                         // Assign random zone
-                        List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
-//                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
+//                        List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
+                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
                         Random random = new Random();
                         mission.setZone(zones.get(random.nextInt(zones.size())));
                         missionService.saveMission(mission);
