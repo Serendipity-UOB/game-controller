@@ -250,6 +250,7 @@ public class MobileController {
                 if (optionalZone.isPresent()) {
                     Zone currentZone = optionalZone.get();
                     player.setCurrentZone(currentZone);
+                    player.setMissionsPaused(false);
                     playerService.savePlayer(player);
                     Zone homeZone = player.getHomeZone();
                     if (currentZone.equals(homeZone)) {
@@ -360,7 +361,8 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
+            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
+                && !player.isMissionsPaused()){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
                     // Assign mission
@@ -663,11 +665,13 @@ public class MobileController {
                     for (Player p : players) {
                         if (!(p.getId().equals(player.getId()))){
                             p.setReturnHome(true);
+                            p.setMissionsPaused(true);
                             playerService.savePlayer(p);
                         }
                     }
                     // set targets exposed attribute
                     target.setExposedBy(playerId);
+                    target.setMissionsPaused(true);
                     playerService.savePlayer(target);
                     // Create expose
                     Expose expose = new Expose(player, target);
@@ -831,68 +835,73 @@ public class MobileController {
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         if (opPlayer.isPresent()) {
             Player player = opPlayer.get();
-            realName = player.getRealName();
-            Zone location = player.getCurrentZone();
-            Mission mission = player.getMissionAssigned();
-            // Check if mission hasn't already been completed
-            if (!mission.isCompleted()) {
-                // Get mission details
-                Player p1 = mission.getPlayer1();
-                Player p2 = mission.getPlayer2();
-                Zone zone = mission.getZone();
-                // Check if the mission hasn't timed out
-                if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS)) || mission.isStart()) {
-                    if (location.equals(zone)) {
-                        // Evidence to return
-                        JSONArray evidence = new JSONArray();
-                        JSONObject e1 = new JSONObject();
-                        e1.put("player_id", p1.getId());
-                        e1.put("amount", 50);
-                        evidence.put(e1);
-                        JSONObject e2 = new JSONObject();
-                        e2.put("player_id", p2.getId());
-                        e2.put("amount", 50);
-                        evidence.put(e2);
-                        output.put("evidence", evidence);
-                        // Success String
-                        String success = "";
-                        if (mission.isStart()) {
-                            Player target = player.getTarget();
-                            success = "Your target, " + target.getCodeName() + ", was last seen in " +
-                                    target.getCurrentZone().getName() + ".\nGo find them!";
+            if(!player.isMissionsPaused()) {
+                realName = player.getRealName();
+                Zone location = player.getCurrentZone();
+                Mission mission = player.getMissionAssigned();
+                // Check if mission hasn't already been completed
+                if (!mission.isCompleted()) {
+                    // Get mission details
+                    Player p1 = mission.getPlayer1();
+                    Player p2 = mission.getPlayer2();
+                    Zone zone = mission.getZone();
+                    // Check if the mission hasn't timed out
+                    if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS)) || mission.isStart()) {
+                        if (location.equals(zone)) {
+                            // Evidence to return
+                            JSONArray evidence = new JSONArray();
+                            JSONObject e1 = new JSONObject();
+                            e1.put("player_id", p1.getId());
+                            e1.put("amount", 50);
+                            evidence.put(e1);
+                            JSONObject e2 = new JSONObject();
+                            e2.put("player_id", p2.getId());
+                            e2.put("amount", 50);
+                            evidence.put(e2);
+                            output.put("evidence", evidence);
+                            // Success String
+                            String success = "";
+                            if (mission.isStart()) {
+                                Player target = player.getTarget();
+                                success = "Your target, " + target.getCodeName() + ", was last seen in " +
+                                        target.getCurrentZone().getName() + ".\nGo find them!";
+                            } else {
+                                success = "Reward: Evidence on " + p1.getRealName() + " and " +
+                                        p2.getRealName() + ".";
+                            }
+                            output.put("success_description", success);
+                            // Set mission complete
+                            mission.setCompleted(true);
+                            missionService.saveMission(mission);
+                            // Add mission to logs
+                            logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
+                            responseStatus = HttpStatus.OK;
                         } else {
-                            success = "Reward: Evidence on " + p1.getRealName() + " and " +
-                                    p2.getRealName() + ".";
+                            System.out.println("Not at mission location yet");
+                            if (mission.isStart()) {
+                                responseStatus = HttpStatus.NO_CONTENT;
+                            } else {
+                                Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
+                                output.put("time_remaining", timeRemaining);
+                                responseStatus = HttpStatus.PARTIAL_CONTENT;
+                            }
                         }
-                        output.put("success_description", success);
+                    } else {
+                        System.out.println("Mission has timed out");
+                        responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
+                        String failure = "No evidence gained.";
+                        output.put("failure_description", failure);
                         // Set mission complete
                         mission.setCompleted(true);
                         missionService.saveMission(mission);
-                        // Add mission to logs
-                        logService.saveLog(LogType.MISSION, mission.getId(), LocalTime.now(), player.getCurrentZone());
-                        responseStatus = HttpStatus.OK;
-                    } else {
-                        System.out.println("Not at mission location yet");
-                        if (mission.isStart()) {
-                            responseStatus = HttpStatus.NO_CONTENT;
-                        } else {
-                            Long timeRemaining = SECONDS.between(LocalTime.now(), mission.getEndTime());
-                            output.put("time_remaining", timeRemaining);
-                            responseStatus = HttpStatus.PARTIAL_CONTENT;
-                        }
                     }
                 } else {
-                    System.out.println("Mission has timed out");
-                    responseStatus = HttpStatus.NON_AUTHORITATIVE_INFORMATION;
-                    String failure = "No evidence gained.";
-                    output.put("failure_description", failure);
-                    // Set mission complete
-                    mission.setCompleted(true);
-                    missionService.saveMission(mission);
+                    System.out.println("Mission already completed");
+                    output.put("BAD_REQUEST", "Mission already completed");
                 }
             } else {
-                System.out.println("Mission already completed");
-                output.put("BAD_REQUEST", "Mission already completed");
+                System.out.println("Missions paused");
+                responseStatus = HttpStatus.RESET_CONTENT;
             }
         } else {
             System.out.println("No player exists by this id");
