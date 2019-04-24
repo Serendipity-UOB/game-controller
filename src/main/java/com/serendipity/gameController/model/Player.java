@@ -39,10 +39,13 @@ public class Player {
     @OneToOne
     private Mission missionAssigned;
 
+    private boolean missionsPaused;
+
     public Player() {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsPaused = false;
     }
 
     public Player(@NotNull String realName, @NotNull String codeName) {
@@ -51,6 +54,7 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsPaused = false;
     }
 
     public Player(@NotNull String realName, @NotNull String codeName, Player target) {
@@ -60,6 +64,7 @@ public class Player {
         this.reputation = 0;
         this.exposedBy = 0l;
         this.returnHome = false;
+        this.missionsPaused = false;
     }
 
     public Long getId() {
@@ -142,6 +147,10 @@ public class Player {
 
     public void setMissionAssigned(Mission missionAssigned) { this.missionAssigned = missionAssigned; }
 
+    public boolean isMissionsPaused() { return missionsPaused; }
+
+    public void setMissionsPaused( boolean missionsPaused ) { this.missionsPaused = missionsPaused; }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -151,10 +160,12 @@ public class Player {
                 ", homeZone=" + homeZone +
                 ", target=" + target +
                 ", reputation=" + reputation +
-                ", exposed=" + exposedBy +
+                ", exposedBy=" + exposedBy +
                 ", returnHome=" + returnHome +
                 ", currentZone=" + currentZone +
+                ", timeEnteredZone=" + timeEnteredZone +
                 ", missionAssigned=" + missionAssigned +
+                ", missionsPaused=" + missionsPaused +
                 '}';
     }
 }
