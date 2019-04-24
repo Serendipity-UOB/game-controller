@@ -360,7 +360,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
+            if(player.getTimeEnteredZone().plusSeconds(300).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
                     // Assign mission
