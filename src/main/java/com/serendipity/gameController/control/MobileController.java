@@ -839,10 +839,10 @@ public class MobileController {
         Optional<Player> opPlayer = playerService.getPlayer(playerId);
         if (opPlayer.isPresent()) {
             Player player = opPlayer.get();
+            realName = player.getRealName();
+            Zone location = player.getCurrentZone();
+            Mission mission = player.getMissionAssigned();
             if(!player.isMissionsPaused()) {
-                realName = player.getRealName();
-                Zone location = player.getCurrentZone();
-                Mission mission = player.getMissionAssigned();
                 // Check if mission hasn't already been completed
                 if (!mission.isCompleted()) {
                     // Get mission details
@@ -898,6 +898,9 @@ public class MobileController {
                         // Set mission complete
                         mission.setCompleted(true);
                         missionService.saveMission(mission);
+                        // Reset zone entry time
+                        player.setTimeEnteredZone(LocalTime.now());
+                        playerService.savePlayer(player);
                     }
                 } else {
                     System.out.println("Mission already completed");
@@ -905,6 +908,8 @@ public class MobileController {
                 }
             } else {
                 System.out.println("Missions paused");
+                mission.setCompleted(true);
+                missionService.saveMission(mission);
                 responseStatus = HttpStatus.RESET_CONTENT;
             }
         } else {
