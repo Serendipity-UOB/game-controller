@@ -363,29 +363,29 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
-                && !player.isMissionsPaused()){
-                // See if previous mission has been completed
-                if(player.getMissionAssigned().isCompleted()) {
-                    // Assign mission
-                    Optional<Mission> opMission = missionService.createMission(player);
-                    if (opMission.isPresent()) {
-                        // Set mission parameters
-                        Mission mission = opMission.get();
-                        mission.setStartTime(LocalTime.now());
-                        // 30 seconds to complete mission, extra second for polling delay
-                        mission.setEndTime(LocalTime.now().plusSeconds(31));
-                        // Assign random zone
-                        List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
-//                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
-                        Random random = new Random();
-                        mission.setZone(zones.get(random.nextInt(zones.size())));
-                        missionService.saveMission(mission);
-                        player.setMissionAssigned(mission);
-                        playerService.savePlayer(player);
-                    }
-                }
-            }
+//            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
+//                && !player.isMissionsPaused()){
+//                // See if previous mission has been completed
+//                if(player.getMissionAssigned().isCompleted()) {
+//                    // Assign mission
+//                    Optional<Mission> opMission = missionService.createMission(player);
+//                    if (opMission.isPresent()) {
+//                        // Set mission parameters
+//                        Mission mission = opMission.get();
+//                        mission.setStartTime(LocalTime.now());
+//                        // 30 seconds to complete mission, extra second for polling delay
+//                        mission.setEndTime(LocalTime.now().plusSeconds(31));
+//                        // Assign random zone
+//                        List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
+////                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
+//                        Random random = new Random();
+//                        mission.setZone(zones.get(random.nextInt(zones.size())));
+//                        missionService.saveMission(mission);
+//                        player.setMissionAssigned(mission);
+//                        playerService.savePlayer(player);
+//                    }
+//                }
+//            }
 
             // Mission
             Optional<Mission> opMission = missionService.getMission(player.getMissionAssigned().getId());
