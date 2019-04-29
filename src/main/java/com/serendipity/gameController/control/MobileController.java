@@ -730,20 +730,20 @@ public class MobileController {
             Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
             if (opIntercept.isPresent()) {
                 Intercept intercept = opIntercept.get();
-                // Check if intercept has expired
-                if (!intercept.isExpired()) {
-                    // Check if intercept should expire
-                    // Check 9 second after as .isBefore doesn't cover is equal
-                    if (LocalTime.now().isBefore(intercept.getStartTime().plusSeconds(10))) {
-                        // Check if the correct target has been sent
-                        if (target.equals(intercept.getTarget())) {
+                // Check if the correct target has been sent
+                if (target.equals(intercept.getTarget())) {
+                    // Check if intercept has expired
+                    if (!intercept.isExpired()) {
+                        // Check if intercept should expire
+                        // Check 9 second after as .isBefore doesn't cover is equal
+                        if (LocalTime.now().isBefore(intercept.getStartTime().plusSeconds(10))) {
                             // Find if exchange has been set
                             if (intercept.getExchange() == null) {
                                 // Set exchange if exists
                                 Optional<Exchange> opExchange = exchangeService.getEarliestActiveExchange(target);
                                 if (opExchange.isPresent()) {
                                     Exchange exchange = opExchange.get();
-                                    if(!exchange.getResponsePlayer().equals(player)) {
+                                    if (!exchange.getResponsePlayer().equals(player)) {
                                         intercept.setExchange(exchange);
                                         interceptService.saveIntercept(intercept);
                                         System.out.println("Exchange set");
@@ -765,47 +765,47 @@ public class MobileController {
                                 responseStatus = HttpStatus.PARTIAL_CONTENT;
                             }
                         } else {
-                            System.out.println("Active intercept exists for another target");
-                            output.put("NOT_FOUND", "Active intercept exists for another target");
-                            responseStatus = HttpStatus.NOT_FOUND;
+                            intercept.setExpired(true);
+                            interceptService.saveIntercept(intercept);
+                            Exchange exchange = intercept.getExchange();
+                            // Determine response
+                            if (exchange != null && exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
+                                JSONArray evidence = new JSONArray();
+                                JSONObject p1 = new JSONObject();
+                                p1.put("player_id", exchange.getRequestPlayer().getId());
+                                p1.put("amount", 30);
+
+                                JSONObject p2 = new JSONObject();
+                                p2.put("player_id", exchange.getResponsePlayer().getId());
+                                p2.put("amount", 10);
+
+                                evidence.put(p1);
+                                evidence.put(p2);
+                                output.put("evidence", evidence);
+                                // Add expose to logs
+                                logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
+                                responseStatus = HttpStatus.OK;
+                            } else {
+                                System.out.println("Exchange wasn't accepted");
+                                output.put("NO_CONTENT", "Exchange wasn't accepted");
+                                responseStatus = HttpStatus.NO_CONTENT;
+                            }
                         }
                     } else {
-                        intercept.setExpired(true);
+                        System.out.println("Intercept has expired, creating a new one");
+                        // Overwrite expired intercept
+                        intercept.setExpired(false);
+                        intercept.setTarget(target);
+                        intercept.setExchange(null);
+                        intercept.setStartTime(LocalTime.now());
                         interceptService.saveIntercept(intercept);
-                        Exchange exchange = intercept.getExchange();
-                        // Determine response
-                        if (exchange != null && exchange.getResponse().equals(ExchangeResponse.ACCEPTED)) {
-                            JSONArray evidence = new JSONArray();
-                            JSONObject p1 = new JSONObject();
-                            p1.put("player_id", exchange.getRequestPlayer().getId());
-                            p1.put("amount", 30);
-
-                            JSONObject p2 = new JSONObject();
-                            p2.put("player_id", exchange.getResponsePlayer().getId());
-                            p2.put("amount", 10);
-
-                            evidence.put(p1);
-                            evidence.put(p2);
-                            output.put("evidence", evidence);
-                            // Add expose to logs
-                            logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
-                            responseStatus = HttpStatus.OK;
-                        } else {
-                            System.out.println("Exchange wasn't accepted");
-                            output.put("NO_CONTENT", "Exchange wasn't accepted");
-                            responseStatus = HttpStatus.NO_CONTENT;
-                        }
+                        output.put("CREATED", "Intercept has expired, creating a new one");
+                        responseStatus = HttpStatus.CREATED;
                     }
                 } else {
-                    System.out.println("Intercept has expired, creating a new one");
-                    // Overwrite expired intercept
-                    intercept.setExpired(false);
-                    intercept.setTarget(target);
-                    intercept.setExchange(null);
-                    intercept.setStartTime(LocalTime.now());
-                    interceptService.saveIntercept(intercept);
-                    output.put("CREATED", "Intercept has expired, creating a new one");
-                    responseStatus = HttpStatus.CREATED;
+                    System.out.println("Active intercept exists for another target");
+                    output.put("NOT_FOUND", "Active intercept exists for another target");
+                    responseStatus = HttpStatus.NOT_FOUND;
                 }
             } else {
                 System.out.println("No intercept exists, creating one");
