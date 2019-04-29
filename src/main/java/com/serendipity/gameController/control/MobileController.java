@@ -730,10 +730,10 @@ public class MobileController {
             Optional<Intercept> opIntercept = interceptService.getInterceptByPlayer(player);
             if (opIntercept.isPresent()) {
                 Intercept intercept = opIntercept.get();
-                // Check if the correct target has been sent
-                if (target.equals(intercept.getTarget())) {
-                    // Check if intercept has expired
-                    if (!intercept.isExpired()) {
+                // Check if intercept has expired
+                if (!intercept.isExpired()) {
+                    // Check if the correct target has been sent
+                    if (target.equals(intercept.getTarget())) {
                         // Check if intercept should expire
                         // Check 9 second after as .isBefore doesn't cover is equal
                         if (LocalTime.now().isBefore(intercept.getStartTime().plusSeconds(10))) {
@@ -792,21 +792,22 @@ public class MobileController {
                             }
                         }
                     } else {
-                        System.out.println("Intercept has expired, creating a new one");
-                        // Overwrite expired intercept
-                        intercept.setExpired(false);
-                        intercept.setTarget(target);
-                        intercept.setExchange(null);
-                        intercept.setStartTime(LocalTime.now());
-                        interceptService.saveIntercept(intercept);
-                        output.put("CREATED", "Intercept has expired, creating a new one");
-                        responseStatus = HttpStatus.CREATED;
+                        System.out.println("Active intercept exists for another target");
+                        output.put("NOT_FOUND", "Active intercept exists for another target");
+                        responseStatus = HttpStatus.NOT_FOUND;
                     }
                 } else {
-                    System.out.println("Active intercept exists for another target");
-                    output.put("NOT_FOUND", "Active intercept exists for another target");
-                    responseStatus = HttpStatus.NOT_FOUND;
+                    System.out.println("Intercept has expired, creating a new one");
+                    // Overwrite expired intercept
+                    intercept.setExpired(false);
+                    intercept.setTarget(target);
+                    intercept.setExchange(null);
+                    intercept.setStartTime(LocalTime.now());
+                    interceptService.saveIntercept(intercept);
+                    output.put("CREATED", "Intercept has expired, creating a new one");
+                    responseStatus = HttpStatus.CREATED;
                 }
+
             } else {
                 System.out.println("No intercept exists, creating one");
                 // Create intercept
