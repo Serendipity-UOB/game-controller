@@ -335,15 +335,6 @@ public class MobileController {
                 output.put("exposed_by", 0l);
             }
 
-            // Return home
-            if (player.isReturnHome()) {
-                output.put("req_new_target", true);
-                player.setReturnHome(false);
-                playerService.savePlayer(player);
-            } else {
-                output.put("req_new_target", false);
-            }
-
             // Game over
             List<Game> games = gameService.getAllGamesByStartTimeAsc();
             if (gameService.isGameOver(games.get(0))) {
@@ -695,16 +686,6 @@ public class MobileController {
                     int reputationGain = playerService.calculateReputationGainFromExpose();
                     playerService.incrementReputation(player, reputationGain);
                     output.put("reputation", reputationGain);
-                    // set other players with the same targets returnHome attribute
-                    // assume player is locked to getNewTarget by app
-                    List<Player> players = playerService.getAllPlayersByTarget(target);
-                    for (Player p : players) {
-                        if (!(p.getId().equals(player.getId()))){
-                            p.setReturnHome(true);
-                            p.setMissionsPaused(true);
-                            playerService.savePlayer(p);
-                        }
-                    }
                     // Pause players missions
                     player.setMissionsPaused(true);
                     playerService.savePlayer(player);
