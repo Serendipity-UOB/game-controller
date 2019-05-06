@@ -145,4 +145,11 @@ public interface PlayerService {
      */
     int calculateReputationGainFromExpose();
 
+    /*
+     * @param player The current player
+     * @param newZone The new closest zone calculated from the playerUpdate.
+     * @return The zone that holds the majority in the previous zones list.
+     */
+    Zone averagePrevZone(Player player, Zone newZone);
+
 }

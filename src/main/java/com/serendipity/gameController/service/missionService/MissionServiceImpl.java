@@ -68,14 +68,10 @@ public class MissionServiceImpl implements MissionService {
             // Create mission
             Mission mission = new Mission(target1, target2);
             saveMission(mission);
-            // Assign mission
-            player.setMissionAssigned(mission);
-            playerService.savePlayer(player);
             return Optional.of(mission);
         } else {
             return Optional.empty();
         }
     }
-
 
 }

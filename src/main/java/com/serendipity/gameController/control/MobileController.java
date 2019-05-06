@@ -302,6 +302,9 @@ public class MobileController {
             Optional<Zone> optionalZone = zoneService.calculateCurrentZone(player, jsonBeacons);
             if (optionalZone.isPresent()) {
                 Zone zone = optionalZone.get();
+                // Get zone assignment from prevZones list
+                zone = playerService.averagePrevZone(player, zone);
+                // Change to new zone
                 if(!zone.equals(player.getCurrentZone())){
                     player.setCurrentZone(zone);
                     player.setTimeEnteredZone(LocalTime.now());
@@ -363,7 +366,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
+            if(player.getTimeEnteredZone().plusSeconds(15).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
                 && !player.isMissionsPaused()){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
@@ -380,6 +383,8 @@ public class MobileController {
 //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
                         Random random = new Random();
                         mission.setZone(zones.get(random.nextInt(zones.size())));
+                        //Set type
+                        mission.setType((player.getMissionAssigned().getType() == 1 ? 2 : 1));
                         missionService.saveMission(mission);
                         player.setMissionAssigned(mission);
                         playerService.savePlayer(player);
@@ -395,18 +400,26 @@ public class MobileController {
                 if (!mission.isSent()) {
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
-                    String missionDescription;
+                    String missionDescription = "";
                     Zone loc = mission.getZone();
                     if(mission.isStart()){
                         missionDescription = "Welcome, Agent.\nGo to " + loc.getName() +
                                 " for a hint on your target's location.";
-                    } else {
+                    } else if (mission.getType() == 1){
                         missionDescription = "Evidence available on " + p1.getRealName()
                                 + " and " + p2.getRealName() + ".\nGo to " + loc.getName() + ".";
+                    } else if (mission.getType() == 2) {
+                        Player target = player.getTarget();
+                        missionDescription = "Your target, " + target.getCodeName() + ", was last seen in " +
+                                    target.getCurrentZone().getName() + ".\nGo find them!";
+                        mission.setCompleted(true);
+                        player.setTimeEnteredZone(LocalTime.now());
+                        playerService.savePlayer(player);
                     }
                     mission.setSent(true);
                     missionService.saveMission(mission);
                     output.put("mission_description", missionDescription);
+                    output.put("mission_type", mission.getType());
                 } else { output.put("mission_description", ""); }
             } else {
                 System.out.println("This player hasn't had a mission assigned to them");
@@ -871,7 +884,7 @@ public class MobileController {
                             evidence.put(e2);
                             output.put("evidence", evidence);
                             // Success String
-                            String success = "";
+                            String success;
                             if (mission.isStart()) {
                                 Player target = player.getTarget();
                                 success = "Your target, " + target.getCodeName() + ", was last seen in " +

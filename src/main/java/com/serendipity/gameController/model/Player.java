@@ -1,10 +1,10 @@
 package com.serendipity.gameController.model;
 
 import javax.persistence.*;
-import javax.swing.text.html.Option;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Player {
@@ -36,6 +36,10 @@ public class Player {
 
     private LocalTime timeEnteredZone;
 
+    @javax.persistence.OrderBy("added ASC")
+    @OneToMany(mappedBy = "player")
+    private List<PrevZone> prevZones;
+
     @OneToOne
     private Mission missionAssigned;
 
@@ -46,6 +50,7 @@ public class Player {
         this.exposedBy = 0l;
         this.returnHome = false;
         this.missionsPaused = false;
+        this.prevZones = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName) {
@@ -55,6 +60,7 @@ public class Player {
         this.exposedBy = 0l;
         this.returnHome = false;
         this.missionsPaused = false;
+        this.prevZones = new ArrayList<>();
     }
 
     public Player(@NotNull String realName, @NotNull String codeName, Player target) {
@@ -65,6 +71,7 @@ public class Player {
         this.exposedBy = 0l;
         this.returnHome = false;
         this.missionsPaused = false;
+        this.prevZones = new ArrayList<>();
     }
 
     public Long getId() {
@@ -83,9 +90,7 @@ public class Player {
         this.realName = realName;
     }
 
-    public String getCodeName() {
-        return codeName;
-    }
+    public String getCodeName() { return codeName; }
 
     public void setCodeName(String codeName) {
         this.codeName = codeName;
@@ -142,6 +147,10 @@ public class Player {
     public LocalTime getTimeEnteredZone() { return timeEnteredZone; }
 
     public void setTimeEnteredZone(LocalTime timeEnteredZone) { this.timeEnteredZone = timeEnteredZone; }
+
+    public List<PrevZone> getPrevZones() { return prevZones; }
+
+    public void setPrevZones(List<PrevZone> prevZones) { this.prevZones = prevZones; }
 
     public Mission getMissionAssigned() { return missionAssigned; }
 

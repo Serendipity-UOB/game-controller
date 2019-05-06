@@ -76,6 +76,7 @@ public class DummyController {
 
         JSONObject output = new JSONObject();
         output.put("all_players", jsonObjects);
+        output.put("first_target_id", 4);
         output.put("end_time", LocalTime.now().plusMinutes(1));
         return new ResponseEntity<>(output.toString(), HttpStatus.OK);
     }
