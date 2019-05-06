@@ -614,6 +614,8 @@ public class MobileController {
                     exchange.setEvidenceList(responseEvidenceList);
                     exchange.setResponse(exchangeResponse);
                     exchangeService.saveExchange(exchange);
+                    playerService.incrementReputation(responder, 1);
+                    playerService.incrementReputation(requester, 1);
                     output.put("ACCEPTED", "Exchange accepted");
                     // Set status code
                     responseStatus = HttpStatus.ACCEPTED;
@@ -792,6 +794,7 @@ public class MobileController {
                                 evidence.put(p1);
                                 evidence.put(p2);
                                 output.put("evidence", evidence);
+
                                 // Add expose to logs
                                 logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
                                 responseStatus = HttpStatus.OK;

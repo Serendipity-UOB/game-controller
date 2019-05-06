@@ -144,7 +144,11 @@ public class ZoneServiceImpl implements ZoneService {
         if (optionalClosestBeacon.isPresent()) {
             Beacon closestBeacon = optionalClosestBeacon.get();
             return Optional.of(closestBeacon.getZone());
-        } else return Optional.empty();
+        } else if (player.hasCurrentZone()) {
+            return Optional.of(player.getCurrentZone());
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
