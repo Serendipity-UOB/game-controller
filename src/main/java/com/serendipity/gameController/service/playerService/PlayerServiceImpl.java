@@ -264,14 +264,15 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Zone averagePrevZone(Player player, Zone newZone) {
+        int maxSize = 3;
         Zone average = new Zone();
         List<PrevZone> prevZones = player.getPrevZones();
         // If list is full
-        if(prevZones.size() >= 3){
+        if(prevZones.size() >= maxSize){
             //Remove PrevZone entry for first item
             prevZoneService.deletePrevZone(prevZones.get(0));
             //Move each item -1 indexes and add new zone
-            prevZones = prevZones.subList(1, 3);
+            prevZones = prevZones.subList(1, maxSize);
         }
         //Add new prevZone
         PrevZone prevZone = new PrevZone(LocalTime.now(), player, newZone);
