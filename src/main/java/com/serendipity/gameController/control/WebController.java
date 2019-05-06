@@ -112,7 +112,7 @@ public class WebController {
         Zone sweden = new Zone("Sweden", 0.25f, 0.55f);
         Zone UN = new Zone("UN", 0.8f, 0.7f);
         Zone switzerland = new Zone("Switzerland", 0.75f, 0.15f);
-        Zone czechRepublic = new Zone("Czech Republic", 0.85f, 0.8f);
+        Zone czechRepublic = new Zone("Czech Republic", 0.6f, 0.55f);
         zoneService.saveZone(italy);
         zoneService.saveZone(sweden);
         zoneService.saveZone(UN);
