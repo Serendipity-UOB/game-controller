@@ -30,7 +30,12 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Optional<Game> getNextGame() {
-        return gameRepository.findFirstByStartTimeAfterOrderByStartTimeAsc(LocalTime.now());
+        return gameRepository.findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(LocalTime.now());
+    }
+
+    @Override
+    public Optional<Game> getCurrentGame() {
+        return gameRepository.findFirstByStartTimeLessThanEqualAndEndTimeGreaterThanEqualOrderByStartTimeAsc(LocalTime.now(), LocalTime.now());
     }
 
     @Override
@@ -59,6 +64,16 @@ public class GameServiceImpl implements GameService {
     public List<Integer> getTimeRemaining(Game game) {
         List<Integer> time = new ArrayList<>();
         int diff = game.getEndTime().toSecondOfDay() - LocalTime.now().toSecondOfDay();
+        time.add((diff/(60 * 60)) % 24);
+        time.add((diff/60) % 60);
+        time.add(diff % 60);
+        return time;
+    }
+
+    @Override
+    public List<Integer> getTimeToStart(Game game) {
+        List<Integer> time = new ArrayList<>();
+        int diff = game.getStartTime().toSecondOfDay() - LocalTime.now().toSecondOfDay();
         time.add((diff/(60 * 60)) % 24);
         time.add((diff/60) % 60);
         time.add(diff % 60);
