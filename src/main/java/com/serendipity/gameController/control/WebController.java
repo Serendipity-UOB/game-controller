@@ -12,6 +12,7 @@ import com.serendipity.gameController.service.interceptService.InterceptServiceI
 import com.serendipity.gameController.service.logService.LogServiceImpl;
 import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
+import com.serendipity.gameController.service.prevZoneService.PrevZoneServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,9 @@ public class WebController {
     @Autowired
     LogServiceImpl logService;
 
+    @Autowired
+    PrevZoneServiceImpl prevZoneService;
+
     @GetMapping(value="/")
     public String home(Model model) {
         model.addAttribute("beacons", beaconService.getAllBeacons());
@@ -67,6 +71,7 @@ public class WebController {
     }
 
     private void resetTables() {
+        prevZoneService.deleteAllPrevZones();
         logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
@@ -90,6 +95,7 @@ public class WebController {
     @PostMapping(value="/addTestBeacons")
     public String setupTestGame() {
 //        resetTables();
+        prevZoneService.deleteAllPrevZones();
         logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();
@@ -207,6 +213,7 @@ public class WebController {
                            @ModelAttribute("minutes") int length,
                            @ModelAttribute("missions") int missions) {
         // Reset all tables except beacons/zones
+        prevZoneService.deleteAllPrevZones();
         logService.deleteAllLogs();
         missionService.unassignAllMissions();
         missionService.deleteAllMissions();

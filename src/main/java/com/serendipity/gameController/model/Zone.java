@@ -20,6 +20,9 @@ public class Zone {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Beacon> beacons;
 
+    @OneToMany(mappedBy = "zone")
+    List<PrevZone> players;
+
     private float x;
 
     private float y;

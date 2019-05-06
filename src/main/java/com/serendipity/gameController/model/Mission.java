@@ -24,6 +24,8 @@ public class Mission {
     @ManyToOne
     private Zone zone;
 
+    private int type;
+
     private boolean start;
 
     private boolean sent;
@@ -36,6 +38,7 @@ public class Mission {
     public Mission(@NotNull Player player1, @NotNull Player player2) {
         this.player1 = player1;
         this.player2 = player2;
+        this.type = 0;
         this.start = false;
         this.sent = false;
         this.completed = false;
@@ -76,6 +79,10 @@ public class Mission {
     public Zone getZone() { return zone; }
 
     public void setZone(Zone zone) { this.zone = zone; }
+
+    public int getType() { return type; }
+
+    public void setType(int type) { this.type = type; }
 
     public boolean isStart() { return start; }
 

@@ -83,4 +83,6 @@ public interface ZoneService {
      * @return The predefined mapping.
      */
     int locationMapping(Zone location);
+
+
 }

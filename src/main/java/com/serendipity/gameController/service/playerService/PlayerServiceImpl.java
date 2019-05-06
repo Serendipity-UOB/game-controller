@@ -2,8 +2,10 @@ package com.serendipity.gameController.service.playerService;
 
 import com.serendipity.gameController.model.Mission;
 import com.serendipity.gameController.model.Player;
+import com.serendipity.gameController.model.PrevZone;
 import com.serendipity.gameController.model.Zone;
 import com.serendipity.gameController.repository.PlayerRepository;
+import com.serendipity.gameController.service.prevZoneService.PrevZoneServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service("playerService")
@@ -21,6 +24,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     ZoneServiceImpl zoneService;
+
+    @Autowired
+    PrevZoneServiceImpl prevZoneService;
 
     @Override
     public void savePlayer(Player player){
@@ -254,6 +260,45 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public int calculateReputationGainFromExpose() {
         return 10;
+    }
+
+    @Override
+    public Zone averagePrevZone(Player player, Zone newZone) {
+        Zone average = new Zone();
+        List<PrevZone> prevZones = player.getPrevZones();
+        // If list is full
+        if(prevZones.size() == 5){
+            //Remove PrevZone entry for first item
+            prevZoneService.deletePrevZone(prevZones.get(0));
+            //Move each item -1 indexes and add new zone
+            prevZones = prevZones.subList(1, prevZones.size());
+        }
+        //Add new prevZone
+        PrevZone prevZone = new PrevZone(LocalTime.now(), player, newZone);
+        prevZoneService.savePrevZone(prevZone);
+        prevZones.add(prevZone);
+        //Update players prevZone list
+        player.setPrevZones(prevZones);
+        savePlayer(player);
+        // Count frequency of zones in list
+        Map<Zone, Integer> frequencies = new HashMap<Zone, Integer>();
+        for(PrevZone z : prevZones){
+            if(frequencies.containsKey(z.getZone())){
+                int value = frequencies.get(z.getZone());
+                frequencies.replace(z.getZone(), value+1);
+            } else {
+                frequencies.put(z.getZone(), 1);
+            }
+        }
+        //Find first zone associated with max value in map
+        int maxVal = Collections.max(frequencies.values());
+        for(Map.Entry<Zone, Integer> entry : frequencies.entrySet()){
+            if (entry.getValue()==maxVal) {
+                average = entry.getKey();
+                break;
+            }
+        }
+        return average;
     }
 
 }
