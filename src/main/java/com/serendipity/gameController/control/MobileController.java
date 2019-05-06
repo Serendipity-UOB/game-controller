@@ -636,7 +636,7 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
-    @PostMapping
+    @PostMapping(value="/decipherCodename")
     @ResponseBody
     public ResponseEntity<String> decipherCodename(@RequestBody String json) {
         JSONObject output = new JSONObject();
