@@ -267,11 +267,11 @@ public class PlayerServiceImpl implements PlayerService {
         Zone average = new Zone();
         List<PrevZone> prevZones = player.getPrevZones();
         // If list is full
-        if(prevZones.size() == 3){
+        if(prevZones.size() >= 3){
             //Remove PrevZone entry for first item
             prevZoneService.deletePrevZone(prevZones.get(0));
             //Move each item -1 indexes and add new zone
-            prevZones = prevZones.subList(1, prevZones.size());
+            prevZones = prevZones.subList(1, 3);
         }
         //Add new prevZone
         PrevZone prevZone = new PrevZone(LocalTime.now(), player, newZone);
@@ -293,7 +293,7 @@ public class PlayerServiceImpl implements PlayerService {
         //Find first zone associated with max value in map
         int maxVal = Collections.max(frequencies.values());
         for(Map.Entry<Zone, Integer> entry : frequencies.entrySet()){
-            if (entry.getValue()==maxVal) {
+            if (entry.getValue() == maxVal) {
                 average = entry.getKey();
                 break;
             }

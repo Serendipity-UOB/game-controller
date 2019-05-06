@@ -860,7 +860,7 @@ public class MobileController {
         if (opPlayer.isPresent()) {
             Player player = opPlayer.get();
             realName = player.getRealName();
-            Zone location = player.getCurrentZone();
+            Zone playerZone = player.getCurrentZone();
             Mission mission = player.getMissionAssigned();
             if(!player.isMissionsPaused()) {
                 // Check if mission hasn't already been completed
@@ -868,10 +868,10 @@ public class MobileController {
                     // Get mission details
                     Player p1 = mission.getPlayer1();
                     Player p2 = mission.getPlayer2();
-                    Zone zone = mission.getZone();
+                    Zone missionZone = mission.getZone();
                     // Check if the mission hasn't timed out
                     if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS)) || mission.isStart()) {
-                        if (location.equals(zone)) {
+                        if (playerZone.getId().intValue() == missionZone.getId().intValue()) {
                             // Evidence to return
                             JSONArray evidence = new JSONArray();
                             JSONObject e1 = new JSONObject();
