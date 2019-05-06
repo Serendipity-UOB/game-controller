@@ -645,6 +645,25 @@ public class MobileController {
         return new ResponseEntity<>(output.toString(), responseStatus);
     }
 
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<String> decipherCodename(@RequestBody String json) {
+        JSONObject output = new JSONObject();
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        JSONObject input = new JSONObject(json);
+        Long playerId = input.getLong("player_id");
+        Optional<Player> optionalPlayer = playerService.getPlayer(playerId);
+        if (optionalPlayer.isPresent()) {
+            Player player = optionalPlayer.get();
+            playerService.incrementReputation(player, 10);
+            responseStatus = HttpStatus.OK;
+            output.put("OK", "Updated reputation");
+        } else {
+            output.put("BAD_REQUEST", "Can't find player");
+        }
+        return new ResponseEntity<>(output.toString(), responseStatus);
+    }
+
     @RequestMapping(value="/expose", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> expose(@RequestBody String json) {
@@ -894,6 +913,7 @@ public class MobileController {
                                         p2.getRealName() + ".";
 
                             }
+                            playerService.incrementReputation(player, 5);
                             output.put("success_description", success);
                             // Set mission complete
                             mission.setCompleted(true);
