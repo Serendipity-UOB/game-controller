@@ -1,6 +1,7 @@
 package com.serendipity.gameController.repository;
 
 import com.serendipity.gameController.model.Game;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     List<Game> findAllByOrderByStartTimeAsc();
 
-    Optional<Game> findFirstByStartTimeAfterOrderByStartTimeAsc(LocalTime time);
+    Optional<Game> findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(LocalTime time);
+
+    Optional<Game> findFirstByStartTimeLessThanEqualAndEndTimeGreaterThanEqualOrderByStartTimeAsc(LocalTime startTime, LocalTime endTime);
 
 }

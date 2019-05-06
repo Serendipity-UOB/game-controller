@@ -26,6 +26,11 @@ public interface GameService {
     Optional<Game> getNextGame();
 
     /*
+     * @return An optional of the current game, if one is exists.
+     */
+    Optional<Game> getCurrentGame();
+
+    /*
      * @return A list of all the games in the database.
      */
     List<Game> getAllGames();
@@ -51,4 +56,10 @@ public interface GameService {
      * @return List of the hours, minutes and seconds left.
      */
     List<Integer> getTimeRemaining(Game game);
+
+    /*
+     * @param game The game you want the time till start for.
+     * @return The hours, minutes and seconds left.
+     */
+    List<Integer> getTimeToStart(Game game);
 }
