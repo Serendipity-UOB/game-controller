@@ -36,7 +36,7 @@ public class Player {
 
     private LocalTime timeEnteredZone;
 
-    @javax.persistence.OrderBy("added ASC")
+    @javax.persistence.OrderBy("id ASC")
     @OneToMany(mappedBy = "player")
     private List<PrevZone> prevZones;
 
