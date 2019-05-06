@@ -413,10 +413,13 @@ public class MobileController {
                         missionDescription = "Your target, " + target.getCodeName() + ", was last seen in " +
                                     target.getCurrentZone().getName() + ".\nGo find them!";
                         mission.setCompleted(true);
+                        player.setTimeEnteredZone(LocalTime.now());
+                        playerService.savePlayer(player);
                     }
                     mission.setSent(true);
                     missionService.saveMission(mission);
                     output.put("mission_description", missionDescription);
+                    output.put("mission_type", mission.getType());
                 } else { output.put("mission_description", ""); }
             } else {
                 System.out.println("This player hasn't had a mission assigned to them");
