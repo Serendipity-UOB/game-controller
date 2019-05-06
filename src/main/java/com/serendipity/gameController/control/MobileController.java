@@ -785,6 +785,8 @@ public class MobileController {
                                 evidence.put(p2);
                                 output.put("evidence", evidence);
 
+                                playerService.incrementReputation(player, 2);
+
                                 // Add expose to logs
                                 logService.saveLog(LogType.INTERCEPT, intercept.getId(), LocalTime.now(), player.getCurrentZone());
                                 responseStatus = HttpStatus.OK;
@@ -877,6 +879,7 @@ public class MobileController {
                             } else {
                                 success = "Reward: Evidence on " + p1.getRealName() + " and " +
                                         p2.getRealName() + ".";
+
                             }
                             output.put("success_description", success);
                             // Set mission complete

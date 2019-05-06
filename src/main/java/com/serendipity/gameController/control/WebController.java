@@ -112,16 +112,26 @@ public class WebController {
         zoneService.saveZone(UN);
         zoneService.saveZone(switzerland);
         zoneService.saveZone(czechRepublic);
-        Beacon beacon1 = new Beacon(1, 1, "Beacon 1", italy);
-        Beacon beacon2 = new Beacon(1, 2, "Beacon 2", sweden);
-        Beacon beacon3 = new Beacon(2, 1, "Beacon 3", UN);
-        Beacon beacon4 = new Beacon(2, 2, "Beacon 4", switzerland);
-        Beacon beacon5 = new Beacon(3, 1, "Beacon 5", czechRepublic);
-        beaconService.saveBeacon(beacon1);
-        beaconService.saveBeacon(beacon2);
-        beaconService.saveBeacon(beacon3);
-        beaconService.saveBeacon(beacon4);
-        beaconService.saveBeacon(beacon5);
+        Beacon beacon1a = new Beacon(2, 1, "0Kic", italy);
+        Beacon beacon1b = new Beacon(3, 2, "nHX3", italy);
+        Beacon beacon2a = new Beacon(4, 0, "20LC", sweden);
+        Beacon beacon2b = new Beacon(3, 18, "j13M", sweden);
+        Beacon beacon3a = new Beacon(3, 4, "u0dd", UN);
+        Beacon beacon3b = new Beacon(3, 6, "gHM1", UN);
+        Beacon beacon4a = new Beacon(2, 987, "4VSu", switzerland);
+        Beacon beacon4b = new Beacon(1, 5, "jpMn", switzerland);
+        Beacon beacon5a = new Beacon(1, 3, "zP1C", czechRepublic);
+        Beacon beacon5b = new Beacon(2, 5, "7Wuj", czechRepublic);
+        beaconService.saveBeacon(beacon1a);
+        beaconService.saveBeacon(beacon1b);
+        beaconService.saveBeacon(beacon2a);
+        beaconService.saveBeacon(beacon2b);
+        beaconService.saveBeacon(beacon3a);
+        beaconService.saveBeacon(beacon3b);
+        beaconService.saveBeacon(beacon4a);
+        beaconService.saveBeacon(beacon4b);
+        beaconService.saveBeacon(beacon5a);
+        beaconService.saveBeacon(beacon5b);
         return "redirect:/";
     }
 

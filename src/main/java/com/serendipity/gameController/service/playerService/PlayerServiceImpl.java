@@ -253,7 +253,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public int calculateReputationGainFromExpose() {
-        return 10;
+        return 20;
     }
 
 }
