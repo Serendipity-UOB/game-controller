@@ -357,7 +357,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(15).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
+            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
                 && !player.isMissionsPaused()){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
@@ -368,7 +368,7 @@ public class MobileController {
                         Mission mission = opMission.get();
                         mission.setStartTime(LocalTime.now());
                         // 30 seconds to complete mission, extra second for polling delay
-                        mission.setEndTime(LocalTime.now().plusSeconds(31));
+                        mission.setEndTime(LocalTime.now().plusSeconds(16));
                         // Assign random zone
                         List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
 //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
@@ -892,7 +892,6 @@ public class MobileController {
                             } else {
                                 success = "Reward: Evidence on " + p1.getRealName() + " and " +
                                         p2.getRealName() + ".";
-
                             }
                             playerService.incrementReputation(player, 5);
                             output.put("success_description", success);

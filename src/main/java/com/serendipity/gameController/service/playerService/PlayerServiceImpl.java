@@ -267,7 +267,7 @@ public class PlayerServiceImpl implements PlayerService {
         Zone average = new Zone();
         List<PrevZone> prevZones = player.getPrevZones();
         // If list is full
-        if(prevZones.size() == 5){
+        if(prevZones.size() == 3){
             //Remove PrevZone entry for first item
             prevZoneService.deletePrevZone(prevZones.get(0));
             //Move each item -1 indexes and add new zone
