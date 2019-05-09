@@ -19,17 +19,21 @@ public class Game {
 
     private LocalTime endTime;
 
+    private int minPlayers;
+
     public Game() {
         LocalTime startTime = LocalTime.now();
         if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
         this.startTime = startTime;
         this.endTime = this.startTime.plus(6, ChronoUnit.MINUTES);
+        this.minPlayers = 3;
     }
 
-    public Game(LocalTime startTime, LocalTime endTime) {
+    public Game(LocalTime startTime, LocalTime endTime, int minPlayers) {
         if (startTime.getSecond() == 0) startTime = startTime.plusSeconds(1);
         this.startTime = startTime;
         this.endTime = endTime;
+        this.minPlayers = minPlayers;
     }
 
     public Long getId() {
@@ -54,5 +58,13 @@ public class Game {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
     }
 }

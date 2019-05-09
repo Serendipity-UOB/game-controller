@@ -189,22 +189,22 @@
                         <span th:text="${game.endTime}"></span>
                     </div>
                     <div>
-                        <span class="attribute">Missions: </span>
-                        <span>TODO</span>
+                        <span class="attribute">Minimum Players: </span>
+                        <span th:text="${game.minPlayers}"></span>
                     </div>
                 </div>
                 <form method="post" th:action="@{/initGame}" class="game new-game">
-                    <div>
-                        <span class="attribute">Start in: </span>
-                        <input type="text" name="start_time" value="1" placeholder="minutes"/>
-                    </div>
+                    <!--<div>-->
+                        <!--<span class="attribute">Start in: </span>-->
+                        <!--<input type="text" name="start_time" value="1" placeholder="minutes"/>-->
+                    <!--</div>-->
                     <div>
                         <span class="attribute">Game length: </span>
                         <input type="text" name="minutes" value="6" placeholder="minutes"/>
                     </div>
-                    <div class="game-missions">
-                        <span class="attribute">Missions: </span>
-                        <input type="text" name="missions"  value="1"/>
+                    <div class="game-players">
+                        <span class="attribute">Minimum players: </span>
+                        <input type="text" name="min_players"  value="3"/>
                     </div>
                     <button type="submit" class="add"><i class="material-icons">add</i></button>
                 </form>

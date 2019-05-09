@@ -218,9 +218,8 @@ public class WebController {
     }
 
     @PostMapping(value="/initGame")
-    public String initGame(@ModelAttribute("start_time") int start,
-                           @ModelAttribute("minutes") int length,
-                           @ModelAttribute("missions") int missions) {
+    public String initGame(@ModelAttribute("minutes") int length,
+                           @ModelAttribute("min_players") int minPlayers) {
         // Reset all tables except beacons/zones
         prevZoneService.deleteAllPrevZones();
         logService.deleteAllLogs();
@@ -235,9 +234,8 @@ public class WebController {
         gameService.deleteAllGames();
 
         // Start game
-        LocalTime startTime = LocalTime.now().plusMinutes(start);
-        Game game = new Game(startTime, startTime.plusMinutes(length));
-         // TODO: Handle number of missions
+        LocalTime startTime = LocalTime.now().plusHours(1);
+        Game game = new Game(startTime, startTime.plusMinutes(length), minPlayers);
         gameService.saveGame(game);
 
         // Initialise CSV files for logging

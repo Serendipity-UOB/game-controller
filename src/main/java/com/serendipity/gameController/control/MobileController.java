@@ -12,7 +12,6 @@ import com.serendipity.gameController.service.missionService.MissionServiceImpl;
 import com.serendipity.gameController.service.playerService.PlayerServiceImpl;
 import com.serendipity.gameController.service.zoneService.ZoneServiceImpl;
 
-import org.apache.tomcat.jni.Local;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Null;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -86,6 +84,23 @@ public class MobileController {
             playerService.savePlayer(player);
             output.put("player_id", player.getId());
             responseStatus = HttpStatus.OK;
+
+            Game nextGame = optionalNextGame.get();
+            if (playerService.countAllPlayers() >= nextGame.getMinPlayers()) {
+
+                // Get game length
+                int diff = nextGame.getEndTime().toSecondOfDay() - nextGame.getStartTime().toSecondOfDay();
+                int minutes = (diff/60) % 60;
+
+                // If min players is reached, set start time to be in 30 seconds
+                nextGame.setStartTime(LocalTime.now().plusSeconds(30));
+
+                // Update end time
+                nextGame.setEndTime(nextGame.getStartTime().plusMinutes(minutes));
+
+                // Save game
+                gameService.saveGame(nextGame);
+            }
         }
         logService.printToCSV(new ArrayList<>(Arrays.asList(realName, LocalTime.now().toString(),
                 responseStatus.toString(), input.toString(), output.toString())), "registerPlayer.csv");
@@ -102,14 +117,50 @@ public class MobileController {
         HttpStatus responseStatus = HttpStatus.OK;
 
         Optional<Game> optionalNextGame = gameService.getNextGame();
-        if (!optionalNextGame.isPresent()) {
+        Optional<Game> optionalCurrentGame = gameService.getCurrentGame();
+
+        if (optionalCurrentGame.isPresent()) {
+            // If game has started
+
+            output.put("number_players", playerService.countAllPlayers());
+            output.put("game_start", true);
+            output.put("countdown", "00:00");
+
+        } else if (optionalNextGame.isPresent()) {
+            // If waiting for game to start
+            Game nextGame = optionalNextGame.get();
+
+            long numPlayers = playerService.countAllPlayers();
+            output.put("number_players", numPlayers);
+            output.put("game_start", false);
+
+            // Calculate countdown
+            if (numPlayers < nextGame.getMinPlayers()) {
+                // Still waiting for more players
+
+                output.put("countdown", "--:--");
+            } else {
+                // Get time left
+
+                List<Integer> timeRemaining = gameService.getTimeToStart(nextGame);
+                Integer minutes = timeRemaining.get(1);
+                Integer seconds = timeRemaining.get(2);
+                String minutesString;
+                if (minutes < 10) minutesString = "0" + minutes.toString();
+                else minutesString = minutes.toString();
+                String secondsString;
+                if (seconds < 10) secondsString = "0" + seconds.toString();
+                else secondsString = seconds.toString();
+                String countdown = minutesString + ":" + secondsString;
+                output.put("countdown", countdown);
+            }
+        } else {
+            // If no games planned/ongoing
+
             responseStatus =  HttpStatus.NO_CONTENT;
             output.put("error", "No game");
-        } else {
-            Game nextGame = optionalNextGame.get();
-            output.put("start_time", nextGame.getStartTime());
-            output.put("number_players", playerService.countAllPlayers());
         }
+
         System.out.println("/gameInfo returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(LocalTime.now().toString(),
                 responseStatus.toString(), output.toString())), "gameInfo.csv");
