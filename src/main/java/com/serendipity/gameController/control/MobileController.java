@@ -418,8 +418,8 @@ public class MobileController {
                         // Set mission parameters
                         Mission mission = opMission.get();
                         mission.setStartTime(LocalTime.now());
-                        // 30 seconds to complete mission, extra second for polling delay
-                        mission.setEndTime(LocalTime.now().plusSeconds(16));
+                        // 15 seconds to complete mission
+                        mission.setEndTime(LocalTime.now().plusSeconds(15));
                         // Assign random zone
                         List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
 //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
@@ -450,7 +450,7 @@ public class MobileController {
                     } else if (mission.getType() == 1){
                         missionDescription = "Evidence available on " + p1.getRealName()
                                 + " and " + p2.getRealName() + ".\nGo to " + loc.getName() + ".";
-                    } else if (mission.getType() == 2) {
+                    } else if (mission.getType() == 2){
                         Player target = player.getTarget();
                         missionDescription = "Your target, " + target.getCodeName() + ", was last seen in " +
                                     target.getCurrentZone().getName() + ".\nGo find them!";
@@ -921,8 +921,8 @@ public class MobileController {
                     Player p2 = mission.getPlayer2();
                     Zone missionZone = mission.getZone();
                     // Check if the mission hasn't timed out
-                    if (LocalTime.now().isBefore(mission.getEndTime().plus(1, ChronoUnit.SECONDS)) || mission.isStart()) {
-                        if (playerZone.getId().intValue() == missionZone.getId().intValue()) {
+                    if (LocalTime.now().isBefore(mission.getEndTime().plusSeconds(1)) || mission.isStart()){
+                        if (playerZone.getId().intValue() == missionZone.getId().intValue()){
                             // Evidence to return
                             JSONArray evidence = new JSONArray();
                             JSONObject e1 = new JSONObject();
