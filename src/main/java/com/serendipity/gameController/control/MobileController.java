@@ -408,7 +408,7 @@ public class MobileController {
             output.put("exchange_pending", requesterId);
 
             // Dispersion of players
-            if(player.getTimeEnteredZone().plusSeconds(30).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
+            if(player.getTimeEnteredZone().plusSeconds(20).isBefore(LocalTime.now()) && !player.getCurrentZone().getName().equals("UN")
                 && !player.isMissionsPaused()){
                 // See if previous mission has been completed
                 if(player.getMissionAssigned().isCompleted()) {
@@ -419,7 +419,7 @@ public class MobileController {
                         Mission mission = opMission.get();
                         mission.setStartTime(LocalTime.now());
                         // 15 seconds to complete mission
-                        mission.setEndTime(LocalTime.now().plusSeconds(15));
+                        mission.setEndTime(LocalTime.now().plusSeconds(20));
                         // Assign random zone
                         List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
 //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
@@ -839,11 +839,11 @@ public class MobileController {
                                 JSONArray evidence = new JSONArray();
                                 JSONObject p1 = new JSONObject();
                                 p1.put("player_id", exchange.getRequestPlayer().getId());
-                                p1.put("amount", 30);
+                                p1.put("amount", 25);
 
                                 JSONObject p2 = new JSONObject();
                                 p2.put("player_id", exchange.getResponsePlayer().getId());
-                                p2.put("amount", 10);
+                                p2.put("amount", 25);
 
                                 evidence.put(p1);
                                 evidence.put(p2);
@@ -927,11 +927,11 @@ public class MobileController {
                             JSONArray evidence = new JSONArray();
                             JSONObject e1 = new JSONObject();
                             e1.put("player_id", p1.getId());
-                            e1.put("amount", 50);
+                            e1.put("amount", 30);
                             evidence.put(e1);
                             JSONObject e2 = new JSONObject();
                             e2.put("player_id", p2.getId());
-                            e2.put("amount", 50);
+                            e2.put("amount", 30);
                             evidence.put(e2);
                             output.put("evidence", evidence);
                             // Success String
