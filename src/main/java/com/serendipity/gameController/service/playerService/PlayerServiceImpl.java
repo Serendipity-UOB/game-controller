@@ -166,8 +166,8 @@ public class PlayerServiceImpl implements PlayerService {
             }
         }
         // Pick a random player from this list as the new target
-        Random random = new Random(System.currentTimeMillis());
-        Player newTarget = weightedPlayers.get(random.nextInt(weightedPlayers.size()));
+        Random random = new Random();
+        Player newTarget = weightedPlayers.get(random.nextInt(100) % weightedPlayers.size());
         // Update the target and save the current player
         currentPlayer.setTarget(newTarget);
         savePlayer(currentPlayer);
@@ -177,8 +177,8 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player getRandomContact(List<Long> ids) {
-        Random random = new Random(System.currentTimeMillis());
-        Long contactId = ids.get(random.nextInt(ids.size()));
+        Random random = new Random();
+        Long contactId = ids.get(random.nextInt(100) % ids.size());
         Player contact = getPlayer(contactId).get();
         return contact;
     }

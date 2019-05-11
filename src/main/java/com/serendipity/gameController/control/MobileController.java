@@ -236,8 +236,8 @@ public class MobileController {
                     mission.setEndTime(game.getEndTime());
                     // Assign random zone
                     List<Zone> zones = zoneService.getAllZonesExceptUN();
-                    Random random = new Random(System.currentTimeMillis());
-                    mission.setZone(zones.get(random.nextInt(zones.size())));
+                    Random random = new Random();
+                    mission.setZone(zones.get(random.nextInt(100) % zones.size()));
                     mission.setStart(true);
                     missionService.saveMission(mission);
                     player.setMissionAssigned(mission);
@@ -423,8 +423,8 @@ public class MobileController {
                         // Assign random zone
                         List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
 //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
-                        Random random = new Random(System.currentTimeMillis());
-                        mission.setZone(zones.get(random.nextInt(zones.size())));
+                        Random random = new Random();
+                        mission.setZone(zones.get(random.nextInt(100) % zones.size()));
                         //Set type
                         mission.setType((player.getMissionAssigned().getType() == 1 ? 2 : 1));
                         missionService.saveMission(mission);

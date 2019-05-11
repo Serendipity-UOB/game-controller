@@ -150,8 +150,8 @@ public class ExchangeServiceImpl implements ExchangeService {
 
         // Pick randomly from contactIds
         if (contactIds.size() != 0) {
-            Random random = new Random(System.currentTimeMillis());
-            Player contact = playerService.getPlayer(contactIds.get(random.nextInt(contactIds.size()))).get();
+            Random random = new Random();
+            Player contact = playerService.getPlayer(contactIds.get(random.nextInt(100) % contactIds.size())).get();
             evidence = new Evidence(exchange, contact, player, 15);
             evidenceList.add(evidence);
         }
