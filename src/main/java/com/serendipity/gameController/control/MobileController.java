@@ -732,7 +732,7 @@ public class MobileController {
             Player target = opTarget.get();
             // ensure given target matches player's assign target and they haven't been exposed
             if(player.getTarget().getId().equals(target.getId())) {
-                if((player.getExposedBy() == 0l) && (!player.isReturnHome())) {
+                if((player.getExposedBy() == 0l)) {
                     // increment reputation for player
                     int reputationGain = playerService.calculateReputationGainFromExpose();
                     playerService.incrementReputation(player, reputationGain);
