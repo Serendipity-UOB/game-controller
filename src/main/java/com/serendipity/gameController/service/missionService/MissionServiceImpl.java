@@ -57,7 +57,7 @@ public class MissionServiceImpl implements MissionService {
     @Override
     public Optional<Mission> createMission(Player player) {
         List<Player> players = playerService.getAllPlayersExcept(player);
-        Random random = new Random();
+        Random random = new Random(System.currentTimeMillis());
         // Ensure there's enough players
         if(players.size() > 1) {
             // Get 2 random targets
