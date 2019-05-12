@@ -150,6 +150,23 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    public JSONArray zoneDisplayBlank() {
+        JSONArray zones = new JSONArray();
+        for(Zone z : zoneService.getAllZones()){
+            // Add to output
+            JSONObject zoneInfo = new JSONObject();
+            zoneInfo.put("zone_id", z.getId());
+            zoneInfo.put("zone_name", z.getName());
+            zoneInfo.put("x", z.getX());
+            zoneInfo.put("y", z.getY());
+            zoneInfo.put("size", 0);
+            zoneInfo.put("colour", 1);
+            zones.put(zoneInfo);
+        }
+        return zones;
+    }
+
+    @Override
     public JSONArray zoneDisplay() {
         JSONArray zones = new JSONArray();
 

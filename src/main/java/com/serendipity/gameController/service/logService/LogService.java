@@ -38,6 +38,11 @@ public interface LogService {
     JSONArray logOutput();
 
     /*
+     * @return A JSONArray with blank colours and sizes
+     */
+    JSONArray zoneDisplayBlank();
+
+    /*
      * @return A JSONArray with all new zone colours and sizes
      */
     JSONArray zoneDisplay();

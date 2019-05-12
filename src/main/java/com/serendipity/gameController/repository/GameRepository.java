@@ -20,4 +20,5 @@ public interface GameRepository extends CrudRepository<Game, Long> {
 
     Optional<Game> findFirstByStartTimeLessThanEqualAndEndTimeGreaterThanEqualOrderByStartTimeAsc(LocalTime startTime, LocalTime endTime);
 
+    Optional<Game> findFirstByEndTimeLessThanEqualOrderByEndTimeDesc(LocalTime time);
 }

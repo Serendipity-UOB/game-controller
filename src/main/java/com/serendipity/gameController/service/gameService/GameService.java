@@ -31,6 +31,11 @@ public interface GameService {
     Optional<Game> getCurrentGame();
 
     /*
+     * @return An optional of the previous game, if one is exists.
+     */
+    Optional<Game> getPreviousGame();
+
+    /*
      * @return A list of all the games in the database.
      */
     List<Game> getAllGames();
