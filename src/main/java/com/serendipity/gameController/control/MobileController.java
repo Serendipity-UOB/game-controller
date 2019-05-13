@@ -830,7 +830,7 @@ public class MobileController {
                                 Optional<Exchange> opExchange = exchangeService.getEarliestActiveExchange(target);
                                 if (opExchange.isPresent()) {
                                     Exchange exchange = opExchange.get();
-                                    if (!exchange.getResponsePlayer().equals(player)) {
+                                    if (!exchange.getResponsePlayer().equals(player) && !exchange.getRequestPlayer().equals(player)){
                                         intercept.setExchange(exchange);
                                         interceptService.saveIntercept(intercept);
                                         System.out.println("Exchange set");
