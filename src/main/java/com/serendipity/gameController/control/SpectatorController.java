@@ -77,6 +77,10 @@ public class SpectatorController {
                 // There is a game queued
                 Game nextGame = optionalNextGame.get();
 
+                // ZONES
+                JSONArray zones = logService.zoneDisplayBlank();
+                output.put("zones", zones);
+
                 if (playerService.countAllPlayers() >= nextGame.getMinPlayers()) {
                     // Game starting
 
@@ -94,10 +98,6 @@ public class SpectatorController {
 
                     // CLEAR LOGS
                     output.put("clear_logs", false);
-
-                    // ZONES
-                    JSONArray zones = new JSONArray();
-                    output.put("zones", zones);
                 } else {
                     // Waiting for players
 
@@ -108,10 +108,6 @@ public class SpectatorController {
 
                     // CLEAR LOGS
                     output.put("clear_logs", true);
-
-                    // ZONES
-                    JSONArray zones = logService.zoneDisplayBlank();
-                    output.put("zones", zones);
                 }
             } else {
                 Optional<Game> optionalPreviousGame = gameService.getPreviousGame();
