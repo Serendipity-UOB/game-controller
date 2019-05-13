@@ -171,12 +171,16 @@ public class LogServiceImpl implements LogService {
         JSONArray zones = new JSONArray();
 
         List<Player> players = playerService.getAllPlayers();
+        int backLog = 5;
 
         for(Zone z : zoneService.getAllZones()){
+            //Fetch log list for zone
+            List<Log> logs = logRepository.findAllByZoneOrderByTimeDesc(z);
             int count = 0;
             float colour = 0;
             // Select colour
-            for(Log l : logRepository.findAllByZone(z)){
+            for(int i = 0; i < backLog; i++){
+                Log l = logs.get(i);
                 // Add to correct colour
                 switch(l.getType()) {
                     case EXCHANGE:
