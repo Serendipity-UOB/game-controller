@@ -306,8 +306,28 @@ public class MobileController {
                     Zone homeZone = player.getHomeZone();
                     if (currentZone.equals(homeZone)) {
                         output.put("home", true);
-                        player.setMissionsPaused(false);
-                        playerService.savePlayer(player);
+                        if(player.isReturnHome()) {
+                            player.setReturnHome(false);
+                            Optional<Mission> opMission = missionService.createMission(player);
+                            if (opMission.isPresent()) {
+                                // Set mission parameters
+                                Mission mission = opMission.get();
+                                mission.setStartTime(LocalTime.now());
+                                // 15 seconds to complete mission
+                                mission.setEndTime(LocalTime.now().plusSeconds(20));
+                                // Assign random zone
+                                List<Zone> zones = zoneService.getAllZonesExceptUNandOne(player.getCurrentZone().getId());
+                                //                        List<Zone> zones = zoneService.getAllZonesExcept(player.getCurrentZone().getId());
+                                Random random = new Random();
+                                mission.setZone(zones.get(random.nextInt(100) % zones.size()));
+                                //Set type
+                                mission.setType(2);
+                                missionService.saveMission(mission);
+                                player.setMissionAssigned(mission);
+                            }
+                            player.setMissionsPaused(false);
+                            playerService.savePlayer(player);
+                        }
                     } else {
                         output.put("home", false);
                     }
@@ -743,6 +763,7 @@ public class MobileController {
                     // set targets exposed attribute
                     target.setExposedBy(playerId);
                     target.setMissionsPaused(true);
+                    target.setReturnHome(true);
                     playerService.savePlayer(target);
                     // Create expose
                     Expose expose = new Expose(player, target);
