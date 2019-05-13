@@ -14,4 +14,6 @@ public interface LogRepository extends CrudRepository<Log, Long> {
 
     List<Log> findAllByZone(Zone zone);
 
+    List<Log> findAllByZoneOrderByTimeDesc(Zone zone);
+
 }

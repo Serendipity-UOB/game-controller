@@ -325,9 +325,9 @@ public class MobileController {
                                 missionService.saveMission(mission);
                                 player.setMissionAssigned(mission);
                             }
-                            player.setMissionsPaused(false);
-                            playerService.savePlayer(player);
                         }
+                        player.setMissionsPaused(false);
+                        playerService.savePlayer(player);
                     } else {
                         output.put("home", false);
                     }
