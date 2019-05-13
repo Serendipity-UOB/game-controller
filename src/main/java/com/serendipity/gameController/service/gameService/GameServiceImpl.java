@@ -39,6 +39,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public Optional<Game> getPreviousGame() {
+        return gameRepository.findFirstByEndTimeLessThanEqualOrderByEndTimeDesc(LocalTime.now());
+    }
+
+    @Override
     public List<Game> getAllGames() {
         return gameRepository.findAll();
     }

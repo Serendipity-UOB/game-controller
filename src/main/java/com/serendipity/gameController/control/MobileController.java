@@ -92,8 +92,8 @@ public class MobileController {
                 int diff = nextGame.getEndTime().toSecondOfDay() - nextGame.getStartTime().toSecondOfDay();
                 int minutes = (diff/60) % 60;
 
-                // If min players is reached, set start time to be in 30 seconds
-                nextGame.setStartTime(LocalTime.now().plusSeconds(30));
+                // If min players is reached, set start time to be in 10 seconds
+                nextGame.setStartTime(LocalTime.now().plusSeconds(10));
 
                 // Update end time
                 nextGame.setEndTime(nextGame.getStartTime().plusMinutes(minutes));
