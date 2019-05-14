@@ -137,7 +137,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         List<Evidence> evidenceList = new ArrayList<>();
 
         // Make evidence on the player giving evidence
-        Evidence evidence = new Evidence(exchange, player, player, 100);
+        Evidence evidence = new Evidence(exchange, player, player, 25);
         evidenceList.add(evidence);
 
         // Remove the responder and requester ids from contacts list
@@ -152,7 +152,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         if (contactIds.size() != 0) {
             Random random = new Random();
             Player contact = playerService.getPlayer(contactIds.get(random.nextInt(100) % contactIds.size())).get();
-            evidence = new Evidence(exchange, contact, player, 100);
+            evidence = new Evidence(exchange, contact, player, 15);
             evidenceList.add(evidence);
         }
 
