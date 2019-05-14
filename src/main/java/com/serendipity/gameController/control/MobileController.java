@@ -241,11 +241,11 @@ public class MobileController {
                     mission.setStart(true);
                     missionService.saveMission(mission);
                     player.setMissionAssigned(mission);
+
                     // Assign new target
-                    Long targetId = playerService.newTarget(player.getId());
-                    Optional<Player> opTarget = playerService.getPlayer(targetId);
-                    if(opTarget.isPresent()){
-                        Player target = opTarget.get();
+                    Optional<Player> newTarget = playerService.newTarget(player);
+                    if(newTarget.isPresent()){
+                        Player target = newTarget.get();
                         player.setTarget(target);
                         playerService.savePlayer(player);
                         // Return all players
@@ -500,24 +500,38 @@ public class MobileController {
     @RequestMapping(value="/newTarget", method=RequestMethod.POST, consumes="application/json")
     @ResponseBody
     public ResponseEntity<String> getNewTarget(@RequestBody String json) {
+        // Create JSON object for response body
+        JSONObject output = new JSONObject();
+        String realName = "";
+        // Set default response status
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        // Process json
         JSONObject input = new JSONObject(json);
         System.out.println("/newTarget received: " + input);
         Long playerId = input.getLong("player_id");
-        String realName = "";
         Optional<Player> optionalPlayer = playerService.getPlayer(playerId);
         if (optionalPlayer.isPresent()) {
             Player player = optionalPlayer.get();
             realName = player.getRealName();
+
+            // Get a new target
+            Optional<Player> optionalNewTarget = playerService.newTarget(player);
+            if (optionalNewTarget.isPresent()) {
+                Player newTarget = optionalNewTarget.get();
+
+                // Set the target
+                player.setTarget(newTarget);
+                playerService.savePlayer(player);
+                output.put("target_player_id", newTarget.getId());
+
+                // Set status code
+                responseStatus = HttpStatus.OK;
+            } else {
+                output.put("BAD_REQUEST", "Couldn't get a new target");
+            }
+        } else {
+            output.put("BAD_REQUEST", "Couldn't find player in database");
         }
-
-        // Create JSON object for response body
-        JSONObject output = new JSONObject();
-        // set default response status
-        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-
-        Long newTargetId = playerService.newTarget(playerId);
-        output.put("target_player_id", newTargetId);
-        responseStatus = HttpStatus.OK;
         System.out.println("/newTarget returned: " + output);
         logService.printToCSV(new ArrayList<>(Arrays.asList(playerId.toString(), realName, LocalTime.now().toString(),
                 responseStatus.toString(), input.toString(), output.toString())), "newTarget.csv");

@@ -147,32 +147,35 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Long newTarget(Long playerId){
-        Player currentPlayer = getPlayer(playerId).get();
+    public Optional<Player> newTarget(Player player) {
         // Create a list containing just the current player and their old target
-        List<Player> players = new ArrayList<>();
-        if (currentPlayer.getTarget() == null) {
-            players = getAllPlayersExcept(currentPlayer);
+        List<Player> players;
+        if (player.getTarget() == null) {
+            players = getAllPlayersExcept(player);
         } else {
-            players = getAllPlayersExceptTwo(currentPlayer, currentPlayer.getTarget());
+            players = getAllPlayersExceptTwo(player, player.getTarget());
         }
-        // Weight all the players in this list by their current rep
-        List<Player> weightedPlayers = new ArrayList<>();
-        for (Player p : players) {
-            int playerWeight = getPlayerWeight(p);
-            weightedPlayers.add(p);
-            for (int i = 0; i < playerWeight; i++) {
+
+        if (!players.isEmpty()) {
+            // Weight all the players in this list by their current rep
+            List<Player> weightedPlayers = new ArrayList<>();
+            for (Player p : players) {
                 weightedPlayers.add(p);
+                int playerWeight = getPlayerWeight(p);
+                for (int i = 0; i < playerWeight; i++) {
+                    weightedPlayers.add(p);
+                }
             }
+
+            // Pick a random player from this list as the new target
+            Random random = new Random();
+            Player newTarget = weightedPlayers.get(random.nextInt(100) % weightedPlayers.size());
+
+            // Return the id of the new target
+            return Optional.of(newTarget);
+        } else {
+            return Optional.empty();
         }
-        // Pick a random player from this list as the new target
-        Random random = new Random();
-        Player newTarget = weightedPlayers.get(random.nextInt(100) % weightedPlayers.size());
-        // Update the target and save the current player
-        currentPlayer.setTarget(newTarget);
-        savePlayer(currentPlayer);
-        // Return the id of the new target
-        return newTarget.getId();
     }
 
     @Override

@@ -95,7 +95,7 @@ public interface PlayerService {
      * @param playerId The id of the player to get a new target for.
      * @return The id of their new target.
      */
-    Long newTarget(Long playerId);
+    Optional<Player> newTarget(Player player);
 
     /*
      * @param ids A list of the ids of all the player's contacts.
